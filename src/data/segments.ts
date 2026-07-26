@@ -20,6 +20,11 @@ export const SEGMENT_OPTIONS: SegmentOption[] = [
   { id: 'd-suv', bodyType: 'suv', classLetter: 'D', label: 'D Segment SUV', shortLabel: 'D SUV', description: 'Orta SUV (X5, GLE, Q7 boyutu)' },
   { id: 'e-suv', bodyType: 'suv', classLetter: 'E', label: 'E Segment SUV', shortLabel: 'E SUV', description: 'Büyük lüks SUV (X7, GLS, Escalade boyutu)' },
   { id: 'f-suv', bodyType: 'suv', classLetter: 'F', label: 'F Segment SUV', shortLabel: 'F SUV', description: 'Ultra lüks SUV (Cullinan, Range SV boyutu)' },
+  { id: 'b-hatchback', bodyType: 'hatchback', classLetter: 'B', label: 'B Segment Hatchback', shortLabel: 'B HB', description: 'Küçük hatchback (Polo, Clio boyutu)' },
+  { id: 'c-hatchback', bodyType: 'hatchback', classLetter: 'C', label: 'C Segment Hatchback', shortLabel: 'C HB', description: 'Kompakt hatchback (Golf, Leon boyutu)' },
+  { id: 'd-hatchback', bodyType: 'hatchback', classLetter: 'D', label: 'D Segment Hatchback', shortLabel: 'D HB', description: 'Orta hatchback (Arteon, A5 Sportback boyutu)' },
+  { id: 'pickup-midsize', bodyType: 'pickup', classLetter: 'M', label: 'Midsize Pick-up', shortLabel: 'Mid Pick-up', description: 'Orta boy pick-up (Ranger, Hilux boyutu)' },
+  { id: 'pickup-fullsize', bodyType: 'pickup', classLetter: 'F', label: 'Fullsize Pick-up', shortLabel: 'Full Pick-up', description: 'Tam boy pick-up (F-150, RAM 1500 boyutu)' },
 ];
 
 export function getSegmentOption(id: VehicleSegment): SegmentOption | undefined {

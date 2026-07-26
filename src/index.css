@@ -3,13 +3,41 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-void: #f9f9fb;
+    --color-surface: #ffffff;
+    --color-surface-elevated: #f3f4f6;
+    --color-glass: rgba(255, 255, 255, 0.72);
+    --color-glass-border: rgba(0, 0, 0, 0.08);
+    --color-muted: #64748b;
+    --color-foreground: #0f172a;
+    --color-accent: #3b82f6;
+    --color-accent-glow: rgba(59, 130, 246, 0.35);
+    --color-accent-red: #ef4444;
+    --color-accent-red-glow: rgba(239, 68, 68, 0.3);
+  }
+
+  .dark {
+    --color-void: #050508;
+    --color-surface: #0c0c10;
+    --color-surface-elevated: #14141a;
+    --color-glass: rgba(20, 20, 26, 0.72);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-muted: #8b8b9a;
+    --color-foreground: #f4f4f7;
+    --color-accent: #3b82f6;
+    --color-accent-glow: rgba(59, 130, 246, 0.35);
+    --color-accent-red: #ef4444;
+    --color-accent-red-glow: rgba(239, 68, 68, 0.3);
+  }
+
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-void font-sans text-foreground antialiased;
+    @apply bg-void font-sans text-foreground antialiased transition-colors duration-300;
     min-height: 100dvh;
     overscroll-behavior-y: none;
   }
@@ -21,8 +49,8 @@
 
 @layer components {
   .glass-panel {
-    background: rgba(20, 20, 26, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-glass);
+    border: 1px solid var(--color-glass-border);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
   }

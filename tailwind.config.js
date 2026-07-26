@@ -1,23 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        void: '#050508',
-        surface: '#0c0c10',
-        'surface-elevated': '#14141a',
-        glass: 'rgba(20, 20, 26, 0.72)',
-        'glass-border': 'rgba(255, 255, 255, 0.08)',
-        muted: '#8b8b9a',
-        foreground: '#f4f4f7',
+        void: 'var(--color-void)',
+        surface: 'var(--color-surface)',
+        'surface-elevated': 'var(--color-surface-elevated)',
+        glass: 'var(--color-glass)',
+        'glass-border': 'var(--color-glass-border)',
+        muted: 'var(--color-muted)',
+        foreground: 'var(--color-foreground)',
         accent: {
-          DEFAULT: '#3b82f6',
-          glow: 'rgba(59, 130, 246, 0.35)',
+          DEFAULT: 'var(--color-accent)',
+          glow: 'var(--color-accent-glow)',
         },
         'accent-red': {
-          DEFAULT: '#ef4444',
-          glow: 'rgba(239, 68, 68, 0.3)',
+          DEFAULT: 'var(--color-accent-red)',
+          glow: 'var(--color-accent-red-glow)',
         },
       },
       fontFamily: {
@@ -31,8 +32,8 @@ export default {
         ],
       },
       boxShadow: {
-        'accent-glow': '0 10px 40px -10px rgba(59, 130, 246, 0.35)',
-        'accent-red-glow': '0 10px 40px -10px rgba(239, 68, 68, 0.3)',
+        'accent-glow': '0 10px 40px -10px var(--color-accent-glow)',
+        'accent-red-glow': '0 10px 40px -10px var(--color-accent-red-glow)',
       },
       borderRadius: {
         '4xl': '2rem',

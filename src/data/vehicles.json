@@ -3,7 +3,20 @@
     "version": "1.0.0",
     "lastUpdated": "2026-05-26",
     "locale": "tr-TR",
-    "availableSegments": ["b-sedan", "c-sedan", "d-sedan", "e-sedan", "f-sedan", "b-suv", "c-suv", "d-suv", "e-suv", "f-suv"]
+    "availableSegments": [
+      "b-sedan",
+      "c-sedan",
+      "d-sedan",
+      "e-sedan",
+      "f-sedan",
+      "b-suv",
+      "c-suv",
+      "d-suv",
+      "e-suv",
+      "f-suv",
+      "c-hatchback",
+      "pickup-midsize"
+    ]
   },
   "vehicles": [
     {
@@ -17,7 +30,11 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "Dinamik kompakt SUV deneyimi",
       "shortDescription": "M Sport paketiyle güçlendirilmiş 2.0 dizel, xDrive AWD ve Harman Kardon ses sistemi.",
-      "pricing": { "currency": "EUR", "msrp": 58900, "trim": "M Sport" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 58900,
+        "trim": "M Sport"
+      },
       "media": {
         "heroImage": "/images/vehicles/bmw-x3-hero.webp",
         "thumbnail": "/images/vehicles/bmw-x3-thumb.webp",
@@ -127,34 +144,87 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Sensatec suni deri", "finish": "perfore", "colorName": "Siyah", "sustainable": false },
-        { "zone": "dashboard", "material": "Alcantara üst panel", "finish": "mat", "colorName": "Antrasit", "sustainable": false },
-        { "zone": "door-panels", "material": "Yumuşak dokunuş plastik + Alcantara insert", "colorName": "Karbon görünümlü", "sustainable": false },
-        { "zone": "steering", "material": "Nappa deri", "finish": "dikilmiş", "colorName": "Siyah M Sport" },
-        { "zone": "headliner", "material": "Antrasit kumaş", "colorName": "Antrasit" },
-        { "zone": "floor", "material": "M Sport halı paspas", "colorName": "Siyah/Mavi dikiş" }
+        {
+          "zone": "seats",
+          "material": "Sensatec suni deri",
+          "finish": "perfore",
+          "colorName": "Siyah",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Alcantara üst panel",
+          "finish": "mat",
+          "colorName": "Antrasit",
+          "sustainable": false
+        },
+        {
+          "zone": "door-panels",
+          "material": "Yumuşak dokunuş plastik + Alcantara insert",
+          "colorName": "Karbon görünümlü",
+          "sustainable": false
+        },
+        {
+          "zone": "steering",
+          "material": "Nappa deri",
+          "finish": "dikilmiş",
+          "colorName": "Siyah M Sport"
+        },
+        {
+          "zone": "headliner",
+          "material": "Antrasit kumaş",
+          "colorName": "Antrasit"
+        },
+        {
+          "zone": "floor",
+          "material": "M Sport halı paspas",
+          "colorName": "Siyah/Mavi dikiş"
+        }
       ],
       "technicalSections": [
         {
           "id": "bmw-chassis",
           "title": "Şasi & Süspansiyon",
           "items": [
-            { "label": "Ön süspansiyon", "value": "MacPherson, M Sport ayarlı" },
-            { "label": "Arka süspansiyon", "value": "5-link, değişken sertlik (opsiyonel)" },
-            { "label": "Frenler", "value": "M Sport mavi kaliper, 374mm ön disk" }
+            {
+              "label": "Ön süspansiyon",
+              "value": "MacPherson, M Sport ayarlı"
+            },
+            {
+              "label": "Arka süspansiyon",
+              "value": "5-link, değişken sertlik (opsiyonel)"
+            },
+            {
+              "label": "Frenler",
+              "value": "M Sport mavi kaliper, 374mm ön disk"
+            }
           ]
         },
         {
           "id": "bmw-efficiency",
           "title": "Verimlilik",
           "items": [
-            { "label": "WLTP tüketim", "value": "5.8 L/100km (karma)" },
-            { "label": "CO₂ emisyonu", "value": "152 g/km" },
-            { "label": "Depo hacmi", "value": "60 L" }
+            {
+              "label": "WLTP tüketim",
+              "value": "5.8 L/100km (karma)"
+            },
+            {
+              "label": "CO₂ emisyonu",
+              "value": "152 g/km"
+            },
+            {
+              "label": "Depo hacmi",
+              "value": "60 L"
+            }
           ]
         }
       ],
-      "highlights": ["xDrive AWD", "M Sport paket", "Harman Kardon", "iDrive 8"],
+      "highlights": [
+        "xDrive AWD",
+        "M Sport paket",
+        "Harman Kardon",
+        "iDrive 8"
+      ],
       "featured": true,
       "accentColor": "blue"
     },
@@ -169,7 +239,11 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "Konfor ve teknolojinin dengesi",
       "shortDescription": "Mild-hybrid 2.0 benzinli, MBUX Hyperscreen opsiyonu ve Burmester 3D ses.",
-      "pricing": { "currency": "EUR", "msrp": 62450, "trim": "AMG Line" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 62450,
+        "trim": "AMG Line"
+      },
       "media": {
         "heroImage": "/images/vehicles/mercedes-glc-hero.webp",
         "thumbnail": "/images/vehicles/mercedes-glc-thumb.webp",
@@ -262,24 +336,63 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Artico deri", "finish": "dikilmiş", "colorName": "Siyah/Bej kontrast", "sustainable": false },
-        { "zone": "dashboard", "material": "Açık gri ağaç dekor", "finish": "open-pore", "colorName": "Doğal meşe", "sustainable": true },
-        { "zone": "door-panels", "material": "Deri insert + krom detay", "colorName": "AMG Line" },
-        { "zone": "steering", "material": "Deri kaplama", "finish": "ısıtmalı", "colorName": "Siyah" },
-        { "zone": "headliner", "material": "Bej alcantara", "colorName": "Macchiato Beige" }
+        {
+          "zone": "seats",
+          "material": "Artico deri",
+          "finish": "dikilmiş",
+          "colorName": "Siyah/Bej kontrast",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Açık gri ağaç dekor",
+          "finish": "open-pore",
+          "colorName": "Doğal meşe",
+          "sustainable": true
+        },
+        {
+          "zone": "door-panels",
+          "material": "Deri insert + krom detay",
+          "colorName": "AMG Line"
+        },
+        {
+          "zone": "steering",
+          "material": "Deri kaplama",
+          "finish": "ısıtmalı",
+          "colorName": "Siyah"
+        },
+        {
+          "zone": "headliner",
+          "material": "Bej alcantara",
+          "colorName": "Macchiato Beige"
+        }
       ],
       "technicalSections": [
         {
           "id": "glc-hybrid",
           "title": "Hibrit Sistem",
           "items": [
-            { "label": "EQ Boost", "value": "48V, 20 hp ek destek" },
-            { "label": "Rejeneratif fren", "value": "Otomatik maksimum kazanım modu" },
-            { "label": "Sail fonksiyonu", "value": "Motor kapalı yuvarlanma" }
+            {
+              "label": "EQ Boost",
+              "value": "48V, 20 hp ek destek"
+            },
+            {
+              "label": "Rejeneratif fren",
+              "value": "Otomatik maksimum kazanım modu"
+            },
+            {
+              "label": "Sail fonksiyonu",
+              "value": "Motor kapalı yuvarlanma"
+            }
           ]
         }
       ],
-      "highlights": ["Mild-hybrid", "Burmester 3D", "AMG Line", "620L bagaj"],
+      "highlights": [
+        "Mild-hybrid",
+        "Burmester 3D",
+        "AMG Line",
+        "620L bagaj"
+      ],
       "featured": true,
       "accentColor": "red"
     },
@@ -294,11 +407,17 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "Quattro ile her yol senin",
       "shortDescription": "245 hp turbo benzin, Virtual Cockpit Plus ve Bang & Olufsen ses.",
-      "pricing": { "currency": "EUR", "msrp": 55200, "trim": "S line" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 55200,
+        "trim": "S line"
+      },
       "media": {
         "heroImage": "/images/vehicles/audi-q5-hero.webp",
         "thumbnail": "/images/vehicles/audi-q5-thumb.webp",
-        "gallery": ["/images/vehicles/audi-q5-exterior-1.webp"],
+        "gallery": [
+          "/images/vehicles/audi-q5-exterior-1.webp"
+        ],
         "colorHex": "#3d3d3d"
       },
       "audio": {
@@ -374,21 +493,45 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Milano deri", "colorName": "Siyah", "sustainable": false },
-        { "zone": "dashboard", "material": "Brushed aluminum inlay", "colorName": "S line" },
-        { "zone": "steering", "material": "Deri, düz taban", "colorName": "S line" }
+        {
+          "zone": "seats",
+          "material": "Milano deri",
+          "colorName": "Siyah",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Brushed aluminum inlay",
+          "colorName": "S line"
+        },
+        {
+          "zone": "steering",
+          "material": "Deri, düz taban",
+          "colorName": "S line"
+        }
       ],
       "technicalSections": [
         {
           "id": "q5-quattro",
           "title": "Quattro Sistemi",
           "items": [
-            { "label": "Varsayılan tork", "value": "60:40 arka öncelikli" },
-            { "label": "Sport mod", "value": "Daha agresif arka eksen kilidi" }
+            {
+              "label": "Varsayılan tork",
+              "value": "60:40 arka öncelikli"
+            },
+            {
+              "label": "Sport mod",
+              "value": "Daha agresif arka eksen kilidi"
+            }
           ]
         }
       ],
-      "highlights": ["S tronic DCT", "B&O 3D", "Quattro", "S line"],
+      "highlights": [
+        "S tronic DCT",
+        "B&O 3D",
+        "Quattro",
+        "S line"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -403,7 +546,11 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "İskandinav minimalizmi, güvenli sürüş",
       "shortDescription": "Mild-hybrid B5, Google built-in infotainment ve Bowers & Wilkins opsiyonu.",
-      "pricing": { "currency": "EUR", "msrp": 54800, "trim": "Ultimate Bright" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 54800,
+        "trim": "Ultimate Bright"
+      },
       "media": {
         "heroImage": "/images/vehicles/volvo-xc60-hero.webp",
         "thumbnail": "/images/vehicles/volvo-xc60-thumb.webp",
@@ -482,22 +629,51 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Nappa deri", "colorName": "Blond", "sustainable": false },
-        { "zone": "dashboard", "material": "Wood decor", "finish": "linear walnut", "colorName": "Açık ceviz", "sustainable": true },
-        { "zone": "door-panels", "material": "Recycled plastic weave", "colorName": "Wool Blend", "sustainable": true }
+        {
+          "zone": "seats",
+          "material": "Nappa deri",
+          "colorName": "Blond",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Wood decor",
+          "finish": "linear walnut",
+          "colorName": "Açık ceviz",
+          "sustainable": true
+        },
+        {
+          "zone": "door-panels",
+          "material": "Recycled plastic weave",
+          "colorName": "Wool Blend",
+          "sustainable": true
+        }
       ],
       "technicalSections": [
         {
           "id": "xc60-safety",
           "title": "Güvenlik",
           "items": [
-            { "label": "Euro NCAP", "value": "5 yıldız (2022 platform)" },
-            { "label": "City Safety", "value": "Yaya/bisiklet/cervan algılama" },
-            { "label": "Bor çelik", "value": "A-pillar ultra yüksek mukavemet" }
+            {
+              "label": "Euro NCAP",
+              "value": "5 yıldız (2022 platform)"
+            },
+            {
+              "label": "City Safety",
+              "value": "Yaya/bisiklet/cervan algılama"
+            },
+            {
+              "label": "Bor çelik",
+              "value": "A-pillar ultra yüksek mukavemet"
+            }
           ]
         }
       ],
-      "highlights": ["Google built-in", "Pilot Assist", "Sürdürülebilir iç mekan"],
+      "highlights": [
+        "Google built-in",
+        "Pilot Assist",
+        "Sürdürülebilir iç mekan"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -512,7 +688,11 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "Hibrit sessizliği, Lexus dokunuşu",
       "shortDescription": "2.5 self-charging hybrid, 14\" touchscreen ve Mark Levinson ses.",
-      "pricing": { "currency": "EUR", "msrp": 51900, "trim": "F Sport" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 51900,
+        "trim": "F Sport"
+      },
       "media": {
         "heroImage": "/images/vehicles/lexus-nx-hero.webp",
         "thumbnail": "/images/vehicles/lexus-nx-thumb.webp",
@@ -583,12 +763,29 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Semi-aniline deri", "colorName": "Rioja Red F Sport", "sustainable": false },
-        { "zone": "dashboard", "material": "Soft-touch polymer", "colorName": "Siyah" },
-        { "zone": "steering", "material": "Deri + paddle shift", "colorName": "F Sport" }
+        {
+          "zone": "seats",
+          "material": "Semi-aniline deri",
+          "colorName": "Rioja Red F Sport",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Soft-touch polymer",
+          "colorName": "Siyah"
+        },
+        {
+          "zone": "steering",
+          "material": "Deri + paddle shift",
+          "colorName": "F Sport"
+        }
       ],
       "technicalSections": [],
-      "highlights": ["Self-charging hybrid", "Mark Levinson", "LSS+ 3.0"],
+      "highlights": [
+        "Self-charging hybrid",
+        "Mark Levinson",
+        "LSS+ 3.0"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -603,7 +800,11 @@
       "bodyStyle": "5 Kapı SUV",
       "tagline": "Koreli lüks, sportif karakter",
       "shortDescription": "2.5 twin-scroll turbo, 27\" geniş ekran ve Lexicon ses sistemi.",
-      "pricing": { "currency": "EUR", "msrp": 49900, "trim": "Sport Prestige" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 49900,
+        "trim": "Sport Prestige"
+      },
       "media": {
         "heroImage": "/images/vehicles/genesis-gv70-hero.webp",
         "thumbnail": "/images/vehicles/genesis-gv70-thumb.webp",
@@ -674,21 +875,45 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Nappa deri", "colorName": "Obsidian Black", "sustainable": false },
-        { "zone": "dashboard", "material": "Alüminyum mesh + deri", "colorName": "Sport Prestige" },
-        { "zone": "headliner", "material": "Süet", "colorName": "Siyah" }
+        {
+          "zone": "seats",
+          "material": "Nappa deri",
+          "colorName": "Obsidian Black",
+          "sustainable": false
+        },
+        {
+          "zone": "dashboard",
+          "material": "Alüminyum mesh + deri",
+          "colorName": "Sport Prestige"
+        },
+        {
+          "zone": "headliner",
+          "material": "Süet",
+          "colorName": "Siyah"
+        }
       ],
       "technicalSections": [
         {
           "id": "gv70-chassis",
           "title": "Sürüş Dinamikleri",
           "items": [
-            { "label": "CDC süspansiyon", "value": "Sürekli damper kontrolü" },
-            { "label": "Launch Control", "value": "Sport Prestige paket" }
+            {
+              "label": "CDC süspansiyon",
+              "value": "Sürekli damper kontrolü"
+            },
+            {
+              "label": "Launch Control",
+              "value": "Sport Prestige paket"
+            }
           ]
         }
       ],
-      "highlights": ["304 hp", "27\" ekran", "Lexicon", "CDC süspansiyon"],
+      "highlights": [
+        "304 hp",
+        "27\" ekran",
+        "Lexicon",
+        "CDC süspansiyon"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -703,11 +928,17 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Spor sedan referansı",
       "shortDescription": "2.0 turbo benzinli, M Sport paket ve iDrive 8.",
-      "pricing": { "currency": "EUR", "msrp": 48500, "trim": "M Sport" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 48500,
+        "trim": "M Sport"
+      },
       "media": {
         "heroImage": "/images/vehicles/bmw-320i.jpg",
         "thumbnail": "/images/vehicles/bmw-320i.jpg",
-        "gallery": ["/images/vehicles/bmw-320i.jpg"],
+        "gallery": [
+          "/images/vehicles/bmw-320i.jpg"
+        ],
         "colorHex": "#1e3a5f"
       },
       "audio": {
@@ -766,28 +997,83 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Sensatec", "colorName": "Siyah", "sustainable": false }
+        {
+          "zone": "seats",
+          "material": "Sensatec",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
       ],
       "technicalSections": [],
-      "highlights": ["M Sport", "RWD", "iDrive 8"],
+      "highlights": [
+        "M Sport",
+        "RWD",
+        "iDrive 8"
+      ],
       "featured": true,
       "accentColor": "blue",
       "configurator": {
         "defaultColorId": "portimao-blue",
         "defaultWheelId": "w18",
         "colors": [
-          { "id": "portimao-blue", "name": "Portimao Mavi", "hex": "#1e3a5f", "metallic": true },
-          { "id": "alpine-white", "name": "Alpin Beyaz", "hex": "#f0f0f0", "metallic": true },
-          { "id": "black-sapphire", "name": "Siyah Safir", "hex": "#0f1419", "metallic": true },
-          { "id": "mineral-grey", "name": "Mineral Gri", "hex": "#5c6670", "metallic": true },
-          { "id": "melbourne-red", "name": "Melbourne Kırmızı", "hex": "#8b1a1a", "metallic": true },
-          { "id": "brooklyn-grey", "name": "Brooklyn Gri", "hex": "#6b7280", "metallic": true }
+          {
+            "id": "portimao-blue",
+            "name": "Portimao Mavi",
+            "hex": "#1e3a5f",
+            "metallic": true
+          },
+          {
+            "id": "alpine-white",
+            "name": "Alpin Beyaz",
+            "hex": "#f0f0f0",
+            "metallic": true
+          },
+          {
+            "id": "black-sapphire",
+            "name": "Siyah Safir",
+            "hex": "#0f1419",
+            "metallic": true
+          },
+          {
+            "id": "mineral-grey",
+            "name": "Mineral Gri",
+            "hex": "#5c6670",
+            "metallic": true
+          },
+          {
+            "id": "melbourne-red",
+            "name": "Melbourne Kırmızı",
+            "hex": "#8b1a1a",
+            "metallic": true
+          },
+          {
+            "id": "brooklyn-grey",
+            "name": "Brooklyn Gri",
+            "hex": "#6b7280",
+            "metallic": true
+          }
         ],
         "wheels": [
-          { "id": "w17", "name": "17\" V-Spoke", "sizeInch": 17 },
-          { "id": "w18", "name": "18\" M Double-Spoke", "sizeInch": 18 },
-          { "id": "w19", "name": "19\" M Y-Spoke", "sizeInch": 19 },
-          { "id": "w20", "name": "20\" M Performance", "sizeInch": 20 }
+          {
+            "id": "w17",
+            "name": "17\" V-Spoke",
+            "sizeInch": 17
+          },
+          {
+            "id": "w18",
+            "name": "18\" M Double-Spoke",
+            "sizeInch": 18
+          },
+          {
+            "id": "w19",
+            "name": "19\" M Y-Spoke",
+            "sizeInch": 19
+          },
+          {
+            "id": "w20",
+            "name": "20\" M Performance",
+            "sizeInch": 20
+          }
         ]
       }
     },
@@ -802,7 +1088,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Hibrit kompakt sedan",
       "shortDescription": "1.8 hibrit, Toyota Safety Sense ve geniş donanım paketi.",
-      "pricing": { "currency": "EUR", "msrp": 28900, "trim": "Comfort" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 28900,
+        "trim": "Comfort"
+      },
       "media": {
         "heroImage": "/images/vehicles/toyota-corolla-sedan.webp",
         "thumbnail": "/images/vehicles/toyota-corolla-sedan.webp",
@@ -810,16 +1100,74 @@
         "colorHex": "#8b0000"
       },
       "audio": {
-        "idle": { "id": "corolla-idle", "label": "Motor Rölanti Sesi", "description": "Hibrit sistem rölanti", "src": "/audio/toyota-corolla-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "corolla-exhaust", "label": "Egzoz Sesi", "description": "Atmosferik/hibrit karakter", "src": "/audio/toyota-corolla-exhaust.mp3", "durationSeconds": 10, "format": "mp3" }
+        "idle": {
+          "id": "corolla-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "Hibrit sistem rölanti",
+          "src": "/audio/toyota-corolla-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "corolla-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Atmosferik/hibrit karakter",
+          "src": "/audio/toyota-corolla-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "2ZR-FXE", "displacementCc": 1798, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "naturally-aspirated", "powerHp": 140, "powerKw": 103, "torqueNm": 185, "fuelType": "hybrid", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 9.8, "topSpeedKmh": 180, "transmission": "cvt", "gears": 1, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4635, "widthMm": 1780, "heightMm": 1435, "wheelbaseMm": 2700, "bootCapacityL": 471, "curbWeightKg": 1380 },
-      "multimedia": [{ "id": "corolla-multimedia", "name": "Toyota Smart Connect", "category": "infotainment", "description": "10.5\" ekran, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Gri", "sustainable": false }],
+      "engine": {
+        "code": "2ZR-FXE",
+        "displacementCc": 1798,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "naturally-aspirated",
+        "powerHp": 140,
+        "powerKw": 103,
+        "torqueNm": 185,
+        "fuelType": "hybrid",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 9.8,
+        "topSpeedKmh": 180,
+        "transmission": "cvt",
+        "gears": 1,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4635,
+        "widthMm": 1780,
+        "heightMm": 1435,
+        "wheelbaseMm": 2700,
+        "bootCapacityL": 471,
+        "curbWeightKg": 1380
+      },
+      "multimedia": [
+        {
+          "id": "corolla-multimedia",
+          "name": "Toyota Smart Connect",
+          "category": "infotainment",
+          "description": "10.5\" ekran, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Gri",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Hibrit", "TSS 3.0", "C segment"],
+      "highlights": [
+        "Hibrit",
+        "TSS 3.0",
+        "C segment"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -834,7 +1182,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Sportif C segment sedan",
       "shortDescription": "1.5 VTEC Turbo, Honda Sensing ve geniş iç hacim.",
-      "pricing": { "currency": "EUR", "msrp": 31900, "trim": "Elegance" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 31900,
+        "trim": "Elegance"
+      },
       "media": {
         "heroImage": "/images/vehicles/honda-civic-sedan.webp",
         "thumbnail": "/images/vehicles/honda-civic-sedan.webp",
@@ -842,16 +1194,74 @@
         "colorHex": "#cc0000"
       },
       "audio": {
-        "idle": { "id": "civic-idle", "label": "Motor Rölanti Sesi", "description": "1.5 turbo rölanti", "src": "/audio/honda-civic-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "civic-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin tepkisi", "src": "/audio/honda-civic-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "civic-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "1.5 turbo rölanti",
+          "src": "/audio/honda-civic-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "civic-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin tepkisi",
+          "src": "/audio/honda-civic-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "L15C", "displacementCc": 1498, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 182, "powerKw": 134, "torqueNm": 240, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.3, "topSpeedKmh": 220, "transmission": "cvt", "gears": 1, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4672, "widthMm": 1802, "heightMm": 1415, "wheelbaseMm": 2735, "bootCapacityL": 519, "curbWeightKg": 1350 },
-      "multimedia": [{ "id": "civic-multimedia", "name": "Honda Connect", "category": "infotainment", "description": "9\" ekran, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "L15C",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 182,
+        "powerKw": 134,
+        "torqueNm": 240,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.3,
+        "topSpeedKmh": 220,
+        "transmission": "cvt",
+        "gears": 1,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4672,
+        "widthMm": 1802,
+        "heightMm": 1415,
+        "wheelbaseMm": 2735,
+        "bootCapacityL": 519,
+        "curbWeightKg": 1350
+      },
+      "multimedia": [
+        {
+          "id": "civic-multimedia",
+          "name": "Honda Connect",
+          "category": "infotainment",
+          "description": "9\" ekran, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["VTEC Turbo", "Honda Sensing", "519 L bagaj"],
+      "highlights": [
+        "VTEC Turbo",
+        "Honda Sensing",
+        "519 L bagaj"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -866,7 +1276,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Fransız orta segment sedan",
       "shortDescription": "1.3 TCe mild-hybrid, OpenR link multimedya.",
-      "pricing": { "currency": "EUR", "msrp": 29900, "trim": "Icon" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 29900,
+        "trim": "Icon"
+      },
       "media": {
         "heroImage": "/images/vehicles/renault-megane-sedan.webp",
         "thumbnail": "/images/vehicles/renault-megane-sedan.webp",
@@ -874,16 +1288,74 @@
         "colorHex": "#313131"
       },
       "audio": {
-        "idle": { "id": "megane-idle", "label": "Motor Rölanti Sesi", "description": "TCe rölanti", "src": "/audio/renault-megane-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "megane-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/renault-megane-exhaust.mp3", "durationSeconds": 10, "format": "mp3" }
+        "idle": {
+          "id": "megane-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "TCe rölanti",
+          "src": "/audio/renault-megane-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "megane-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/renault-megane-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "H5Ht", "displacementCc": 1332, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 140, "powerKw": 103, "torqueNm": 240, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 9.4, "topSpeedKmh": 205, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4632, "widthMm": 1814, "heightMm": 1445, "wheelbaseMm": 2711, "bootCapacityL": 503, "curbWeightKg": 1325 },
-      "multimedia": [{ "id": "megane-multimedia", "name": "OpenR Link", "category": "infotainment", "description": "Google built-in, 9.3\" ekran", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Gri", "sustainable": true }],
+      "engine": {
+        "code": "H5Ht",
+        "displacementCc": 1332,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 140,
+        "powerKw": 103,
+        "torqueNm": 240,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 9.4,
+        "topSpeedKmh": 205,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4632,
+        "widthMm": 1814,
+        "heightMm": 1445,
+        "wheelbaseMm": 2711,
+        "bootCapacityL": 503,
+        "curbWeightKg": 1325
+      },
+      "multimedia": [
+        {
+          "id": "megane-multimedia",
+          "name": "OpenR Link",
+          "category": "infotainment",
+          "description": "Google built-in, 9.3\" ekran",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Gri",
+          "sustainable": true
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["OpenR Link", "Mild-hybrid", "503 L bagaj"],
+      "highlights": [
+        "OpenR Link",
+        "Mild-hybrid",
+        "503 L bagaj"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -898,7 +1370,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Türkiye'nin C segment sedanı",
       "shortDescription": "1.4 Fire veya 1.6 Multijet, Uconnect multimedya.",
-      "pricing": { "currency": "EUR", "msrp": 22900, "trim": "Easy" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 22900,
+        "trim": "Easy"
+      },
       "media": {
         "heroImage": "/images/vehicles/fiat-egea-sedan.webp",
         "thumbnail": "/images/vehicles/fiat-egea-sedan.webp",
@@ -906,16 +1382,74 @@
         "colorHex": "#96172e"
       },
       "audio": {
-        "idle": { "id": "egea-idle", "label": "Motor Rölanti Sesi", "description": "Fire T-Jet rölanti", "src": "/audio/fiat-egea-idle.mp3", "durationSeconds": 13, "format": "mp3" },
-        "exhaust": { "id": "egea-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/fiat-egea-exhaust.mp3", "durationSeconds": 10, "format": "mp3" }
+        "idle": {
+          "id": "egea-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "Fire T-Jet rölanti",
+          "src": "/audio/fiat-egea-idle.mp3",
+          "durationSeconds": 13,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "egea-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/fiat-egea-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "55253258", "displacementCc": 1368, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 150, "powerKw": 110, "torqueNm": 230, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.7, "topSpeedKmh": 210, "transmission": "manual", "gears": 6, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4523, "widthMm": 1792, "heightMm": 1495, "wheelbaseMm": 2636, "bootCapacityL": 520, "curbWeightKg": 1280 },
-      "multimedia": [{ "id": "egea-multimedia", "name": "Uconnect 7\"", "category": "infotainment", "description": "Apple CarPlay / Android Auto", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Bej", "sustainable": false }],
+      "engine": {
+        "code": "55253258",
+        "displacementCc": 1368,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 230,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.7,
+        "topSpeedKmh": 210,
+        "transmission": "manual",
+        "gears": 6,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4523,
+        "widthMm": 1792,
+        "heightMm": 1495,
+        "wheelbaseMm": 2636,
+        "bootCapacityL": 520,
+        "curbWeightKg": 1280
+      },
+      "multimedia": [
+        {
+          "id": "egea-multimedia",
+          "name": "Uconnect 7\"",
+          "category": "infotainment",
+          "description": "Apple CarPlay / Android Auto",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Bej",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["520 L bagaj", "Uconnect", "Geniş servis ağı"],
+      "highlights": [
+        "520 L bagaj",
+        "Uconnect",
+        "Geniş servis ağı"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -930,7 +1464,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Parametrik tasarım sedan",
       "shortDescription": "1.6 T-GDI, SmartSense ve dijital kokpit.",
-      "pricing": { "currency": "EUR", "msrp": 30900, "trim": "Style" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 30900,
+        "trim": "Style"
+      },
       "media": {
         "heroImage": "/images/vehicles/hyundai-elantra.webp",
         "thumbnail": "/images/vehicles/hyundai-elantra.webp",
@@ -938,16 +1476,74 @@
         "colorHex": "#002c5f"
       },
       "audio": {
-        "idle": { "id": "elantra-idle", "label": "Motor Rölanti Sesi", "description": "T-GDI rölanti", "src": "/audio/hyundai-elantra-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "elantra-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/hyundai-elantra-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "elantra-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "T-GDI rölanti",
+          "src": "/audio/hyundai-elantra-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "elantra-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/hyundai-elantra-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "G4FP", "displacementCc": 1598, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 180, "powerKw": 132, "torqueNm": 265, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 7.8, "topSpeedKmh": 220, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4675, "widthMm": 1825, "heightMm": 1415, "wheelbaseMm": 2720, "bootCapacityL": 480, "curbWeightKg": 1335 },
-      "multimedia": [{ "id": "elantra-multimedia", "name": "Hyundai Bluelink", "category": "infotainment", "description": "10.25\" dijital küme + 10.25\" ekran", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "G4FP",
+        "displacementCc": 1598,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 180,
+        "powerKw": 132,
+        "torqueNm": 265,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 7.8,
+        "topSpeedKmh": 220,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4675,
+        "widthMm": 1825,
+        "heightMm": 1415,
+        "wheelbaseMm": 2720,
+        "bootCapacityL": 480,
+        "curbWeightKg": 1335
+      },
+      "multimedia": [
+        {
+          "id": "elantra-multimedia",
+          "name": "Hyundai Bluelink",
+          "category": "infotainment",
+          "description": "10.25\" dijital küme + 10.25\" ekran",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["SmartSense", "T-GDI", "Parametrik tasarım"],
+      "highlights": [
+        "SmartSense",
+        "T-GDI",
+        "Parametrik tasarım"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -962,7 +1558,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Kia'nın global C sedan'ı",
       "shortDescription": "1.6 T-GDI, Drive Wise ve 12.3\" ekran.",
-      "pricing": { "currency": "EUR", "msrp": 29900, "trim": "GT-Line" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 29900,
+        "trim": "GT-Line"
+      },
       "media": {
         "heroImage": "/images/vehicles/kia-cerato-sedan.webp",
         "thumbnail": "/images/vehicles/kia-cerato-sedan.webp",
@@ -970,16 +1570,74 @@
         "colorHex": "#05141f"
       },
       "audio": {
-        "idle": { "id": "cerato-idle", "label": "Motor Rölanti Sesi", "description": "T-GDI rölanti", "src": "/audio/kia-cerato-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "cerato-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/kia-cerato-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "cerato-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "T-GDI rölanti",
+          "src": "/audio/kia-cerato-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "cerato-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/kia-cerato-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "G4FP", "displacementCc": 1598, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 180, "powerKw": 132, "torqueNm": 265, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 7.9, "topSpeedKmh": 220, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4680, "widthMm": 1825, "heightMm": 1415, "wheelbaseMm": 2720, "bootCapacityL": 490, "curbWeightKg": 1340 },
-      "multimedia": [{ "id": "cerato-multimedia", "name": "Kia Connect", "category": "infotainment", "description": "12.3\" ekran, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Deri", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "G4FP",
+        "displacementCc": 1598,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 180,
+        "powerKw": 132,
+        "torqueNm": 265,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 7.9,
+        "topSpeedKmh": 220,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4680,
+        "widthMm": 1825,
+        "heightMm": 1415,
+        "wheelbaseMm": 2720,
+        "bootCapacityL": 490,
+        "curbWeightKg": 1340
+      },
+      "multimedia": [
+        {
+          "id": "cerato-multimedia",
+          "name": "Kia Connect",
+          "category": "infotainment",
+          "description": "12.3\" ekran, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Deri",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Drive Wise", "GT-Line", "7 yıl garanti"],
+      "highlights": [
+        "Drive Wise",
+        "GT-Line",
+        "7 yıl garanti"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -994,7 +1652,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Klasik Alman C sedan",
       "shortDescription": "1.5 TSI evo, IQ.Drive ve geniş bagaj.",
-      "pricing": { "currency": "EUR", "msrp": 32900, "trim": "Life" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 32900,
+        "trim": "Life"
+      },
       "media": {
         "heroImage": "/images/vehicles/volkswagen-jetta.webp",
         "thumbnail": "/images/vehicles/volkswagen-jetta.webp",
@@ -1002,16 +1664,74 @@
         "colorHex": "#001e50"
       },
       "audio": {
-        "idle": { "id": "jetta-idle", "label": "Motor Rölanti Sesi", "description": "TSI evo rölanti", "src": "/audio/vw-jetta-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "jetta-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/vw-jetta-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "jetta-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "TSI evo rölanti",
+          "src": "/audio/vw-jetta-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "jetta-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/vw-jetta-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "EA211 evo", "displacementCc": 1498, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 150, "powerKw": 110, "torqueNm": 250, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.5, "topSpeedKmh": 220, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4702, "widthMm": 1799, "heightMm": 1459, "wheelbaseMm": 2686, "bootCapacityL": 510, "curbWeightKg": 1370 },
-      "multimedia": [{ "id": "jetta-multimedia", "name": "Discover Media", "category": "infotainment", "description": "10\" ekran, App-Connect", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Gri", "sustainable": false }],
+      "engine": {
+        "code": "EA211 evo",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 250,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.5,
+        "topSpeedKmh": 220,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4702,
+        "widthMm": 1799,
+        "heightMm": 1459,
+        "wheelbaseMm": 2686,
+        "bootCapacityL": 510,
+        "curbWeightKg": 1370
+      },
+      "multimedia": [
+        {
+          "id": "jetta-multimedia",
+          "name": "Discover Media",
+          "category": "infotainment",
+          "description": "10\" ekran, App-Connect",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Gri",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["IQ.Drive", "TSI evo", "510 L bagaj"],
+      "highlights": [
+        "IQ.Drive",
+        "TSI evo",
+        "510 L bagaj"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1026,7 +1746,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Akıllı değer sedan'ı",
       "shortDescription": "1.5 TSI, Simply Clever detaylar ve geniş bagaj.",
-      "pricing": { "currency": "EUR", "msrp": 28900, "trim": "Selection" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 28900,
+        "trim": "Selection"
+      },
       "media": {
         "heroImage": "/images/vehicles/skoda-octavia.webp",
         "thumbnail": "/images/vehicles/skoda-octavia.webp",
@@ -1034,16 +1758,74 @@
         "colorHex": "#4ba82e"
       },
       "audio": {
-        "idle": { "id": "octavia-idle", "label": "Motor Rölanti Sesi", "description": "TSI rölanti", "src": "/audio/skoda-octavia-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "octavia-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/skoda-octavia-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "octavia-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "TSI rölanti",
+          "src": "/audio/skoda-octavia-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "octavia-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/skoda-octavia-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "EA211 evo", "displacementCc": 1498, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 150, "powerKw": 110, "torqueNm": 250, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.4, "topSpeedKmh": 220, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4689, "widthMm": 1829, "heightMm": 1470, "wheelbaseMm": 2686, "bootCapacityL": 600, "curbWeightKg": 1355 },
-      "multimedia": [{ "id": "octavia-multimedia", "name": "Bolero", "category": "infotainment", "description": "10\" ekran, SmartLink+", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Gri", "sustainable": false }],
+      "engine": {
+        "code": "EA211 evo",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 250,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.4,
+        "topSpeedKmh": 220,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4689,
+        "widthMm": 1829,
+        "heightMm": 1470,
+        "wheelbaseMm": 2686,
+        "bootCapacityL": 600,
+        "curbWeightKg": 1355
+      },
+      "multimedia": [
+        {
+          "id": "octavia-multimedia",
+          "name": "Bolero",
+          "category": "infotainment",
+          "description": "10\" ekran, SmartLink+",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Gri",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["600 L bagaj", "Simply Clever", "Travel Assist"],
+      "highlights": [
+        "600 L bagaj",
+        "Simply Clever",
+        "Travel Assist"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1058,7 +1840,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Fastback C segment",
       "shortDescription": "1.2 PureTech, i-Cockpit ve sportif silüet.",
-      "pricing": { "currency": "EUR", "msrp": 33900, "trim": "Allure" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 33900,
+        "trim": "Allure"
+      },
       "media": {
         "heroImage": "/images/vehicles/peugeot-408-sedan.webp",
         "thumbnail": "/images/vehicles/peugeot-408-sedan.webp",
@@ -1066,16 +1852,74 @@
         "colorHex": "#001e4d"
       },
       "audio": {
-        "idle": { "id": "408-idle", "label": "Motor Rölanti Sesi", "description": "PureTech rölanti", "src": "/audio/peugeot-408-idle.mp3", "durationSeconds": 13, "format": "mp3" },
-        "exhaust": { "id": "408-exhaust", "label": "Egzoz Sesi", "description": "3 silindir turbo", "src": "/audio/peugeot-408-exhaust.mp3", "durationSeconds": 10, "format": "mp3" }
+        "idle": {
+          "id": "408-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "PureTech rölanti",
+          "src": "/audio/peugeot-408-idle.mp3",
+          "durationSeconds": 13,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "408-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "3 silindir turbo",
+          "src": "/audio/peugeot-408-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "EB2ADTS", "displacementCc": 1199, "cylinders": 3, "configuration": "Sıralı 3", "aspiration": "turbocharged", "powerHp": 130, "powerKw": 96, "torqueNm": 230, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 9.7, "topSpeedKmh": 205, "transmission": "automatic", "gears": 8, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4687, "widthMm": 1848, "heightMm": 1485, "wheelbaseMm": 2738, "bootCapacityL": 471, "curbWeightKg": 1385 },
-      "multimedia": [{ "id": "408-multimedia", "name": "i-Connect Advanced", "category": "infotainment", "description": "10\" ekran, i-Cockpit 3D", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Alcantara", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "EB2ADTS",
+        "displacementCc": 1199,
+        "cylinders": 3,
+        "configuration": "Sıralı 3",
+        "aspiration": "turbocharged",
+        "powerHp": 130,
+        "powerKw": 96,
+        "torqueNm": 230,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 9.7,
+        "topSpeedKmh": 205,
+        "transmission": "automatic",
+        "gears": 8,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4687,
+        "widthMm": 1848,
+        "heightMm": 1485,
+        "wheelbaseMm": 2738,
+        "bootCapacityL": 471,
+        "curbWeightKg": 1385
+      },
+      "multimedia": [
+        {
+          "id": "408-multimedia",
+          "name": "i-Connect Advanced",
+          "category": "infotainment",
+          "description": "10\" ekran, i-Cockpit 3D",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Alcantara",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["i-Cockpit", "Fastback", "PureTech"],
+      "highlights": [
+        "i-Cockpit",
+        "Fastback",
+        "PureTech"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1090,7 +1934,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Alman mühendisliği sedan",
       "shortDescription": "1.2 Turbo, IntelliLux LED ve Pure Panel.",
-      "pricing": { "currency": "EUR", "msrp": 30900, "trim": "Edition" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 30900,
+        "trim": "Edition"
+      },
       "media": {
         "heroImage": "/images/vehicles/opel-astra-sedan.webp",
         "thumbnail": "/images/vehicles/opel-astra-sedan.webp",
@@ -1098,16 +1946,74 @@
         "colorHex": "#f7d400"
       },
       "audio": {
-        "idle": { "id": "astra-idle", "label": "Motor Rölanti Sesi", "description": "1.2 turbo rölanti", "src": "/audio/opel-astra-idle.mp3", "durationSeconds": 13, "format": "mp3" },
-        "exhaust": { "id": "astra-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/opel-astra-exhaust.mp3", "durationSeconds": 10, "format": "mp3" }
+        "idle": {
+          "id": "astra-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "1.2 turbo rölanti",
+          "src": "/audio/opel-astra-idle.mp3",
+          "durationSeconds": 13,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "astra-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/opel-astra-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "EB2ADTS", "displacementCc": 1199, "cylinders": 3, "configuration": "Sıralı 3", "aspiration": "turbocharged", "powerHp": 130, "powerKw": 96, "torqueNm": 230, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 9.5, "topSpeedKmh": 205, "transmission": "automatic", "gears": 8, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4642, "widthMm": 1860, "heightMm": 1455, "wheelbaseMm": 2732, "bootCapacityL": 470, "curbWeightKg": 1360 },
-      "multimedia": [{ "id": "astra-multimedia", "name": "Pure Panel", "category": "infotainment", "description": "Çift 10\" ekran, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Gri", "sustainable": true }],
+      "engine": {
+        "code": "EB2ADTS",
+        "displacementCc": 1199,
+        "cylinders": 3,
+        "configuration": "Sıralı 3",
+        "aspiration": "turbocharged",
+        "powerHp": 130,
+        "powerKw": 96,
+        "torqueNm": 230,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 9.5,
+        "topSpeedKmh": 205,
+        "transmission": "automatic",
+        "gears": 8,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4642,
+        "widthMm": 1860,
+        "heightMm": 1455,
+        "wheelbaseMm": 2732,
+        "bootCapacityL": 470,
+        "curbWeightKg": 1360
+      },
+      "multimedia": [
+        {
+          "id": "astra-multimedia",
+          "name": "Pure Panel",
+          "category": "infotainment",
+          "description": "Çift 10\" ekran, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Gri",
+          "sustainable": true
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Pure Panel", "IntelliLux", "C segment"],
+      "highlights": [
+        "Pure Panel",
+        "IntelliLux",
+        "C segment"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1122,7 +2028,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Dinamik sürüş odaklı sedan",
       "shortDescription": "1.5 EcoBoost, Co-Pilot360 ve SYNC 4.",
-      "pricing": { "currency": "EUR", "msrp": 29900, "trim": "Titanium" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 29900,
+        "trim": "Titanium"
+      },
       "media": {
         "heroImage": "/images/vehicles/ford-focus-sedan.webp",
         "thumbnail": "/images/vehicles/ford-focus-sedan.webp",
@@ -1130,16 +2040,74 @@
         "colorHex": "#003478"
       },
       "audio": {
-        "idle": { "id": "focus-idle", "label": "Motor Rölanti Sesi", "description": "EcoBoost rölanti", "src": "/audio/ford-focus-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "focus-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/ford-focus-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "focus-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "EcoBoost rölanti",
+          "src": "/audio/ford-focus-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "focus-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/ford-focus-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "Dragon", "displacementCc": 1496, "cylinders": 3, "configuration": "Sıralı 3", "aspiration": "turbocharged", "powerHp": 150, "powerKw": 110, "torqueNm": 240, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.6, "topSpeedKmh": 215, "transmission": "manual", "gears": 6, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4667, "widthMm": 1825, "heightMm": 1488, "wheelbaseMm": 2700, "bootCapacityL": 375, "curbWeightKg": 1345 },
-      "multimedia": [{ "id": "focus-multimedia", "name": "SYNC 4", "category": "infotainment", "description": "13.2\" ekran, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "Dragon",
+        "displacementCc": 1496,
+        "cylinders": 3,
+        "configuration": "Sıralı 3",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 240,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.6,
+        "topSpeedKmh": 215,
+        "transmission": "manual",
+        "gears": 6,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4667,
+        "widthMm": 1825,
+        "heightMm": 1488,
+        "wheelbaseMm": 2700,
+        "bootCapacityL": 375,
+        "curbWeightKg": 1345
+      },
+      "multimedia": [
+        {
+          "id": "focus-multimedia",
+          "name": "SYNC 4",
+          "category": "infotainment",
+          "description": "13.2\" ekran, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Co-Pilot360", "EcoBoost", "SYNC 4"],
+      "highlights": [
+        "Co-Pilot360",
+        "EcoBoost",
+        "SYNC 4"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1154,7 +2122,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Premium kompakt sedan",
       "shortDescription": "35 TFSI, Virtual Cockpit ve Matrix LED seçenekleri.",
-      "pricing": { "currency": "EUR", "msrp": 38900, "trim": "Advanced" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 38900,
+        "trim": "Advanced"
+      },
       "media": {
         "heroImage": "/images/vehicles/audi-a3-sedan.webp",
         "thumbnail": "/images/vehicles/audi-a3-sedan.webp",
@@ -1162,16 +2134,74 @@
         "colorHex": "#bb0a30"
       },
       "audio": {
-        "idle": { "id": "a3-sedan-idle", "label": "Motor Rölanti Sesi", "description": "TFSI rölanti", "src": "/audio/audi-a3-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "a3-sedan-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/audi-a3-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "a3-sedan-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "TFSI rölanti",
+          "src": "/audio/audi-a3-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "a3-sedan-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/audi-a3-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "EA211 evo", "displacementCc": 1498, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 150, "powerKw": 110, "torqueNm": 250, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.4, "topSpeedKmh": 224, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4548, "widthMm": 1816, "heightMm": 1429, "wheelbaseMm": 2636, "bootCapacityL": 425, "curbWeightKg": 1385 },
-      "multimedia": [{ "id": "a3-multimedia", "name": "MMI touch", "category": "infotainment", "description": "10.1\" ekran, Virtual Cockpit", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Alcantara", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "EA211 evo",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 250,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.4,
+        "topSpeedKmh": 224,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4548,
+        "widthMm": 1816,
+        "heightMm": 1429,
+        "wheelbaseMm": 2636,
+        "bootCapacityL": 425,
+        "curbWeightKg": 1385
+      },
+      "multimedia": [
+        {
+          "id": "a3-multimedia",
+          "name": "MMI touch",
+          "category": "infotainment",
+          "description": "10.1\" ekran, Virtual Cockpit",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Alcantara",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Virtual Cockpit", "Matrix LED", "S line"],
+      "highlights": [
+        "Virtual Cockpit",
+        "Matrix LED",
+        "S line"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -1186,7 +2216,11 @@
       "bodyStyle": "4 Kapı Gran Coupe",
       "tagline": "Kompakt premium fastback",
       "shortDescription": "218i, iDrive 8 ve coupe silüetli C segment.",
-      "pricing": { "currency": "EUR", "msrp": 41900, "trim": "M Sport" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 41900,
+        "trim": "M Sport"
+      },
       "media": {
         "heroImage": "/images/vehicles/bmw-2-gran-coupe.webp",
         "thumbnail": "/images/vehicles/bmw-2-gran-coupe.webp",
@@ -1194,16 +2228,74 @@
         "colorHex": "#1e3a5f"
       },
       "audio": {
-        "idle": { "id": "bmw-2gc-idle", "label": "Motor Rölanti Sesi", "description": "B38 1.5T rölanti", "src": "/audio/bmw-2gc-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "bmw-2gc-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/bmw-2gc-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "bmw-2gc-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "B38 1.5T rölanti",
+          "src": "/audio/bmw-2gc-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "bmw-2gc-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/bmw-2gc-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "B38A15", "displacementCc": 1499, "cylinders": 3, "configuration": "Sıralı 3", "aspiration": "turbocharged", "powerHp": 156, "powerKw": 115, "torqueNm": 220, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.6, "topSpeedKmh": 225, "transmission": "dct", "gears": 7, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4526, "widthMm": 1800, "heightMm": 1435, "wheelbaseMm": 2670, "bootCapacityL": 430, "curbWeightKg": 1420 },
-      "multimedia": [{ "id": "bmw-2gc-idrive", "name": "BMW iDrive 8", "category": "infotainment", "description": "Curved Display, kablosuz CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Sensatec", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "B38A15",
+        "displacementCc": 1499,
+        "cylinders": 3,
+        "configuration": "Sıralı 3",
+        "aspiration": "turbocharged",
+        "powerHp": 156,
+        "powerKw": 115,
+        "torqueNm": 220,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.6,
+        "topSpeedKmh": 225,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4526,
+        "widthMm": 1800,
+        "heightMm": 1435,
+        "wheelbaseMm": 2670,
+        "bootCapacityL": 430,
+        "curbWeightKg": 1420
+      },
+      "multimedia": [
+        {
+          "id": "bmw-2gc-idrive",
+          "name": "BMW iDrive 8",
+          "category": "infotainment",
+          "description": "Curved Display, kablosuz CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Sensatec",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Gran Coupe", "iDrive 8", "M Sport"],
+      "highlights": [
+        "Gran Coupe",
+        "iDrive 8",
+        "M Sport"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1218,7 +2310,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "İskandinav güvenlik sedan'ı",
       "shortDescription": "B4 mild-hybrid, Pilot Assist ve Google built-in.",
-      "pricing": { "currency": "EUR", "msrp": 44900, "trim": "Plus" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 44900,
+        "trim": "Plus"
+      },
       "media": {
         "heroImage": "/images/vehicles/volvo-s60.webp",
         "thumbnail": "/images/vehicles/volvo-s60.webp",
@@ -1226,16 +2322,74 @@
         "colorHex": "#003057"
       },
       "audio": {
-        "idle": { "id": "s60-idle", "label": "Motor Rölanti Sesi", "description": "B4 rölanti", "src": "/audio/volvo-s60-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "s60-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/volvo-s60-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "s60-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "B4 rölanti",
+          "src": "/audio/volvo-s60-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "s60-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/volvo-s60-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "B420T2", "displacementCc": 1969, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 197, "powerKw": 145, "torqueNm": 300, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 6.8, "topSpeedKmh": 230, "transmission": "automatic", "gears": 8, "drivetrain": "awd" },
-      "dimensions": { "lengthMm": 4761, "widthMm": 1850, "heightMm": 1431, "wheelbaseMm": 2872, "bootCapacityL": 442, "curbWeightKg": 1680 },
-      "multimedia": [{ "id": "s60-multimedia", "name": "Google built-in", "category": "infotainment", "description": "9\" dikey ekran, Google Maps", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Nappa", "colorName": "Blond", "sustainable": true }],
+      "engine": {
+        "code": "B420T2",
+        "displacementCc": 1969,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 197,
+        "powerKw": 145,
+        "torqueNm": 300,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 6.8,
+        "topSpeedKmh": 230,
+        "transmission": "automatic",
+        "gears": 8,
+        "drivetrain": "awd"
+      },
+      "dimensions": {
+        "lengthMm": 4761,
+        "widthMm": 1850,
+        "heightMm": 1431,
+        "wheelbaseMm": 2872,
+        "bootCapacityL": 442,
+        "curbWeightKg": 1680
+      },
+      "multimedia": [
+        {
+          "id": "s60-multimedia",
+          "name": "Google built-in",
+          "category": "infotainment",
+          "description": "9\" dikey ekran, Google Maps",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Nappa",
+          "colorName": "Blond",
+          "sustainable": true
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["Pilot Assist", "B4 AWD", "Google built-in"],
+      "highlights": [
+        "Pilot Assist",
+        "B4 AWD",
+        "Google built-in"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1250,7 +2404,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Amerikan C segment sedan",
       "shortDescription": "1.4 Turbo, OnStar ve geniş iç hacim.",
-      "pricing": { "currency": "EUR", "msrp": 26900, "trim": "LT" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 26900,
+        "trim": "LT"
+      },
       "media": {
         "heroImage": "/images/vehicles/chevrolet-cruze-sedan.webp",
         "thumbnail": "/images/vehicles/chevrolet-cruze-sedan.webp",
@@ -1258,16 +2416,74 @@
         "colorHex": "#c8102e"
       },
       "audio": {
-        "idle": { "id": "cruze-idle", "label": "Motor Rölanti Sesi", "description": "1.4 turbo rölanti", "src": "/audio/chevrolet-cruze-idle.mp3", "durationSeconds": 14, "format": "mp3" },
-        "exhaust": { "id": "cruze-exhaust", "label": "Egzoz Sesi", "description": "Turbo benzin", "src": "/audio/chevrolet-cruze-exhaust.mp3", "durationSeconds": 11, "format": "mp3" }
+        "idle": {
+          "id": "cruze-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "1.4 turbo rölanti",
+          "src": "/audio/chevrolet-cruze-idle.mp3",
+          "durationSeconds": 14,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "cruze-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Turbo benzin",
+          "src": "/audio/chevrolet-cruze-exhaust.mp3",
+          "durationSeconds": 11,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "LE2", "displacementCc": 1399, "cylinders": 4, "configuration": "Sıralı 4", "aspiration": "turbocharged", "powerHp": 153, "powerKw": 112, "torqueNm": 240, "fuelType": "petrol", "emissionStandard": "Euro 6d" },
-      "performance": { "zeroTo100Kmh": 8.4, "topSpeedKmh": 205, "transmission": "automatic", "gears": 6, "drivetrain": "fwd" },
-      "dimensions": { "lengthMm": 4666, "widthMm": 1795, "heightMm": 1457, "wheelbaseMm": 2700, "bootCapacityL": 445, "curbWeightKg": 1320 },
-      "multimedia": [{ "id": "cruze-multimedia", "name": "Chevrolet Infotainment 3", "category": "infotainment", "description": "7\" ekran, Apple CarPlay", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Kumaş", "colorName": "Siyah", "sustainable": false }],
+      "engine": {
+        "code": "LE2",
+        "displacementCc": 1399,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 153,
+        "powerKw": 112,
+        "torqueNm": 240,
+        "fuelType": "petrol",
+        "emissionStandard": "Euro 6d"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.4,
+        "topSpeedKmh": 205,
+        "transmission": "automatic",
+        "gears": 6,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4666,
+        "widthMm": 1795,
+        "heightMm": 1457,
+        "wheelbaseMm": 2700,
+        "bootCapacityL": 445,
+        "curbWeightKg": 1320
+      },
+      "multimedia": [
+        {
+          "id": "cruze-multimedia",
+          "name": "Chevrolet Infotainment 3",
+          "category": "infotainment",
+          "description": "7\" ekran, Apple CarPlay",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Kumaş",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
+      ],
       "technicalSections": [],
-      "highlights": ["OnStar", "1.4 Turbo", "Geniş iç hacim"],
+      "highlights": [
+        "OnStar",
+        "1.4 Turbo",
+        "Geniş iç hacim"
+      ],
       "featured": false,
       "accentColor": "red"
     },
@@ -1282,7 +2498,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Elektrikli C segment referansı",
       "shortDescription": "RWD, 15\" ekran ve Autopilot donanımı.",
-      "pricing": { "currency": "EUR", "msrp": 42900, "trim": "RWD" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 42900,
+        "trim": "RWD"
+      },
       "media": {
         "heroImage": "/images/vehicles/tesla-model-3.webp",
         "thumbnail": "/images/vehicles/tesla-model-3.webp",
@@ -1290,16 +2510,89 @@
         "colorHex": "#3e6ae1"
       },
       "audio": {
-        "idle": { "id": "model3-idle", "label": "Sistem Sesi", "description": "Elektrikli araç hazır modu", "src": "/audio/tesla-model3-idle.mp3", "durationSeconds": 8, "format": "mp3" },
-        "exhaust": { "id": "model3-exhaust", "label": "Hızlanma Sesi", "description": "Elektrik motor ivmesi", "src": "/audio/tesla-model3-drive.mp3", "durationSeconds": 12, "format": "mp3" }
+        "idle": {
+          "id": "model3-idle",
+          "label": "Sistem Sesi",
+          "description": "Elektrikli araç hazır modu",
+          "src": "/audio/tesla-model3-idle.mp3",
+          "durationSeconds": 8,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "model3-exhaust",
+          "label": "Hızlanma Sesi",
+          "description": "Elektrik motor ivmesi",
+          "src": "/audio/tesla-model3-drive.mp3",
+          "durationSeconds": 12,
+          "format": "mp3"
+        }
       },
-      "engine": { "code": "Permanent Magnet", "displacementCc": 0, "cylinders": 0, "configuration": "Elektrik motoru", "aspiration": "electric", "powerHp": 283, "powerKw": 208, "torqueNm": 420, "fuelType": "electric", "emissionStandard": "Sıfır emisyon" },
-      "performance": { "zeroTo100Kmh": 6.1, "topSpeedKmh": 225, "transmission": "automatic", "gears": 1, "drivetrain": "rwd" },
-      "dimensions": { "lengthMm": 4720, "widthMm": 1849, "heightMm": 1441, "wheelbaseMm": 2875, "bootCapacityL": 594, "curbWeightKg": 1760 },
-      "multimedia": [{ "id": "model3-multimedia", "name": "Tesla UI", "category": "infotainment", "description": "15\" merkezi ekran, OTA güncellemeler", "highlight": true, "icon": "monitor" }],
-      "interiorMaterials": [{ "zone": "seats", "material": "Sentetik deri", "colorName": "Siyah", "sustainable": true }],
-      "technicalSections": [{ "id": "model3-ev", "title": "Şarj", "items": [{ "label": "AC şarj", "value": "11 kW" }, { "label": "DC hızlı şarj", "value": "170 kW" }] }],
-      "highlights": ["Elektrik", "594 L bagaj", "Autopilot"],
+      "engine": {
+        "code": "Permanent Magnet",
+        "displacementCc": 0,
+        "cylinders": 0,
+        "configuration": "Elektrik motoru",
+        "aspiration": "electric",
+        "powerHp": 283,
+        "powerKw": 208,
+        "torqueNm": 420,
+        "fuelType": "electric",
+        "emissionStandard": "Sıfır emisyon"
+      },
+      "performance": {
+        "zeroTo100Kmh": 6.1,
+        "topSpeedKmh": 225,
+        "transmission": "automatic",
+        "gears": 1,
+        "drivetrain": "rwd"
+      },
+      "dimensions": {
+        "lengthMm": 4720,
+        "widthMm": 1849,
+        "heightMm": 1441,
+        "wheelbaseMm": 2875,
+        "bootCapacityL": 594,
+        "curbWeightKg": 1760
+      },
+      "multimedia": [
+        {
+          "id": "model3-multimedia",
+          "name": "Tesla UI",
+          "category": "infotainment",
+          "description": "15\" merkezi ekran, OTA güncellemeler",
+          "highlight": true,
+          "icon": "monitor"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Sentetik deri",
+          "colorName": "Siyah",
+          "sustainable": true
+        }
+      ],
+      "technicalSections": [
+        {
+          "id": "model3-ev",
+          "title": "Şarj",
+          "items": [
+            {
+              "label": "AC şarj",
+              "value": "11 kW"
+            },
+            {
+              "label": "DC hızlı şarj",
+              "value": "170 kW"
+            }
+          ]
+        }
+      ],
+      "highlights": [
+        "Elektrik",
+        "594 L bagaj",
+        "Autopilot"
+      ],
       "featured": true,
       "accentColor": "blue"
     },
@@ -1314,7 +2607,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "İş dünyasının quattro sedanı",
       "shortDescription": "245 hp TFSI quattro, Virtual Cockpit ve Matrix LED.",
-      "pricing": { "currency": "EUR", "msrp": 62900, "trim": "S line" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 62900,
+        "trim": "S line"
+      },
       "media": {
         "heroImage": "/images/vehicles/audi-a6-hero.webp",
         "thumbnail": "/images/vehicles/audi-a6-thumb.webp",
@@ -1377,10 +2674,19 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Valcona deri", "colorName": "Siyah", "sustainable": false }
+        {
+          "zone": "seats",
+          "material": "Valcona deri",
+          "colorName": "Siyah",
+          "sustainable": false
+        }
       ],
       "technicalSections": [],
-      "highlights": ["Quattro", "S line", "Matrix LED"],
+      "highlights": [
+        "Quattro",
+        "S line",
+        "Matrix LED"
+      ],
       "featured": false,
       "accentColor": "blue"
     },
@@ -1395,7 +2701,11 @@
       "bodyStyle": "4 Kapı Sedan",
       "tagline": "Executive sedan ikonu",
       "shortDescription": "Mild-hybrid, MBUX Hyperscreen opsiyonu, Burmester ses.",
-      "pricing": { "currency": "EUR", "msrp": 71500, "trim": "AMG Line" },
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 71500,
+        "trim": "AMG Line"
+      },
       "media": {
         "heroImage": "/images/vehicles/mercedes-e-hero.webp",
         "thumbnail": "/images/vehicles/mercedes-e-thumb.webp",
@@ -1466,11 +2776,172 @@
         }
       ],
       "interiorMaterials": [
-        { "zone": "seats", "material": "Deri", "colorName": "Macchiato Beige", "sustainable": false }
+        {
+          "zone": "seats",
+          "material": "Deri",
+          "colorName": "Macchiato Beige",
+          "sustainable": false
+        }
       ],
       "technicalSections": [],
-      "highlights": ["Mild-hybrid", "Burmester", "AMG Line"],
+      "highlights": [
+        "Mild-hybrid",
+        "Burmester",
+        "AMG Line"
+      ],
       "featured": true,
+      "accentColor": "red"
+    },
+    {
+      "id": "vw-golf-8",
+      "slug": "vw-golf-8-style",
+      "brand": "Volkswagen",
+      "model": "Golf 8",
+      "year": 2024,
+      "segment": "c-hatchback",
+      "bodyType": "hatchback",
+      "bodyStyle": "5 Kapı Hatchback",
+      "tagline": "İkonik kompakt",
+      "shortDescription": "C segmentinin standartlarını belirleyen efsane model.",
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 35000,
+        "trim": "Style"
+      },
+      "media": {
+        "heroImage": "",
+        "thumbnail": "",
+        "gallery": [],
+        "colorHex": "#4287f5"
+      },
+      "audio": {
+        "idle": {
+          "id": "golf-idle",
+          "label": "Idle",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "golf-exhaust",
+          "label": "Exhaust",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        }
+      },
+      "engine": {
+        "code": "EA211",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "inline",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 250,
+        "fuelType": "petrol"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.5,
+        "topSpeedKmh": 224,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4284,
+        "widthMm": 1789,
+        "heightMm": 1491,
+        "wheelbaseMm": 2619,
+        "bootCapacityL": 381,
+        "curbWeightKg": 1365
+      },
+      "multimedia": [],
+      "interiorMaterials": [],
+      "technicalSections": [],
+      "highlights": [
+        "Dijital Kokpit",
+        "IQ.LIGHT"
+      ],
+      "featured": false,
+      "accentColor": "blue"
+    },
+    {
+      "id": "ford-ranger-raptor",
+      "slug": "ford-ranger-raptor-2024",
+      "brand": "Ford",
+      "model": "Ranger Raptor",
+      "year": 2024,
+      "segment": "pickup-midsize",
+      "bodyType": "pickup",
+      "bodyStyle": "Çift Kabin Pick-up",
+      "tagline": "Off-road canavarı",
+      "shortDescription": "Zorlu koşullar için geliştirilmiş yüksek performanslı pick-up.",
+      "pricing": {
+        "currency": "EUR",
+        "msrp": 65000,
+        "trim": "Raptor"
+      },
+      "media": {
+        "heroImage": "",
+        "thumbnail": "",
+        "gallery": [],
+        "colorHex": "#f54242"
+      },
+      "audio": {
+        "idle": {
+          "id": "ranger-idle",
+          "label": "Idle",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "ranger-exhaust",
+          "label": "Exhaust",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        }
+      },
+      "engine": {
+        "code": "EcoBoost",
+        "displacementCc": 2956,
+        "cylinders": 6,
+        "configuration": "v6",
+        "aspiration": "twin-turbo",
+        "powerHp": 292,
+        "powerKw": 215,
+        "torqueNm": 491,
+        "fuelType": "petrol"
+      },
+      "performance": {
+        "zeroTo100Kmh": 7.9,
+        "topSpeedKmh": 180,
+        "transmission": "automatic",
+        "gears": 10,
+        "drivetrain": "4wd"
+      },
+      "dimensions": {
+        "lengthMm": 5360,
+        "widthMm": 2028,
+        "heightMm": 1926,
+        "wheelbaseMm": 3270,
+        "bootCapacityL": 0,
+        "curbWeightKg": 2454
+      },
+      "multimedia": [],
+      "interiorMaterials": [],
+      "technicalSections": [],
+      "highlights": [
+        "FOX Amortisörler",
+        "Baja Modu"
+      ],
+      "featured": false,
       "accentColor": "red"
     }
   ]

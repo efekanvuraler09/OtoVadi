@@ -1,7 +1,7 @@
 export type FuelType = 'petrol' | 'diesel' | 'hybrid' | 'plug-in-hybrid' | 'electric';
 export type Drivetrain = 'fwd' | 'rwd' | 'awd' | '4wd';
 export type Transmission = 'automatic' | 'cvt' | 'dct' | 'manual';
-export type BodyType = 'sedan' | 'suv';
+export type BodyType = 'sedan' | 'suv' | 'hatchback' | 'pickup';
 
 /** Klasman: B/C/D/E/F + gövde tipi (sedan veya suv) */
 export type VehicleSegment =
@@ -14,7 +14,12 @@ export type VehicleSegment =
   | 'c-suv'
   | 'd-suv'
   | 'e-suv'
-  | 'f-suv';
+  | 'f-suv'
+  | 'b-hatchback'
+  | 'c-hatchback'
+  | 'd-hatchback'
+  | 'pickup-midsize'
+  | 'pickup-fullsize';
 
 export interface AudioTrack {
   id: string;

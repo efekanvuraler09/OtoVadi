@@ -4,15 +4,15 @@ import { ChevronRight } from 'lucide-react';
 import type { BodyType, VehicleSegment } from '../../types/vehicle';
 import { SEGMENT_OPTIONS, getSegmentsByBodyType } from '../../data/segments';
 import { countBySegment, useVehicleStore } from '../../store/useVehicleStore';
-import { SedanIcon, SuvIcon } from '../icons/BodyTypeIcons';
 
 const BODY_TYPES: {
   id: BodyType;
   label: string;
-  Icon: typeof SedanIcon;
 }[] = [
-  { id: 'sedan', label: 'Sedan', Icon: SedanIcon },
-  { id: 'suv', label: 'SUV', Icon: SuvIcon },
+  { id: 'sedan', label: 'Sedan' },
+  { id: 'suv', label: 'SUV' },
+  { id: 'hatchback', label: 'Hatchback' },
+  { id: 'pickup', label: 'Pick-up' },
 ];
 
 export function SegmentPicker() {
@@ -40,9 +40,9 @@ export function SegmentPicker() {
         </p>
       </div>
 
-      {/* Gövde tipi: Sedan / SUV */}
+      {/* Gövde tipi: Sedan / SUV / Hatchback / Pick-up */}
       <div className="grid grid-cols-2 gap-3">
-        {BODY_TYPES.map(({ id, label, Icon }) => {
+        {BODY_TYPES.map(({ id, label }) => {
           const active = bodyType === id;
           return (
             <motion.button
@@ -50,11 +50,10 @@ export function SegmentPicker() {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={() => setBodyType(id)}
-              className={`glass-panel flex min-h-[72px] flex-col items-start justify-center rounded-2xl p-4 text-left transition-colors ${
+              className={`glass-panel flex min-h-[56px] items-center justify-center rounded-2xl p-4 text-center transition-colors ${
                 active ? 'ring-2 ring-accent bg-accent/10' : ''
               }`}
             >
-              <Icon className={`mb-2 h-8 w-[4.5rem] ${active ? 'text-accent' : 'text-muted'}`} />
               <span className={`text-base font-semibold ${active ? 'text-accent' : 'text-foreground'}`}>
                 {label}
               </span>
@@ -63,9 +62,9 @@ export function SegmentPicker() {
         })}
       </div>
 
-      {/* Segment: B, C, D, E, F */}
+      {/* Segment Listesi */}
       <p className="mb-3 mt-6 text-left text-xs font-medium uppercase tracking-wider text-muted">
-        {bodyType === 'sedan' ? 'Sedan segmentleri' : 'SUV segmentleri'}
+        {bodyType === 'pickup' ? 'Pick-up segmentleri' : `${bodyType.charAt(0).toUpperCase() + bodyType.slice(1)} segmentleri`}
       </p>
 
       <ul className="flex flex-col gap-2">
