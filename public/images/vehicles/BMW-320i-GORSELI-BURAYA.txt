@@ -1,0 +1,18 @@
+BMW 320i deneme görseli — DOSYAYI BU KLASÖRE KOYUN
+================================================
+
+Dosya adı (tam olarak):
+  bmw-320i.jpg
+
+Tam yol (Windows):
+  C:\Users\User\.cursor\projects\C-Users-User-AppData-Local-Temp-18292b58-995b-4f26-abd1-593dface36fa\interactive-vehicle-catalog\public\images\vehicles\bmw-320i.jpg
+
+Kabul edilen formatlar:
+  .jpg  .jpeg  .png  .webp
+
+PNG kullanırsanız vehicles.json içinde yolu .png yapın veya dosyayı bmw-320i.jpg olarak kaydedin.
+
+Siteyi yenileyin (Ctrl+Shift+R), sonra:
+  Ana sayfa → Sedan → C Segment → BMW 320i kartı
+
+Bu txt dosyasını silebilirsiniz; görseli koyduktan sonra gerekmez.
