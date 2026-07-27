@@ -158,6 +158,8 @@ export interface Vehicle {
   featured: boolean;
   accentColor: 'blue' | 'red';
   configurator?: VehicleConfigurator;
+  has3D?: boolean;
+  modelPath?: string;
 }
 
 export interface VehicleCatalogMeta {

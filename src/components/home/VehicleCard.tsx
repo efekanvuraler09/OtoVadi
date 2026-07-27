@@ -36,10 +36,10 @@ export function VehicleCard({ vehicle, index = 0 }: VehicleCardProps) {
       transition={{ delay: index * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="group w-full"
     >
-      <div className="glass-panel flex w-full flex-col overflow-hidden rounded-3xl md:flex-row md:items-stretch">
+      <div className="glass-panel flex w-full flex-col overflow-hidden rounded-3xl">
         <Link
           to={detailPath}
-          className={`relative block h-52 w-full shrink-0 overflow-hidden bg-gradient-to-br md:h-auto md:min-h-[220px] md:w-2/5 ${accent.gradient}`}
+          className={`relative block h-56 w-full shrink-0 overflow-hidden bg-gradient-to-br md:h-64 ${accent.gradient}`}
         >
           <VehicleMediaCover
             src={vehicle.media.thumbnail}
@@ -72,7 +72,7 @@ export function VehicleCard({ vehicle, index = 0 }: VehicleCardProps) {
           </div>
         </Link>
 
-        <div className="flex flex-1 flex-col p-5 md:p-6">
+        <div className="flex flex-col p-5 md:p-6">
           <Link to={detailPath} className="text-left">
             <p className="text-sm leading-relaxed text-muted line-clamp-2">
               {vehicle.shortDescription}

@@ -1,9 +1,9 @@
+
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Volume2, Sparkles, Cuboid } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronRight, Volume2, Sparkles } from 'lucide-react';
+import { countActiveSegments, getHeroStats } from '../../lib/catalogStats';
 import { useVehicleStore } from '../../store/useVehicleStore';
-import { SedanIcon, SuvIcon } from '../icons/BodyTypeIcons';
 import { ThemeToggle } from '../layout/ThemeToggle';
 
 interface HeroSectionProps {
@@ -13,14 +13,8 @@ interface HeroSectionProps {
 export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
   const vehicles = useVehicleStore((s) => s.vehicles);
   const vehicleCount = vehicles.length;
-  const sedanCount = useMemo(
-    () => vehicles.filter((v) => v.bodyType === 'sedan').length,
-    [vehicles],
-  );
-  const suvCount = useMemo(
-    () => vehicles.filter((v) => v.bodyType === 'suv').length,
-    [vehicles],
-  );
+  const activeSegmentCount = useMemo(() => countActiveSegments(vehicles), [vehicles]);
+  const heroStats = useMemo(() => getHeroStats(vehicles), [vehicles]);
 
   return (
     <section className="safe-top px-4 pt-4 md:px-8 md:pt-10 lg:px-12">
@@ -59,8 +53,8 @@ export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
           </h1>
 
           <p className="mt-4 text-left text-sm leading-relaxed text-muted md:text-base lg:max-w-lg">
-            Sedan ve SUV segmentlerinde klasman seçin; motor sesi, donanım ve teknik
-            detayları tek ekranda inceleyin.
+            Gövde tipi ve klasman seçin; motor sesi, donanım ve teknik detayları tek ekranda
+            inceleyin.
           </p>
 
           {showCatalogCta && (
@@ -76,18 +70,10 @@ export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
 
               <div className="flex items-center gap-2 rounded-2xl border border-glass-border bg-white/5 px-4 py-3">
                 <Volume2 className="size-4 text-accent" />
-                <span className="text-xs text-muted">{vehicleCount} araç · 10 klasman</span>
+                <span className="text-xs text-muted">
+                  {vehicleCount} araç · {activeSegmentCount} aktif klasman
+                </span>
               </div>
-              
-              <Link to="/3d-configurator">
-                <motion.div
-                  whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 rounded-2xl border border-accent/30 bg-accent/10 px-4 py-3 hover:bg-accent/20 transition-colors cursor-pointer"
-                >
-                  <Cuboid className="size-4 text-accent" />
-                  <span className="text-sm font-semibold text-accent">3D Deneyimle</span>
-                </motion.div>
-              </Link>
             </div>
           )}
         </div>
@@ -96,15 +82,15 @@ export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="relative z-10 mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:absolute md:bottom-8 md:right-8 md:mt-0"
+          className={`relative z-10 mt-8 grid gap-2 md:absolute md:bottom-8 md:right-8 md:mt-0 ${
+            heroStats.length <= 3
+              ? 'grid-cols-3'
+              : heroStats.length === 4
+                ? 'grid-cols-2 sm:grid-cols-4'
+                : 'grid-cols-2 sm:grid-cols-3'
+          }`}
         >
-          {[
-            { label: 'Kayıtlı', value: '42' },
-            { label: 'Sedan', value: '19' },
-            { label: 'SUV', value: '6' },
-            { label: 'Hatchback', value: '12' },
-            { label: 'Pick-up', value: '5' },
-          ].map((stat) => (
+          {heroStats.map((stat) => (
             <div
               key={stat.label}
               className="flex min-w-[72px] flex-col justify-center rounded-xl border border-glass-border bg-void/40 px-3 py-3 text-center backdrop-blur-sm"

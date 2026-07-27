@@ -2943,6 +2943,192 @@
       ],
       "featured": false,
       "accentColor": "red"
+    },
+    {
+      "id": "hyundai-tucson-2023",
+      "slug": "hyundai-tucson-elite-plus-2023",
+      "brand": "Hyundai",
+      "model": "Tucson",
+      "year": 2023,
+      "segment": "c-suv",
+      "bodyType": "suv",
+      "bodyStyle": "5 Kapı SUV",
+      "tagline": "Geleceğin SUV'si",
+      "shortDescription": "Hyundai'nin en sevilen SUV'si Tucson, Elite Plus donanımı ile üstün konfor ve teknoloji sunar.",
+      "pricing": {
+        "currency": "TRY",
+        "msrp": 2500000,
+        "trim": "Elite Plus"
+      },
+      "has3D": true,
+      "modelPath": "/models/tucson.glb",
+      "media": {
+        "heroImage": "/images/vehicles/tucson-hero.png",
+        "thumbnail": "/images/vehicles/tucson-hero.png",
+        "gallery": [],
+        "colorHex": "#2c2c2c"
+      },
+      "audio": {
+        "idle": {
+          "id": "tucson-idle",
+          "label": "Motor Rölanti Sesi",
+          "description": "1.6 T-GDI motor",
+          "src": "/audio/bmw-x3-20d-idle.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "tucson-exhaust",
+          "label": "Egzoz Sesi",
+          "description": "Egzoz sesi",
+          "src": "/audio/bmw-x3-20d-exhaust.mp3",
+          "durationSeconds": 10,
+          "format": "mp3"
+        }
+      },
+      "engine": {
+        "code": "Smartstream 1.6 CRDI",
+        "displacementCc": 1598,
+        "cylinders": 4,
+        "configuration": "Sıralı 4",
+        "aspiration": "turbocharged",
+        "powerHp": 136,
+        "powerKw": 100,
+        "torqueNm": 320,
+        "fuelType": "diesel"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8.8,
+        "topSpeedKmh": 201,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4500,
+        "widthMm": 1865,
+        "heightMm": 1650,
+        "wheelbaseMm": 2680,
+        "bootCapacityL": 620,
+        "curbWeightKg": 1500
+      },
+      "multimedia": [
+        {
+          "id": "tucson-info",
+          "name": "10.25 inç bilgi eğlence ekranı",
+          "category": "infotainment",
+          "description": "Yüksek çözünürlüklü dokunmatik ekran",
+          "highlight": true
+        },
+        {
+          "id": "tucson-cluster",
+          "name": "10.25 inç dijital gösterge",
+          "category": "infotainment",
+          "description": "Dijital gösterge bilgi ekranı"
+        },
+        {
+          "id": "tucson-audio",
+          "name": "KRELL Premium Ses Sistemi",
+          "category": "audio",
+          "description": "Üstün ses kalitesi sunan premium ses sistemi",
+          "highlight": true
+        },
+        {
+          "id": "tucson-connectivity",
+          "name": "Apple CarPlay ve Android Auto",
+          "category": "connectivity",
+          "description": "Akıllı telefon entegrasyonu"
+        },
+        {
+          "id": "tucson-charge",
+          "name": "Kablosuz şarj sistemi",
+          "category": "comfort",
+          "description": "Hızlı kablosuz şarj pedi"
+        }
+      ],
+      "interiorMaterials": [
+        {
+          "zone": "seats",
+          "material": "Deri döşeme",
+          "finish": "ısıtmalı",
+          "colorName": "Siyah"
+        },
+        {
+          "zone": "dashboard",
+          "material": "Çok renkli ambiyans aydınlatması",
+          "colorName": "Değişken"
+        },
+        {
+          "zone": "headliner",
+          "material": "Açılabilir panoramik cam tavan",
+          "colorName": "Siyah"
+        },
+        {
+          "zone": "door-panels",
+          "material": "Yumuşak doku",
+          "colorName": "Siyah"
+        },
+        {
+          "zone": "steering",
+          "material": "Elektronik vites paneli (E-Shift)",
+          "colorName": "Siyah"
+        }
+      ],
+      "technicalSections": [],
+      "highlights": [
+        "Parametrik Izgara",
+        "10.25\" Ekran"
+      ],
+      "featured": true,
+      "accentColor": "blue",
+      "configurator": {
+        "colors": [
+          {
+            "id": "atlas-white",
+            "name": "Atlas Beyazı",
+            "hex": "#F4F6F6"
+          },
+          {
+            "id": "phantom-black",
+            "name": "Mika Siyah",
+            "hex": "#111314"
+          },
+          {
+            "id": "amazon-gray",
+            "name": "Amazon Gri",
+            "hex": "#525656"
+          },
+          {
+            "id": "titan-gray",
+            "name": "Duman Gri",
+            "hex": "#4A4C4F"
+          },
+          {
+            "id": "intense-blue",
+            "name": "Safir Mavi",
+            "hex": "#1C3B6F"
+          },
+          {
+            "id": "shimmering-silver",
+            "name": "Gümüş Gri",
+            "hex": "#A8A9AD"
+          },
+          {
+            "id": "sunset-red",
+            "name": "Gün Batımı Kırmızı",
+            "hex": "#6B1319"
+          }
+        ],
+        "wheels": [
+          {
+            "id": "w19",
+            "name": "19\" Alaşım",
+            "sizeInch": 19
+          }
+        ],
+        "defaultColorId": "amazon-gray",
+        "defaultWheelId": "w19"
+      }
     }
   ]
 }
