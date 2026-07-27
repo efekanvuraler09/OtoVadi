@@ -1,4 +1,4 @@
-# SonicDrive — Medya ve Dosya Yolu Rehberi
+# OtoVadi — Medya ve Dosya Yolu Rehberi
 
 ## Proje konumu (tam yol)
 

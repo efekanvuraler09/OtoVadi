@@ -15,7 +15,7 @@ export function GlassPanel({ children, className = '', onClick }: GlassPanelProp
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       whileTap={onClick ? { scale: 0.98 } : undefined}
-      className={`glass-panel rounded-2xl ${className}`}
+      className={`border border-border-subtle bg-transparent rounded-none ${className}`}
     >
       {children}
     </Component>

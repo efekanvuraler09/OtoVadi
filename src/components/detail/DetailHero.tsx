@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart } from 'lucide-react';
+import { ArrowLeft, Bookmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types/vehicle';
-import { useAccent } from '../../hooks/useAccent';
-import { useVehicleStore } from '../../store/useVehicleStore';
+import { useGarage } from '../../context/GarageContext';
+import { useAuth } from '../../context/AuthContext';
 import { VehicleMediaCover } from '../ui/VehicleMediaCover';
 
 interface DetailHeroProps {
   vehicle: Vehicle;
+  onOpenTestDrive?: () => void;
 }
 
 function formatPrice(msrp: number, currency: string) {
@@ -18,15 +19,15 @@ function formatPrice(msrp: number, currency: string) {
   }).format(msrp);
 }
 
-export function DetailHero({ vehicle }: DetailHeroProps) {
-  const accent = useAccent(vehicle);
-  const toggleFavorite = useVehicleStore((s) => s.toggleFavorite);
-  const isFavorite = useVehicleStore((s) => s.isFavorite(vehicle.id));
+export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
+  const { garagedSlugs, addVehicle, removeVehicle, loadingSlug } = useGarage();
+  const { user, openAuthModal } = useAuth();
+  const isGaraged = garagedSlugs.includes(vehicle.id) || garagedSlugs.includes(vehicle.slug); // Support both for safety during transition
 
   return (
     <header className="safe-top relative">
       <div
-        className={`relative h-64 w-full overflow-hidden bg-gradient-to-br md:h-80 ${accent.gradient}`}
+        className="relative h-80 w-full overflow-hidden bg-void md:h-[28rem]"
       >
         <VehicleMediaCover
           src={vehicle.media.heroImage}
@@ -34,44 +35,71 @@ export function DetailHero({ vehicle }: DetailHeroProps) {
           colorHex={vehicle.media.colorHex}
         />
         <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(180deg, transparent 20%, #050508 92%)`,
-          }}
+          className="absolute inset-0 bg-gradient-to-t from-void via-void/40 to-transparent"
         />
 
         <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8">
           <Link
             to="/"
-            className="glass-panel flex size-11 items-center justify-center rounded-xl"
+            className="flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none"
             aria-label="Geri dön"
           >
             <ArrowLeft className="size-5 text-foreground" />
           </Link>
 
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => toggleFavorite(vehicle.id)}
-            className="glass-panel flex size-11 items-center justify-center rounded-xl"
-            aria-label={isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
-          >
-            <Heart
-              className={`size-5 ${isFavorite ? 'fill-accent-red text-accent-red' : 'text-muted'}`}
-            />
-          </motion.button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                if (!user) {
+                  openAuthModal('Bu ayrıcalığı yaşamak için lütfen giriş yapın.');
+                  return;
+                }
+                onOpenTestDrive?.();
+              }}
+              className="flex items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm px-6 font-sans text-xs uppercase tracking-widest text-foreground transition-colors hover:bg-foreground hover:text-void"
+            >
+              Test Sürüşü
+            </button>
+            <motion.button
+              type="button"
+              disabled={loadingSlug === vehicle.slug}
+              whileTap={loadingSlug === vehicle.slug ? {} : { scale: 0.9 }}
+              onClick={() => {
+                if (!user) {
+                  openAuthModal('Bu ayrıcalığı yaşamak için lütfen giriş yapın.');
+                  return;
+                }
+                if (isGaraged) {
+                  removeVehicle(vehicle.slug, `${vehicle.brand} ${vehicle.model}`);
+                } else {
+                  addVehicle(vehicle.slug, `${vehicle.brand} ${vehicle.model}`);
+                }
+              }}
+              className={`flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none ${loadingSlug === vehicle.slug ? 'opacity-50 cursor-not-allowed' : ''}`}
+              aria-label={isGaraged ? 'Garajdan çıkar' : 'Garaja ekle'}
+            >
+              {loadingSlug === vehicle.slug ? (
+                <div className="size-5 rounded-full border-[1.5px] border-muted border-t-foreground animate-spin" />
+              ) : (
+                <Bookmark
+                  className={`size-5 ${isGaraged ? 'fill-foreground text-foreground stroke-foreground' : 'text-muted stroke-[1.5]'}`}
+                />
+              )}
+            </motion.button>
+          </div>
         </div>
 
         <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-6 md:px-8 lg:px-12">
-          <p className="text-xs font-medium uppercase tracking-widest text-white/60">
+          <p className="text-xs font-sans uppercase tracking-mb-wider text-white/60">
             {vehicle.brand} · {vehicle.year}
           </p>
-          <h1 className="mt-1 text-3xl font-semibold text-white md:text-4xl">
+          <h1 className="mt-1 font-display text-4xl md:text-5xl font-light tracking-wide text-white">
             {vehicle.model}
           </h1>
           <p className="mt-1 text-sm text-white/70">{vehicle.tagline}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="glass-panel rounded-xl px-3 py-1.5 text-sm font-semibold text-foreground">
+            <span className="text-lg font-sans font-light text-foreground">
               {formatPrice(vehicle.pricing.msrp, vehicle.pricing.currency)}
             </span>
             <span className="text-xs text-muted">{vehicle.pricing.trim}</span>

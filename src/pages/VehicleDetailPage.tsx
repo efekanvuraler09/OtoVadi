@@ -3,13 +3,15 @@ import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Cog, LayoutGrid, Monitor, Sofa, Volume2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
-import { VehicleConfigurator } from '../components/detail/VehicleConfigurator';
+import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
 import { MultimediaList } from '../components/detail/MultimediaList';
 import { SpecGrid } from '../components/detail/SpecGrid';
 import { AudioPlayer } from '../components/audio/AudioPlayer';
+import { FinanceCalculator } from '../components/detail/FinanceCalculator';
 import { Accordion } from '../components/ui/Accordion';
 import { Tabs } from '../components/ui/Tabs';
+import { TestDriveModal } from '../components/ui/TestDriveModal';
 import { useVehicleStore } from '../store/useVehicleStore';
 
 const DETAIL_TABS = [
@@ -29,6 +31,7 @@ export function VehicleDetailPage() {
   const [activeTab, setActiveTab] = useState<string>(
     tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl) ? tabFromUrl : 'audio',
   );
+  const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
 
   useEffect(() => {
     if (tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl)) {
@@ -50,7 +53,7 @@ export function VehicleDetailPage() {
         {section.items.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between gap-4 border-b border-glass-border/50 py-2 last:border-0"
+            className="flex justify-between gap-4 border-b border-border-subtle/50 py-2 last:border-0"
           >
             <dt className="text-xs text-muted">{item.label}</dt>
             <dd className="text-right text-xs font-medium text-foreground">{item.value}</dd>
@@ -67,23 +70,21 @@ export function VehicleDetailPage() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <DetailHero vehicle={vehicle} />
+      <DetailHero vehicle={vehicle} onOpenTestDrive={() => setIsTestDriveOpen(true)} />
 
-      <div className="py-6">
-        <VehicleConfigurator vehicle={vehicle} />
+      <div className="py-10">
+        <InteractiveGallery vehicle={vehicle} />
       </div>
 
-      <div className="px-4 pb-8 md:px-8 lg:mx-auto lg:max-w-4xl lg:px-12">
+      <div className="px-4 pb-8 md:px-8 lg:mx-auto lg:max-w-4xl lg:px-12 py-10">
         {/* Hızlı özet */}
-        <section className="py-6">
+        <section className="py-10">
           <p className="text-sm leading-relaxed text-muted">{vehicle.shortDescription}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {vehicle.highlights.map((tag) => (
               <span
                 key={tag}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-medium ${
-                  vehicle.accentColor === 'red' ? 'bg-accent-red/15 text-accent-red' : 'bg-accent/15 text-accent'
-                }`}
+                className="rounded-none px-2.5 py-1 text-[11px] font-medium bg-foreground/10 text-foreground/70"
               >
                 {tag}
               </span>
@@ -95,7 +96,6 @@ export function VehicleDetailPage() {
           tabs={[...DETAIL_TABS]}
           activeId={activeTab}
           onChange={setActiveTab}
-          accentColor={vehicle.accentColor}
         />
 
         <div className="mt-6">
@@ -106,10 +106,10 @@ export function VehicleDetailPage() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col gap-4"
             >
-              <AudioPlayer track={vehicle.audio.idle} accentColor={vehicle.accentColor} />
-              <AudioPlayer track={vehicle.audio.exhaust} accentColor={vehicle.accentColor} />
+              <AudioPlayer track={vehicle.audio.idle} />
+              <AudioPlayer track={vehicle.audio.exhaust} />
               {vehicle.audio.rev && (
-                <AudioPlayer track={vehicle.audio.rev} accentColor={vehicle.accentColor} />
+                <AudioPlayer track={vehicle.audio.rev} />
               )}
             </motion.div>
           )}
@@ -129,7 +129,6 @@ export function VehicleDetailPage() {
                   </h3>
                   <Accordion
                     items={technicalAccordionItems}
-                    accentColor={vehicle.accentColor}
                   />
                 </div>
               ) : (
@@ -178,7 +177,7 @@ export function VehicleDetailPage() {
                 ].map(({ label, value }) => (
                   <div
                     key={label}
-                    className="glass-panel rounded-xl px-4 py-3"
+                    className="border border-border-subtle rounded-none px-4 py-3"
                   >
                     <dt className="text-[10px] uppercase tracking-wider text-muted">{label}</dt>
                     <dd className="mt-1 text-sm font-semibold text-foreground">{value}</dd>
@@ -188,7 +187,16 @@ export function VehicleDetailPage() {
             </motion.div>
           )}
         </div>
+
+        {/* Finance Calculator */}
+        <FinanceCalculator price={vehicle.pricing.msrp} />
       </div>
+
+      <TestDriveModal 
+        vehicle={vehicle} 
+        isOpen={isTestDriveOpen} 
+        onClose={() => setIsTestDriveOpen(false)} 
+      />
     </motion.div>
   );
 }

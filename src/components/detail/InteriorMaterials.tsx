@@ -19,7 +19,7 @@ export function InteriorMaterials({ materials }: InteriorMaterialsProps) {
       {materials.map((item, i) => (
         <li
           key={`${item.zone}-${i}`}
-          className="flex items-start justify-between gap-4 rounded-xl border border-glass-border bg-white/5 px-4 py-3"
+          className="flex items-start justify-between gap-4 rounded-none border border-border-subtle bg-transparent px-4 py-3"
         >
           <div>
             <p className="text-xs font-medium text-muted">{zoneLabels[item.zone]}</p>
@@ -31,7 +31,7 @@ export function InteriorMaterials({ materials }: InteriorMaterialsProps) {
           <div className="text-right">
             <p className="text-xs text-foreground">{item.colorName}</p>
             {item.sustainable && (
-              <span className="mt-1 inline-block rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">
+              <span className="mt-1 inline-block rounded-none bg-foreground/10 px-1.5 py-0.5 text-[9px] font-medium text-foreground/70">
                 Sürdürülebilir
               </span>
             )}

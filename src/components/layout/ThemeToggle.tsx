@@ -9,11 +9,11 @@ export function ThemeToggle() {
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
-      className="glass-panel flex h-10 w-[72px] items-center justify-between rounded-full p-1 relative"
+      className="border border-border-subtle bg-surface flex h-10 w-[72px] items-center justify-between rounded-none p-1 relative"
       aria-label="Temayı değiştir"
     >
       <motion.div
-        className="absolute h-8 w-8 rounded-full bg-surface-elevated shadow-sm"
+        className="absolute h-8 w-8 rounded-none bg-foreground"
         animate={{
           x: theme === 'dark' ? 32 : 0,
         }}
@@ -22,12 +22,12 @@ export function ThemeToggle() {
       <div className="z-10 flex w-full justify-between px-1.5">
         <Sun
           className={`h-4 w-4 ${
-            theme === 'light' ? 'text-accent' : 'text-muted'
+            theme === 'light' ? 'text-void' : 'text-muted'
           }`}
         />
         <Moon
           className={`h-4 w-4 ${
-            theme === 'dark' ? 'text-accent' : 'text-muted'
+            theme === 'dark' ? 'text-void' : 'text-muted'
           }`}
         />
       </div>

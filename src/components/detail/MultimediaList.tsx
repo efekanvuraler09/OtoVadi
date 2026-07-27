@@ -7,7 +7,6 @@ import {
   Smartphone,
 } from 'lucide-react';
 import type { MultimediaFeature } from '../../types/vehicle';
-import { useAccent } from '../../hooks/useAccent';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   monitor: Monitor,
@@ -20,12 +19,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 interface MultimediaListProps {
   features: MultimediaFeature[];
-  accentColor: 'blue' | 'red';
+  accentColor?: 'blue' | 'red';
 }
 
-export function MultimediaList({ features, accentColor }: MultimediaListProps) {
-  const accent = useAccent({ accentColor });
-
+export function MultimediaList({ features }: MultimediaListProps) {
   return (
     <ul className="flex flex-col gap-3">
       {features.map((feature) => {
@@ -33,23 +30,23 @@ export function MultimediaList({ features, accentColor }: MultimediaListProps) {
         return (
           <li
             key={feature.id}
-            className={`rounded-2xl border p-4 ${
+            className={`rounded-none border p-4 bg-transparent ${
               feature.highlight
-                ? `${accent.border} bg-white/5`
-                : 'border-glass-border bg-transparent'
+                ? 'border-foreground/20'
+                : 'border-border-subtle'
             }`}
           >
             <div className="flex gap-3">
               <div
-                className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${accent.bgSoft}`}
+                className="flex size-10 shrink-0 items-center justify-center rounded-none bg-foreground/10"
               >
-                <Icon className={`size-5 ${accent.text}`} />
+                <Icon className="size-5 text-foreground" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm font-semibold text-foreground">{feature.name}</h4>
                   {feature.highlight && (
-                    <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase ${accent.bgSoft} ${accent.text}`}>
+                    <span className="rounded-none bg-foreground/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-foreground/70">
                       Öne çıkan
                     </span>
                   )}

@@ -28,7 +28,7 @@ export function HomePage() {
       {!selectedSegment ? (
         <SegmentPicker />
       ) : (
-        <section id="catalog" className="scroll-mt-4 px-4 pt-6 md:px-8 lg:px-12">
+        <section id="catalog" className="scroll-mt-4 px-4 pt-6 md:px-8 lg:px-12 py-16">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -37,7 +37,7 @@ export function HomePage() {
             <button
               type="button"
               onClick={() => setSelectedSegment(null)}
-              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-accent"
+              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
             >
               <ArrowLeft className="size-4" />
               Klasman Değiştir
@@ -45,10 +45,10 @@ export function HomePage() {
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-left">
-                <p className="text-xs font-medium uppercase tracking-wider text-accent">
+                <p className="text-xs font-medium uppercase tracking-mb-wider text-muted">
                   {segmentInfo?.label}
                 </p>
-                <h2 className="mt-1 text-xl font-semibold text-foreground md:text-2xl">
+                <h2 className="mt-1 text-xl font-display font-light tracking-wide text-foreground md:text-2xl">
                   Araç Kataloğu
                 </h2>
                 <p className="mt-1 text-sm text-muted">
@@ -57,7 +57,7 @@ export function HomePage() {
                 </p>
               </div>
 
-              <div className="glass-panel flex min-h-12 items-center gap-3 rounded-2xl px-4 md:max-w-xs md:flex-1">
+              <div className="border border-border-subtle bg-transparent flex min-h-12 items-center gap-3 rounded-none px-4 md:max-w-xs md:flex-1">
                 <Search className="size-4 shrink-0 text-muted" />
                 <input
                   type="search"
@@ -75,7 +75,7 @@ export function HomePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="glass-panel rounded-3xl px-6 py-12 text-center"
+              className="border border-border-subtle rounded-none px-6 py-12 text-center"
             >
               <p className="text-sm text-muted">
                 Bu klasmanda henüz araç yok veya aramanızla eşleşmedi.
@@ -85,7 +85,7 @@ export function HomePage() {
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="text-sm font-medium text-accent"
+                    className="text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
                   >
                     Aramayı temizle
                   </button>
@@ -93,14 +93,14 @@ export function HomePage() {
                 <button
                   type="button"
                   onClick={() => setSelectedSegment(null)}
-                  className="text-sm font-medium text-muted underline"
+                  className="text-sm font-medium text-muted underline hover:text-foreground transition-colors"
                 >
                   Başka klasman seç
                 </button>
               </div>
             </motion.div>
           ) : (
-            <ul className="flex flex-col gap-5 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 xl:gap-8">
+            <ul className="flex flex-col gap-12 md:grid md:grid-cols-2 md:gap-16 lg:grid-cols-2 xl:grid-cols-3">
               {filteredVehicles.map((vehicle, index) => (
                 <li key={vehicle.id} className="w-full">
                   <VehicleCard vehicle={vehicle} index={index} />

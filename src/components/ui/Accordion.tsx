@@ -11,20 +11,17 @@ export interface AccordionItem {
 interface AccordionProps {
   items: AccordionItem[];
   defaultOpenId?: string;
-  accentColor?: 'blue' | 'red';
 }
 
-export function Accordion({ items, defaultOpenId, accentColor = 'blue' }: AccordionProps) {
+export function Accordion({ items, defaultOpenId }: AccordionProps) {
   const [openId, setOpenId] = useState<string | null>(defaultOpenId ?? items[0]?.id ?? null);
-
-  const accentText = accentColor === 'red' ? 'text-accent-red' : 'text-accent';
 
   return (
     <div className="flex flex-col gap-2">
       {items.map((item) => {
         const isOpen = openId === item.id;
         return (
-          <div key={item.id} className="glass-panel overflow-hidden rounded-2xl">
+          <div key={item.id} className="border border-border-subtle rounded-none overflow-hidden">
             <button
               type="button"
               onClick={() => setOpenId(isOpen ? null : item.id)}
@@ -33,7 +30,7 @@ export function Accordion({ items, defaultOpenId, accentColor = 'blue' }: Accord
             >
               <span className="text-sm font-semibold text-foreground">{item.title}</span>
               <ChevronDown
-                className={`size-4 shrink-0 text-muted transition-transform ${isOpen ? 'rotate-180' : ''} ${accentText}`}
+                className={`size-4 shrink-0 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
               />
             </button>
             <AnimatePresence initial={false}>
@@ -45,7 +42,7 @@ export function Accordion({ items, defaultOpenId, accentColor = 'blue' }: Accord
                   transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="border-t border-glass-border px-4 pb-4 pt-2">
+                  <div className="border-t border-border-subtle px-4 pb-4 pt-2">
                     {item.content}
                   </div>
                 </motion.div>

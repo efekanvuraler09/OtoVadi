@@ -226,7 +226,26 @@
         "iDrive 8"
       ],
       "featured": true,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/bmw-x3-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "mercedes-glc-300-2023",
@@ -394,7 +413,26 @@
         "620L bagaj"
       ],
       "featured": true,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/mercedes-glc-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "audi-q5-45-tfsi-2023",
@@ -533,7 +571,26 @@
         "S line"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/audi-q5-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "volvo-xc60-b5-2023",
@@ -675,7 +732,26 @@
         "Sürdürülebilir iç mekan"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/volvo-xc60-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "lexus-nx-350h-2023",
@@ -787,7 +863,26 @@
         "LSS+ 3.0"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/lexus-nx-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "genesis-gv70-2.5t-2023",
@@ -915,7 +1010,26 @@
         "CDC süspansiyon"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/genesis-gv70-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "bmw-320i-2023",
@@ -1012,67 +1126,22 @@
       ],
       "featured": true,
       "accentColor": "blue",
-      "configurator": {
-        "defaultColorId": "portimao-blue",
-        "defaultWheelId": "w18",
-        "colors": [
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/bmw-320i.jpg",
+        "hotspots": [
           {
-            "id": "portimao-blue",
-            "name": "Portimao Mavi",
-            "hex": "#1e3a5f",
-            "metallic": true
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
           },
           {
-            "id": "alpine-white",
-            "name": "Alpin Beyaz",
-            "hex": "#f0f0f0",
-            "metallic": true
-          },
-          {
-            "id": "black-sapphire",
-            "name": "Siyah Safir",
-            "hex": "#0f1419",
-            "metallic": true
-          },
-          {
-            "id": "mineral-grey",
-            "name": "Mineral Gri",
-            "hex": "#5c6670",
-            "metallic": true
-          },
-          {
-            "id": "melbourne-red",
-            "name": "Melbourne Kırmızı",
-            "hex": "#8b1a1a",
-            "metallic": true
-          },
-          {
-            "id": "brooklyn-grey",
-            "name": "Brooklyn Gri",
-            "hex": "#6b7280",
-            "metallic": true
-          }
-        ],
-        "wheels": [
-          {
-            "id": "w17",
-            "name": "17\" V-Spoke",
-            "sizeInch": 17
-          },
-          {
-            "id": "w18",
-            "name": "18\" M Double-Spoke",
-            "sizeInch": 18
-          },
-          {
-            "id": "w19",
-            "name": "19\" M Y-Spoke",
-            "sizeInch": 19
-          },
-          {
-            "id": "w20",
-            "name": "20\" M Performance",
-            "sizeInch": 20
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
           }
         ]
       }
@@ -1169,7 +1238,26 @@
         "C segment"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/toyota-corolla-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "honda-civic-sedan-2024",
@@ -1263,7 +1351,26 @@
         "519 L bagaj"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/honda-civic-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "renault-megane-sedan-2024",
@@ -1357,7 +1464,26 @@
         "503 L bagaj"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/renault-megane-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "fiat-egea-sedan-2024",
@@ -1451,7 +1577,26 @@
         "Geniş servis ağı"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/fiat-egea-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "hyundai-elantra-2024",
@@ -1545,7 +1690,26 @@
         "Parametrik tasarım"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/hyundai-elantra.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "kia-cerato-sedan-2024",
@@ -1639,7 +1803,26 @@
         "7 yıl garanti"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/kia-cerato-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "volkswagen-jetta-2024",
@@ -1733,7 +1916,26 @@
         "510 L bagaj"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/volkswagen-jetta.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "skoda-octavia-sedan-2024",
@@ -1827,7 +2029,26 @@
         "Travel Assist"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/skoda-octavia.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "peugeot-408-sedan-2024",
@@ -1921,7 +2142,26 @@
         "PureTech"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/peugeot-408-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "opel-astra-sedan-2024",
@@ -2015,7 +2255,26 @@
         "C segment"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/opel-astra-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "ford-focus-sedan-2024",
@@ -2109,7 +2368,26 @@
         "SYNC 4"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/ford-focus-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "audi-a3-sedan-2024",
@@ -2203,7 +2481,26 @@
         "S line"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/audi-a3-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "bmw-2-gran-coupe-2024",
@@ -2297,7 +2594,26 @@
         "M Sport"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/bmw-2-gran-coupe.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "volvo-s60-2024",
@@ -2391,7 +2707,26 @@
         "Google built-in"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/volvo-s60.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "chevrolet-cruze-sedan-2023",
@@ -2485,7 +2820,26 @@
         "Geniş iç hacim"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/chevrolet-cruze-sedan.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "tesla-model-3-2024",
@@ -2594,7 +2948,26 @@
         "Autopilot"
       ],
       "featured": true,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/tesla-model-3.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "audi-a6-45-tfsi-2023",
@@ -2688,7 +3061,26 @@
         "Matrix LED"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/audi-a6-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "mercedes-e300-2023",
@@ -2790,7 +3182,26 @@
         "AMG Line"
       ],
       "featured": true,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/mercedes-e-hero.webp",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "vw-golf-8",
@@ -2866,7 +3277,26 @@
         "IQ.LIGHT"
       ],
       "featured": false,
-      "accentColor": "blue"
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "ford-ranger-raptor",
@@ -2942,7 +3372,26 @@
         "Baja Modu"
       ],
       "featured": false,
-      "accentColor": "red"
+      "accentColor": "red",
+      "interactiveGallery": {
+        "studioImage": "",
+        "hotspots": [
+          {
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
+          },
+          {
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
+          }
+        ]
+      }
     },
     {
       "id": "hyundai-tucson-2023",
@@ -2960,7 +3409,6 @@
         "msrp": 2500000,
         "trim": "Elite Plus"
       },
-      "has3D": true,
       "modelPath": "/models/tucson.glb",
       "media": {
         "heroImage": "/images/vehicles/tucson-hero.png",
@@ -3081,53 +3529,190 @@
       ],
       "featured": true,
       "accentColor": "blue",
-      "configurator": {
-        "colors": [
+      "interactiveGallery": {
+        "studioImage": "/images/vehicles/tucson-hero.png",
+        "hotspots": [
           {
-            "id": "atlas-white",
-            "name": "Atlas Beyazı",
-            "hex": "#F4F6F6"
+            "id": "headlight",
+            "xPosition": 15,
+            "yPosition": 45,
+            "title": "Matrix LED Far Teknolojisi",
+            "description": "Gelişmiş aydınlatma sistemi ile gece sürüşlerinde maksimum görüş alanı."
           },
           {
-            "id": "phantom-black",
-            "name": "Mika Siyah",
-            "hex": "#111314"
-          },
-          {
-            "id": "amazon-gray",
-            "name": "Amazon Gri",
-            "hex": "#525656"
-          },
-          {
-            "id": "titan-gray",
-            "name": "Duman Gri",
-            "hex": "#4A4C4F"
-          },
-          {
-            "id": "intense-blue",
-            "name": "Safir Mavi",
-            "hex": "#1C3B6F"
-          },
-          {
-            "id": "shimmering-silver",
-            "name": "Gümüş Gri",
-            "hex": "#A8A9AD"
-          },
-          {
-            "id": "sunset-red",
-            "name": "Gün Batımı Kırmızı",
-            "hex": "#6B1319"
+            "id": "wheel",
+            "xPosition": 25,
+            "yPosition": 75,
+            "title": "20 İnç Elmas Kesim Alaşım",
+            "description": "Aerodinamik tasarım ve yüksek performanslı sürüş dinamiği."
           }
-        ],
-        "wheels": [
-          {
-            "id": "w19",
-            "name": "19\" Alaşım",
-            "sizeInch": 19
-          }
-        ],
-        "defaultColorId": "amazon-gray",
-        "defaultWheelId": "w19"
+        ]
+      }
+    },
+    {
+      "id": "tucson-2023",
+      "slug": "hyundai-tucson",
+      "brand": "Hyundai",
+      "model": "Tucson",
+      "year": 2023,
+      "segment": "c-suv",
+      "bodyType": "suv",
+      "bodyStyle": "C-SUV",
+      "tagline": "Işığın gücü",
+      "shortDescription": "Parametrik gizli farları ve yenilikçi tasarımıyla sınıfının en dikkat çeken modeli.",
+      "pricing": {
+        "currency": "TRY",
+        "msrp": 2300000,
+        "trim": "Elite Plus"
+      },
+      "media": {
+        "heroImage": "https://cdn.motor1.com/images/mgl/LMyX9y/s3/2025-hyundai-tucson-front-three-quarter.jpg",
+        "gallery": [],
+        "thumbnail": "",
+        "colorHex": "#424242"
+      },
+      "audio": {
+        "idle": {
+          "id": "t-1",
+          "label": "Rölanti",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "t-2",
+          "label": "Egzoz",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        }
+      },
+      "engine": {
+        "code": "1.6 T-GDI",
+        "displacementCc": 1598,
+        "cylinders": 4,
+        "configuration": "inline",
+        "aspiration": "turbocharged",
+        "powerHp": 180,
+        "powerKw": 132,
+        "torqueNm": 265,
+        "fuelType": "hybrid"
+      },
+      "performance": {
+        "zeroTo100Kmh": 8,
+        "topSpeedKmh": 201,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "4wd"
+      },
+      "dimensions": {
+        "lengthMm": 4500,
+        "widthMm": 1865,
+        "heightMm": 1650,
+        "wheelbaseMm": 2680,
+        "bootCapacityL": 620,
+        "curbWeightKg": 1564
+      },
+      "multimedia": [],
+      "interiorMaterials": [],
+      "technicalSections": [],
+      "highlights": [
+        "Cam Tavan",
+        "Şerit Takip Sistemi",
+        "Koltuk Isıtma",
+        "4WD Çekiş",
+        "Kör Nokta Uyarısı"
+      ],
+      "featured": true,
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "https://cdn.motor1.com/images/mgl/LMyX9y/s3/2025-hyundai-tucson-front-three-quarter.jpg",
+        "hotspots": []
+      }
+    },
+    {
+      "id": "tiguan-2023",
+      "slug": "volkswagen-tiguan",
+      "brand": "Volkswagen",
+      "model": "Tiguan",
+      "year": 2023,
+      "segment": "c-suv",
+      "bodyType": "suv",
+      "bodyStyle": "C-SUV",
+      "tagline": "Kusursuz Alman mühendisliği",
+      "shortDescription": "Segmentinin standartlarını belirleyen, zarif ve teknolojik C-SUV lideri.",
+      "pricing": {
+        "currency": "TRY",
+        "msrp": 2500000,
+        "trim": "R-Line"
+      },
+      "media": {
+        "heroImage": "https://cdn.motor1.com/images/mgl/ZnmwOQ/s1/volkswagen-tiguan-2024.webp",
+        "gallery": [],
+        "thumbnail": "",
+        "colorHex": "#f4f4f5"
+      },
+      "audio": {
+        "idle": {
+          "id": "ti-1",
+          "label": "Rölanti",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        },
+        "exhaust": {
+          "id": "ti-2",
+          "label": "Egzoz",
+          "description": "",
+          "src": "",
+          "durationSeconds": 0,
+          "format": "mp3"
+        }
+      },
+      "engine": {
+        "code": "1.5 TSI",
+        "displacementCc": 1498,
+        "cylinders": 4,
+        "configuration": "inline",
+        "aspiration": "turbocharged",
+        "powerHp": 150,
+        "powerKw": 110,
+        "torqueNm": 250,
+        "fuelType": "petrol"
+      },
+      "performance": {
+        "zeroTo100Kmh": 9.2,
+        "topSpeedKmh": 202,
+        "transmission": "dct",
+        "gears": 7,
+        "drivetrain": "fwd"
+      },
+      "dimensions": {
+        "lengthMm": 4509,
+        "widthMm": 1839,
+        "heightMm": 1665,
+        "wheelbaseMm": 2681,
+        "bootCapacityL": 615,
+        "curbWeightKg": 1540
+      },
+      "multimedia": [],
+      "interiorMaterials": [],
+      "technicalSections": [],
+      "highlights": [
+        "Cam Tavan",
+        "Şerit Takip Sistemi",
+        "Koltuk Isıtma",
+        "Matrix LED Far",
+        "Adaptif Hız Sabitleyici"
+      ],
+      "featured": true,
+      "accentColor": "blue",
+      "interactiveGallery": {
+        "studioImage": "https://cdn.motor1.com/images/mgl/ZnmwOQ/s1/volkswagen-tiguan-2024.webp",
+        "hotspots": []
       }
     }
   ]

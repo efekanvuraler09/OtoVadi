@@ -6,7 +6,6 @@ import { useAudioStore } from '../../store/useAudioStore';
 
 interface AudioPlayerProps {
   track: AudioTrack;
-  accentColor: 'blue' | 'red';
   compact?: boolean;
 }
 
@@ -16,7 +15,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayerProps) {
+export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -28,9 +27,6 @@ export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayer
   const setActiveTrack = useAudioStore((s) => s.setActiveTrack);
 
   const isActive = activeTrackId === track.id;
-  const accentBg = accentColor === 'red' ? 'bg-accent-red' : 'bg-accent';
-  const accentText = accentColor === 'red' ? 'text-accent-red' : 'text-accent';
-  const accentRing = accentColor === 'red' ? 'ring-accent-red/50' : 'ring-accent/50';
 
   const stopPlayback = useCallback(() => {
     const el = audioRef.current;
@@ -123,7 +119,7 @@ export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayer
 
   return (
     <div
-      className={`glass-panel rounded-2xl ${compact ? 'p-3' : 'p-4 md:p-5'}`}
+      className={`border border-border-subtle rounded-none ${compact ? 'p-3' : 'p-4 md:p-5'}`}
     >
       <audio ref={audioRef} src={track.src} preload="metadata" />
 
@@ -134,7 +130,7 @@ export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayer
           onClick={togglePlay}
           disabled={unavailable}
           aria-label={isPlaying ? 'Duraklat' : 'Oynat'}
-          className={`flex shrink-0 items-center justify-center rounded-2xl text-white ring-2 ring-offset-2 ring-offset-transparent ${accentBg} ${accentRing} ${
+          className={`flex shrink-0 items-center justify-center rounded-none bg-foreground text-void hover:bg-foreground/90 transition-colors ${
             compact ? 'size-12' : 'size-14 min-h-[56px] min-w-[56px]'
           } disabled:opacity-50`}
         >
@@ -179,10 +175,10 @@ export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayer
                     );
                   }
                 }}
-                className="mt-3 h-2 cursor-pointer overflow-hidden rounded-full bg-white/10"
+                className="mt-3 h-2 cursor-pointer overflow-hidden rounded-full bg-foreground/10"
               >
                 <motion.div
-                  className={`h-full rounded-full ${accentBg}`}
+                  className="h-full rounded-full bg-foreground"
                   style={{ width: `${progress}%` }}
                   layout
                 />
@@ -200,11 +196,11 @@ export function AudioPlayer({ track, accentColor, compact = false }: AudioPlayer
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`mt-3 flex items-center gap-2 text-[10px] font-medium ${accentText}`}
+          className="mt-3 flex items-center gap-2 text-[10px] font-medium text-foreground"
         >
           <span className="relative flex size-2">
-            <span className={`absolute inline-flex size-full animate-ping rounded-full opacity-75 ${accentBg}`} />
-            <span className={`relative inline-flex size-2 rounded-full ${accentBg}`} />
+            <span className="absolute inline-flex size-full animate-ping rounded-full opacity-75 bg-foreground" />
+            <span className="relative inline-flex size-2 rounded-full bg-foreground" />
           </span>
           Dinleniyor…
         </motion.div>

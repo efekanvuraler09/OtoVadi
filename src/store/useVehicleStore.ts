@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import catalogData from '../data/vehicles.json';
 import type { Vehicle, VehicleCatalog, VehicleSegment } from '../types/vehicle';
 
@@ -50,9 +51,14 @@ interface VehicleStore {
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   getVehicleBySlug: (slug: string) => Vehicle | undefined;
+  addVehicle: (vehicle: Vehicle) => void;
+  removeVehicle: (id: string) => void;
+  updateVehicle: (id: string, updates: Partial<Vehicle>) => void;
 }
 
-export const useVehicleStore = create<VehicleStore>((set, get) => ({
+export const useVehicleStore = create<VehicleStore>()(
+  persist(
+    (set, get) => ({
   vehicles: catalog.vehicles,
   featuredVehicles: catalog.vehicles.filter((v) => v.featured),
   favorites: [],
@@ -77,6 +83,23 @@ export const useVehicleStore = create<VehicleStore>((set, get) => ({
   isFavorite: (id) => get().favorites.includes(id),
 
   getVehicleBySlug: (slug) => get().vehicles.find((v) => v.slug === slug),
-}));
+
+  addVehicle: (vehicle) => set((state) => ({ 
+    vehicles: [...state.vehicles, vehicle] 
+  })),
+
+  removeVehicle: (id) => set((state) => ({
+    vehicles: state.vehicles.filter((v) => v.id !== id)
+  })),
+
+  updateVehicle: (id, updates) => set((state) => ({
+    vehicles: state.vehicles.map((v) => v.id === id ? { ...v, ...updates } : v)
+  })),
+    }),
+    {
+      name: 'otovadi_vehicles_storage',
+    }
+  )
+);
 
 export const catalogMeta = catalog.meta;

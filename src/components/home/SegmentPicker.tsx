@@ -30,18 +30,17 @@ export function SegmentPicker() {
   };
 
   return (
-    <section id="segment-picker" className="scroll-mt-4 px-4 pt-6 md:px-8 lg:px-12">
-      <div className="mb-6 text-left">
-        <h2 className="text-xl font-semibold text-foreground md:text-2xl">
+    <section id="segment-picker" className="scroll-mt-4 px-4 pt-16 pb-16 md:px-8 lg:px-12 mx-auto max-w-7xl">
+      <div className="mb-12 text-left">
+        <h2 className="font-display text-2xl md:text-3xl font-light tracking-wide text-foreground">
           Klasman Seçin
         </h2>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-2 text-sm tracking-wide text-muted">
           Önce gövde tipi, ardından segment — katalog buna göre listelenir
         </p>
       </div>
 
-      {/* Gövde tipi: Sedan / SUV / Hatchback / Pick-up */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4 md:flex md:flex-wrap">
         {BODY_TYPES.map(({ id, label }) => {
           const active = bodyType === id;
           return (
@@ -50,54 +49,49 @@ export function SegmentPicker() {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={() => setBodyType(id)}
-              className={`glass-panel flex min-h-[56px] items-center justify-center rounded-2xl p-4 text-center transition-colors ${
-                active ? 'ring-2 ring-accent bg-accent/10' : ''
+              className={`flex h-14 items-center justify-center rounded-none border px-8 text-sm uppercase tracking-widest transition-all duration-300 md:flex-1 ${
+                active
+                  ? 'border-foreground bg-foreground text-void'
+                  : 'border-neutral-200 dark:border-neutral-800 bg-transparent text-foreground hover:bg-foreground hover:text-void'
               }`}
             >
-              <span className={`text-base font-semibold ${active ? 'text-accent' : 'text-foreground'}`}>
-                {label}
-              </span>
+              {label}
             </motion.button>
           );
         })}
       </div>
 
-      {/* Segment Listesi */}
-      <p className="mb-3 mt-6 text-left text-xs font-medium uppercase tracking-wider text-muted">
+      <p className="mb-6 mt-12 text-left text-xs uppercase tracking-widest text-muted">
         {bodyType === 'pickup' ? 'Pick-up segmentleri' : `${bodyType.charAt(0).toUpperCase() + bodyType.slice(1)} segmentleri`}
       </p>
 
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col">
         {segments.map((seg, index) => {
           const count = countBySegment(vehicles, seg.id);
           return (
             <motion.li
               key={seg.id}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
             >
               <button
                 type="button"
                 onClick={() => handleSelect(seg.id)}
-                className="glass-panel group flex w-full min-h-[64px] items-center gap-4 rounded-2xl px-4 py-3 text-left active:bg-white/5"
+                className="group flex w-full min-h-[80px] items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 bg-transparent px-2 py-4 text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-lg font-bold text-accent">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-foreground/10 text-lg font-light text-foreground">
                   {seg.classLetter}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-foreground">{seg.label}</p>
-                  <p className="mt-0.5 text-xs text-muted line-clamp-1">{seg.description}</p>
+                  <p className="font-display text-xl font-light text-foreground">{seg.label}</p>
+                  <p className="mt-1 text-xs tracking-wide text-muted line-clamp-1">{seg.description}</p>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <span
-                    className={`rounded-lg px-2 py-1 text-[10px] font-medium ${
-                      count > 0 ? 'bg-accent/15 text-accent' : 'bg-white/5 text-muted'
-                    }`}
-                  >
+                <div className="flex shrink-0 items-center gap-4">
+                  <span className="text-xs uppercase tracking-widest text-muted">
                     {count > 0 ? `${count} araç` : 'Yakında'}
                   </span>
-                  <ChevronRight className="size-4 text-muted transition-transform group-active:translate-x-0.5" />
+                  <ChevronRight className="size-4 text-muted transition-transform group-hover:translate-x-1" />
                 </div>
               </button>
             </motion.li>
@@ -105,7 +99,7 @@ export function SegmentPicker() {
         })}
       </ul>
 
-      <p className="mt-4 text-center text-[10px] text-muted">
+      <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">
         Toplam {SEGMENT_OPTIONS.length} klasman · {vehicles.length} araç kayıtlı
       </p>
     </section>

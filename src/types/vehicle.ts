@@ -114,18 +114,17 @@ export interface VehicleWheelOption {
   sizeInch: number;
 }
 
-export interface VehicleConfigurator {
-  colors: VehicleColorOption[];
-  wheels: VehicleWheelOption[];
-  defaultColorId?: string;
-  defaultWheelId?: string;
-  /** Opsiyonel 360° kare dizisi: {basePath}/01.webp … {frameCount}.webp */
-  spinFrames?: {
-    basePath: string;
-    frameCount: number;
-    extension?: string;
-  };
-  interiorImage?: string;
+export interface Hotspot {
+  id: string;
+  xPosition: number;
+  yPosition: number;
+  title: string;
+  description: string;
+}
+
+export interface InteractiveGalleryData {
+  studioImage: string;
+  hotspots: Hotspot[];
 }
 
 export interface VehiclePricing {
@@ -157,8 +156,7 @@ export interface Vehicle {
   highlights: string[];
   featured: boolean;
   accentColor: 'blue' | 'red';
-  configurator?: VehicleConfigurator;
-  has3D?: boolean;
+  interactiveGallery?: InteractiveGalleryData;
   modelPath?: string;
 }
 

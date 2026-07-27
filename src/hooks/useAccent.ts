@@ -1,17 +1,13 @@
 import type { Vehicle } from '../types/vehicle';
 
-export function useAccent(vehicle: Pick<Vehicle, 'accentColor'>) {
-  const isRed = vehicle.accentColor === 'red';
-
+export function useAccent(_vehicle: Pick<Vehicle, 'accentColor'>) {
   return {
-    isRed,
-    text: isRed ? 'text-accent-red' : 'text-accent',
-    bg: isRed ? 'bg-accent-red' : 'bg-accent',
-    bgSoft: isRed ? 'bg-accent-red/15' : 'bg-accent/15',
-    border: isRed ? 'border-accent-red/40' : 'border-accent/40',
-    glow: isRed ? 'shadow-accent-red-glow' : 'shadow-accent-glow',
-    gradient: isRed
-      ? 'from-accent-red/30 to-accent-red/5'
-      : 'from-accent/30 to-accent/5',
+    isRed: false,
+    text: 'text-foreground',
+    bg: 'bg-foreground',
+    bgSoft: 'bg-foreground/10',
+    border: 'border-border-subtle',
+    glow: '',
+    gradient: '',
   };
 }

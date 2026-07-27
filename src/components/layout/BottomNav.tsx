@@ -26,7 +26,7 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-50 md:hidden safe-bottom"
       aria-label="Ana gezinme"
     >
-      <div className="mx-3 mb-2 glass-panel rounded-2xl px-2 py-2">
+      <div className="mx-3 mb-2 border border-border-subtle bg-void/95 backdrop-blur-sm px-2 py-2">
         <ul className="flex items-center justify-around">
           {navItems.map(({ id, label, icon: Icon, to }) => {
             const active = isActive(to);
@@ -40,23 +40,23 @@ export function BottomNav() {
                   {active && (
                     <motion.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 rounded-xl bg-accent/15"
+                      className="absolute inset-0 rounded-sm bg-foreground/5"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
                   <span className="relative z-10">
                     <Icon
-                      className={`size-5 ${active ? 'text-accent' : 'text-muted'}`}
+                      className={`size-5 ${active ? 'text-foreground' : 'text-muted'}`}
                       strokeWidth={active ? 2.25 : 1.75}
                     />
                     {id === 'favorites' && favoritesCount > 0 && (
-                      <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-accent-red text-[9px] font-bold text-white">
+                      <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-none bg-foreground text-[9px] font-bold text-void">
                         {favoritesCount}
                       </span>
                     )}
                   </span>
                   <span
-                    className={`relative z-10 text-[10px] font-medium ${active ? 'text-accent' : 'text-muted'}`}
+                    className={`relative z-10 text-[10px] font-medium ${active ? 'text-foreground' : 'text-muted'}`}
                   >
                     {label}
                   </span>
