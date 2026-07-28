@@ -13,9 +13,10 @@ export function FinanceCalculator({ price }: FinanceCalculatorProps) {
   const [term, setTerm] = useState(36);
 
   const formatCurrency = (val: number) => {
+    const currency = price < 1000000 ? 'EUR' : 'TRY';
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
-      currency: 'TRY',
+      currency: currency,
       maximumFractionDigits: 0,
     }).format(val);
   };

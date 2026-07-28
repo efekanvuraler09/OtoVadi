@@ -5,19 +5,13 @@ import type { Vehicle } from '../../types/vehicle';
 import { useGarage } from '../../context/GarageContext';
 import { useAuth } from '../../context/AuthContext';
 import { VehicleMediaCover } from '../ui/VehicleMediaCover';
+import { formatPrice } from '../../utils/formatPrice';
 
 interface DetailHeroProps {
   vehicle: Vehicle;
   onOpenTestDrive?: () => void;
 }
 
-function formatPrice(msrp: number, currency: string) {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(msrp);
-}
 
 export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
   const { garagedSlugs, addVehicle, removeVehicle, loadingSlug } = useGarage();
@@ -35,7 +29,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
           colorHex={vehicle.media.colorHex}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-void via-void/40 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"
         />
 
         <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8">
@@ -99,10 +93,10 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
           </h1>
           <p className="mt-1 text-sm text-white/70">{vehicle.tagline}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="text-lg font-sans font-light text-foreground">
-              {formatPrice(vehicle.pricing.msrp, vehicle.pricing.currency)}
+            <span className="text-lg font-sans font-light text-white">
+              {formatPrice(vehicle.pricing.msrp)}
             </span>
-            <span className="text-xs text-muted">{vehicle.pricing.trim}</span>
+            <span className="text-xs text-white/70">{vehicle.pricing.trim}</span>
           </div>
         </div>
       </div>

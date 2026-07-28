@@ -51,7 +51,8 @@ export function AdminDashboard() {
     studioImage: '',
     engine: '',
     hp: '',
-    zeroTo100: ''
+    zeroTo100: '',
+    trim: ''
   });
 
   useEffect(() => {
@@ -83,7 +84,7 @@ export function AdminDashboard() {
       bodyStyle: 'SUV',
       tagline: 'Yeni Eklenen Araç',
       shortDescription: 'Admin paneli üzerinden eklendi.',
-      pricing: { currency: 'TRY', msrp: parseInt(formData.price) || 0, trim: 'Standart' },
+      pricing: { currency: 'TRY', msrp: parseInt(formData.price) || 0, trim: formData.trim || '' },
       media: { heroImage: formData.heroImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop', gallery: [], thumbnail: formData.heroImage || formData.studioImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=600&auto=format&fit=crop', colorHex: '#000' },
       audio: { idle: { id: '1', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' }, exhaust: { id: '2', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' } },
       engine: { code: formData.engine || '1.0', displacementCc: 1000, cylinders: 4, configuration: 'inline', aspiration: 'turbocharged', powerHp: parseInt(formData.hp) || 100, powerKw: 75, torqueNm: 200, fuelType: 'petrol' },
@@ -118,7 +119,7 @@ export function AdminDashboard() {
     // Trigger Success
     setCurrentView('list');
     setEditingVehicleId(null);
-    setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '' });
+    setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '', trim: '' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
@@ -135,7 +136,8 @@ export function AdminDashboard() {
       studioImage: v.interactiveGallery?.studioImage || v.media.heroImage,
       engine: v.engine.code,
       hp: v.engine.powerHp.toString(),
-      zeroTo100: v.performance.zeroTo100Kmh.toString()
+      zeroTo100: v.performance.zeroTo100Kmh.toString(),
+      trim: v.pricing.trim || ''
     });
     setEditingVehicleId(v.id);
     setCurrentView('edit');
@@ -163,7 +165,7 @@ export function AdminDashboard() {
             onClick={() => {
               setCurrentView('add');
               setEditingVehicleId(null);
-              setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '' });
+              setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '', trim: '' });
             }}
             className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
@@ -263,8 +265,9 @@ export function AdminDashboard() {
                   <FloatingInput id="model" label="Model" value={formData.model} onChange={(e: any) => setFormData({...formData, model: e.target.value})} />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-3 gap-8">
                   <FloatingInput id="year" label="Üretim Yılı" type="number" value={formData.year} onChange={(e: any) => setFormData({...formData, year: e.target.value})} />
+                  <FloatingInput id="trim" label="Paket (Örn: M Sport)" value={formData.trim} onChange={(e: any) => setFormData({...formData, trim: e.target.value})} />
                   <FloatingInput id="price" label="Fiyat (TL)" type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} />
                 </div>
 

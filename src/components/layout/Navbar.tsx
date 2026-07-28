@@ -36,24 +36,17 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-void/80 backdrop-blur-md transition-colors duration-300">
       <div className="mx-auto flex h-16 max-w-7xl items-center px-4 md:px-8 lg:px-12">
         
-        {/* Left: Brand Name */}
-        <div className="flex flex-1 justify-start">
-          <Link 
-            to="/" 
-            className="font-display text-xl font-bold uppercase tracking-wide text-foreground transition-opacity hover:opacity-80"
-          >
-            OtoVadi
-          </Link>
-        </div>
-
-        {/* Center: Minimalist Icon */}
-        <div className="flex justify-center shrink-0 px-4">
+        {/* Left: Brand Icon & Name */}
+        <div className="flex flex-1 items-center justify-start">
           <Link 
             to="/" 
             aria-label="Ana Sayfa"
-            className="transition-opacity duration-300 hover:opacity-80"
+            className="group flex items-center gap-3 transition-opacity duration-300 hover:opacity-80"
           >
             <BrandIcon />
+            <span className="font-display text-xl font-bold uppercase tracking-wide text-foreground">
+              OtoVadi
+            </span>
           </Link>
         </div>
 

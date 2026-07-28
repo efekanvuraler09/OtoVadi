@@ -1,10 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 type CuratorState = 'prompt' | 'analyzing' | 'result';
+
+const TypewriterText = ({ text, speed = 30 }: { text: string; speed?: number }) => {
+  const [charIndex, setCharIndex] = useState(0);
+
+  // Yeni metin geldiğinde sayacı mutlaka sıfırla
+  useEffect(() => {
+    setCharIndex(0);
+  }, [text]);
+
+  // Metni indeks sayısına göre harf harf ilerlet
+  useEffect(() => {
+    if (!text || charIndex >= text.length) return;
+
+    const timer = setTimeout(() => {
+      setCharIndex(prev => prev + 1);
+    }, speed); // 30ms lüks hız
+
+    return () => clearTimeout(timer);
+  }, [charIndex, text, speed]);
+
+  return <span>{text.substring(0, charIndex)}</span>;
+};
 
 export function AutoCurator() {
   const vehicles = useVehicleStore((s) => s.vehicles);
@@ -12,30 +35,54 @@ export function AutoCurator() {
   const [inputValue, setInputValue] = useState('');
   const [loadingText, setLoadingText] = useState('OtoVadi verileri analiz ediliyor...');
   const [recommendedVehicle, setRecommendedVehicle] = useState<Vehicle | null>(null);
+  const [aiReasoning, setAiReasoning] = useState('');
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("API Key Bulunamadı: VITE_GEMINI_API_KEY eksik veya boş.");
+      return;
+    }
+
     setCurrentState('analyzing');
+    setLoadingText('OtoVadi verileri yapay zeka ile analiz ediliyor...');
 
-    // Simulate AI thinking stages
-    setTimeout(() => {
-      setLoadingText('Kriterlerinize uygun araçlar eşleştiriliyor...');
-    }, 1500);
+    try {
+      const stockInfo = JSON.stringify(vehicles.map(v => ({
+        id: v.slug,
+        brand: v.brand,
+        model: v.model,
+        trim: v.pricing.trim,
+        price: `${v.pricing.msrp} ${v.pricing.currency}`,
+        highlights: v.highlights
+      })));
 
-    setTimeout(() => {
-      setLoadingText('Mükemmel eşleşme bulundu.');
-    }, 3000);
+      const aiPrompt = `Sen lüks bir otomotiv danışmanısın. Aşağıda JSON formatında verilen stok listesinden, kullanıcının isteğine en uygun olan 1 aracı seç. İlk satıra SADECE seçtiğin aracın ID'sini yaz. İkinci satırdan itibaren neden bu aracı seçtiğini lüks ve asil bir dille açıkla. Kesinlikle JSON veya Markdown formatı kullanma.\nYanıtını son derece profesyonel, lüks bir dille ve KUSURSUZ bir Türkçe dilbilgisiyle yaz. Asla imla hatası veya kelimelerde harf eksikliği yapma.\n\nKullanıcı İsteği: "${inputValue}"\n\nAraç Listesi: ${stockInfo}`;
 
-    // Show result
-    setTimeout(() => {
-      // For demonstration, pick a highly equipped vehicle like Tucson or Tiguan
-      // or simply the first featured vehicle.
-      const match = vehicles.find(v => v.slug === 'hyundai-tucson') || vehicles[0];
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+      const result = await model.generateContent(aiPrompt);
+      const responseText = result.response.text().trim();
+      
+      const lines = responseText.split('\n');
+      const slug = lines[0].trim().replace(/['"]/g, ''); // Temizle
+      const reasoning = (lines.slice(1).join('\n').trim() || responseText).trim();
+
+      const match = vehicles.find(v => v.slug === slug) || vehicles[0];
       setRecommendedVehicle(match);
+      setAiReasoning(reasoning);
       setCurrentState('result');
-    }, 4000);
+
+    } catch (error) {
+      console.error("Gemini SDK Hatası:", error);
+      // Fallback
+      setRecommendedVehicle(vehicles[0]);
+      setAiReasoning("Sistemlerimizde olağanüstü bir yoğunluk var ancak lüks danışmanlarımız sizin için bu özel aracı uygun gördü...");
+      setCurrentState('result');
+    }
   };
 
   const resetCurator = () => {
@@ -125,8 +172,8 @@ export function AutoCurator() {
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight">
                 {recommendedVehicle.brand} {recommendedVehicle.model}
               </h2>
-              <p className="font-sans text-base md:text-lg text-muted leading-relaxed">
-                "Kriterlerinize en uygun profil. Geniş aileniz için devasa bagaj hacmi sunarken, yenilikçi donanımları ve asil tasarımıyla yaşam tarzınızı mükemmel şekilde yansıtıyor."
+              <p className="font-sans text-base md:text-lg text-muted leading-relaxed min-h-[80px]">
+                "<TypewriterText text={aiReasoning} />"
               </p>
             </div>
 
