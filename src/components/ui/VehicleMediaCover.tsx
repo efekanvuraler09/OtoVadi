@@ -20,6 +20,9 @@ export function VehicleMediaCover({
 
   // Ensure local paths are absolute from root for Vercel
   const safeSrc = src?.startsWith('http') || src?.startsWith('/') ? src : `/${src}`;
+  
+  // Proxy external images to bypass hotlink protection and CORS
+  const proxyUrl = safeSrc?.startsWith('http') ? `https://wsrv.nl/?url=${encodeURIComponent(safeSrc)}` : safeSrc;
 
   return (
     <>
@@ -36,9 +39,9 @@ export function VehicleMediaCover({
         )}
       </div>
       
-      {!failed && safeSrc && (
+      {!failed && proxyUrl && (
         <img
-          src={safeSrc}
+          src={proxyUrl}
           alt={alt}
           className={`${className} transition-opacity duration-300 ${
             loaded ? 'opacity-100' : 'opacity-0'
