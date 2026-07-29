@@ -6,6 +6,7 @@ const BODY_TYPE_LABELS: Record<BodyType, string> = {
   suv: 'SUV',
   hatchback: 'Hatchback',
   pickup: 'Pick-up',
+  'muscle-car': 'Muscle Cars',
 };
 
 export function countByBodyType(vehicles: Vehicle[], bodyType: BodyType): number {
@@ -13,7 +14,7 @@ export function countByBodyType(vehicles: Vehicle[], bodyType: BodyType): number
 }
 
 export function getBodyTypesWithVehicles(vehicles: Vehicle[]): BodyType[] {
-  const types: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup'];
+  const types: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup', 'muscle-car'];
   return types.filter((t) => countByBodyType(vehicles, t) > 0);
 }
 

@@ -25,6 +25,7 @@ export const SEGMENT_OPTIONS: SegmentOption[] = [
   { id: 'd-hatchback', bodyType: 'hatchback', classLetter: 'D', label: 'D Segment Hatchback', shortLabel: 'D HB', description: 'Orta hatchback (Arteon, A5 Sportback boyutu)' },
   { id: 'pickup-midsize', bodyType: 'pickup', classLetter: 'M', label: 'Midsize Pick-up', shortLabel: 'Mid Pick-up', description: 'Orta boy pick-up (Ranger, Hilux boyutu)' },
   { id: 'pickup-fullsize', bodyType: 'pickup', classLetter: 'F', label: 'Fullsize Pick-up', shortLabel: 'Full Pick-up', description: 'Tam boy pick-up (F-150, RAM 1500 boyutu)' },
+  { id: 'muscle-car', bodyType: 'muscle-car', classLetter: 'M', label: 'Muscle Cars', shortLabel: 'Muscle', description: 'Yüksek performanslı, geniş hacimli motorlu Amerikan efsaneleri' },
 ];
 
 export function getSegmentOption(id: VehicleSegment): SegmentOption | undefined {

@@ -13,6 +13,7 @@ const BODY_TYPES: {
   { id: 'suv', label: 'SUV' },
   { id: 'hatchback', label: 'Hatchback' },
   { id: 'pickup', label: 'Pick-up' },
+  { id: 'muscle-car', label: 'Muscle Cars' },
 ];
 
 export function SegmentPicker() {
