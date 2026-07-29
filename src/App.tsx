@@ -10,6 +10,7 @@ import { ModelsPage } from './pages/ModelsPage';
 import { GaragePage } from './pages/GaragePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AboutPage } from './pages/AboutPage';
+import { MyAppointments } from './pages/MyAppointments';
 import { GarageProvider } from './context/GarageContext';
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -54,6 +55,7 @@ export default function App() {
                 <Route path="kesif" element={<CuratorPage />} />
                 <Route path="garajim" element={<GaragePage />} />
                 <Route path="profil" element={<ProfilePage />} />
+                <Route path="randevularim" element={<MyAppointments />} />
               </Route>
             </Route>
           </Routes>

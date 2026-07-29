@@ -101,10 +101,22 @@ export function Navbar() {
                 <div className="size-7 rounded-full bg-surface/80 border border-border-subtle flex items-center justify-center cursor-pointer text-foreground text-xs uppercase font-medium">
                   {user.email?.[0] || 'U'}
                 </div>
-                <div className="absolute top-full right-0 mt-2 w-32 bg-surface/90 backdrop-blur-md border border-border-subtle opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="absolute top-full right-0 mt-2 w-48 bg-surface/90 backdrop-blur-md border border-border-subtle opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <Link 
+                    to="/profil"
+                    className="block w-full text-left px-4 py-3 text-xs uppercase tracking-widest text-muted hover:text-foreground hover:bg-white/5 transition-colors border-b border-border-subtle/50"
+                  >
+                    Profilim
+                  </Link>
+                  <Link 
+                    to="/randevularim"
+                    className="block w-full text-left px-4 py-3 text-xs uppercase tracking-widest text-muted hover:text-foreground hover:bg-white/5 transition-colors border-b border-border-subtle/50"
+                  >
+                    Sürüş Randevularım
+                  </Link>
                   <button 
                     onClick={logout}
-                    className="w-full text-left px-4 py-3 text-xs uppercase tracking-widest text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+                    className="block w-full text-left px-4 py-3 text-xs uppercase tracking-widest text-red-500/80 hover:text-red-500 hover:bg-white/5 transition-colors"
                   >
                     Çıkış Yap
                   </button>
@@ -157,6 +169,15 @@ export function Navbar() {
               className="text-lg font-medium tracking-wide text-emerald-500 hover:text-emerald-400 border-b border-white/5 pb-2"
             >
               Yönetim Paneli
+            </Link>
+          )}
+          {user && (
+            <Link
+              to="/randevularim"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-lg font-medium tracking-wide text-muted hover:text-foreground border-b border-white/5 pb-2"
+            >
+              Sürüş Randevularım
             </Link>
           )}
         </div>

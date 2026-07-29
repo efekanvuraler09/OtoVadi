@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
+import { useAuth } from '../../context/AuthContext';
+import { createTestDriveRequest } from '../../services/testDriveService';
 
 interface TestDriveModalProps {
   vehicle: Vehicle;
@@ -10,24 +12,47 @@ interface TestDriveModalProps {
 }
 
 const LOCATIONS = ['İzmir', 'Aydın', 'Denizli', 'Eskişehir', 'Bursa'];
-const DATES = ['Bugün', 'Yarın', '2 Gün Sonra'];
-const TIMES = ['10:00', '14:00', '16:00'];
 
 type ModalState = 'form' | 'loading' | 'success';
 
 export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps) {
   const [modalState, setModalState] = useState<ModalState>('form');
   const [selectedLocation, setSelectedLocation] = useState(LOCATIONS[0]);
-  const [selectedDate, setSelectedDate] = useState(DATES[1]);
-  const [selectedTime, setSelectedTime] = useState(TIMES[0]);
+  
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [selectedTime, setSelectedTime] = useState('10:00');
+  const [formData, setFormData] = useState({ name: '', surname: '', phone: '' });
+  
+  const { user, openAuthModal } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      onClose();
+      openAuthModal();
+      return;
+    }
+    
     setModalState('loading');
     
-    setTimeout(() => {
+    try {
+      await createTestDriveRequest({
+        userId: user.uid,
+        vehicleId: vehicle.id,
+        vehicleName: `${vehicle.brand} ${vehicle.model}`,
+        customerName: `${formData.name} ${formData.surname}`,
+        customerPhone: formData.phone,
+        location: selectedLocation,
+        date: selectedDate,
+        time: selectedTime,
+      });
       setModalState('success');
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      alert('Randevu oluşturulurken bir hata oluştu.');
+      setModalState('form');
+    }
   };
 
   const resetAndClose = () => {
@@ -90,6 +115,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                         type="text" 
                         id="td-name" 
                         required 
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
                         className="peer w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors" 
                         placeholder=" " 
                       />
@@ -106,6 +133,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                         type="text" 
                         id="td-surname" 
                         required 
+                        value={formData.surname}
+                        onChange={(e) => setFormData({...formData, surname: e.target.value})}
                         className="peer w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors" 
                         placeholder=" " 
                       />
@@ -122,6 +151,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                         type="tel" 
                         id="td-phone" 
                         required 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
                         className="peer w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors" 
                         placeholder=" " 
                       />
@@ -149,36 +180,27 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                   </div>
 
                   {/* Quick Select: Dates & Times */}
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs uppercase tracking-widest text-muted mb-3">Tarih</label>
-                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        {DATES.map(date => (
-                          <button
-                            key={date}
-                            type="button"
-                            onClick={() => setSelectedDate(date)}
-                            className={`whitespace-nowrap px-4 py-2 text-xs uppercase tracking-wider transition-all duration-300 border ${selectedDate === date ? 'border-foreground text-foreground' : 'border-border-subtle text-muted hover:border-muted'}`}
-                          >
-                            {date}
-                          </button>
-                        ))}
-                      </div>
+                      <label className="block text-xs uppercase tracking-widest text-muted mb-2">Tarih</label>
+                      <input 
+                        type="date"
+                        min={todayStr}
+                        required
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors"
+                      />
                     </div>
                     <div>
-                      <label className="block text-xs uppercase tracking-widest text-muted mb-3">Saat</label>
-                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        {TIMES.map(time => (
-                          <button
-                            key={time}
-                            type="button"
-                            onClick={() => setSelectedTime(time)}
-                            className={`whitespace-nowrap px-4 py-2 text-xs uppercase tracking-wider transition-all duration-300 border ${selectedTime === time ? 'border-foreground text-foreground' : 'border-border-subtle text-muted hover:border-muted'}`}
-                          >
-                            {time}
-                          </button>
-                        ))}
-                      </div>
+                      <label className="block text-xs uppercase tracking-widest text-muted mb-2">Saat</label>
+                      <input 
+                        type="time"
+                        required
+                        value={selectedTime}
+                        onChange={(e) => setSelectedTime(e.target.value)}
+                        className="w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors"
+                      />
                     </div>
                   </div>
 

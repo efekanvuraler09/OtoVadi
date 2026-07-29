@@ -19,10 +19,10 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 md:hidden safe-bottom"
+      className="fixed inset-x-0 bottom-0 z-50 md:hidden safe-bottom pb-[env(safe-area-inset-bottom)]"
       aria-label="Ana gezinme"
     >
-      <div className="mx-3 mb-2 border border-border-subtle bg-void/95 backdrop-blur-sm px-2 py-2">
+      <div className="mx-3 mb-2 border border-border-subtle bg-void/95 backdrop-blur-sm px-2 py-3">
         <ul className="flex items-center justify-around">
           {navItems.map(({ id, label, icon: Icon, to }) => {
             const active = isActive(to);
@@ -30,7 +30,7 @@ export function BottomNav() {
               <li key={id}>
                 <NavLink
                   to={to}
-                  className="relative flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 px-3 py-1.5"
+                  className="relative flex min-h-[56px] min-w-[56px] flex-col items-center justify-center gap-1 px-4 py-2"
                   aria-current={active ? 'page' : undefined}
                 >
                   {active && (

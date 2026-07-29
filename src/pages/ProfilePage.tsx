@@ -1,10 +1,88 @@
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Shield, Save } from 'lucide-react';
+import { User, Mail, Shield, Save, Camera, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { getUserProfile, updateUserProfile } from '../services/userService';
 
 export function ProfilePage() {
   const { user, isAdmin } = useAuth();
+  const [photoURL, setPhotoURL] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      getUserProfile(user.uid).then(profile => {
+        if (profile?.photoURL) {
+          setPhotoURL(profile.photoURL);
+        }
+      });
+    }
+  }, [user]);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    
+    // Validate type and size (e.g. max 2MB)
+    if (!file.type.startsWith('image/')) {
+      alert('Lütfen geçerli bir resim dosyası seçin.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Resim boyutu en fazla 2MB olmalıdır.');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        
+        // Basic resize via canvas
+        const img = new Image();
+        img.src = base64String;
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 500;
+          const MAX_HEIGHT = 500;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          
+          await updateUserProfile(user.uid, { photoURL: resizedBase64 });
+          setPhotoURL(resizedBase64);
+          setIsUploading(false);
+        };
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('Fotoğraf yükleme hatası:', err);
+      alert('Fotoğraf yüklenirken bir hata oluştu.');
+      setIsUploading(false);
+    }
+  };
 
   if (!user) {
     return <Navigate to="/" replace />;
@@ -20,8 +98,30 @@ export function ProfilePage() {
     >
       <div className="mx-auto max-w-2xl">
         <header className="mb-10 text-center">
-          <div className="mx-auto flex size-20 items-center justify-center rounded-full border border-border-subtle bg-foreground/5 mb-6">
-            <User className="size-8 text-foreground" strokeWidth={1} />
+          <div className="relative mx-auto flex size-24 items-center justify-center rounded-full border border-border-subtle bg-surface mb-6 group cursor-pointer overflow-hidden">
+            {isUploading ? (
+              <Loader2 className="size-6 animate-spin text-muted" />
+            ) : photoURL ? (
+              <img src={photoURL} alt="Profil" className="size-full object-cover" />
+            ) : (
+              <User className="size-10 text-muted group-hover:text-foreground transition-colors" strokeWidth={1} />
+            )}
+            
+            {!isUploading && (
+              <div 
+                className="absolute inset-0 bg-void/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Camera className="size-6 text-white" />
+              </div>
+            )}
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              accept="image/png, image/jpeg, image/webp"
+              className="hidden"
+            />
           </div>
           <h1 className="font-serif text-3xl font-light tracking-wide text-foreground">Profil Ayarları</h1>
           <p className="mt-2 text-sm text-muted">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>

@@ -10,9 +10,10 @@ import {
   updateVehicleInFirestore,
   deleteVehicleFromFirestore,
 } from '../../services/vehicleService';
+import { subscribeToTestDrives, updateTestDriveStatus, type TestDriveRequest } from '../../services/testDriveService';
 import type { Vehicle } from '../../types/vehicle';
 
-type AdminView = 'list' | 'add' | 'edit';
+type AdminView = 'list' | 'add' | 'edit' | 'test-drives';
 
 const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any) => (
   <div className="relative group">
@@ -58,13 +59,23 @@ export function AdminDashboard() {
     trim: ''
   });
 
+  const [testDrives, setTestDrives] = useState<TestDriveRequest[]>([]);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate('/admin/login');
       }
     });
-    return () => unsubscribe();
+    
+    const unsubscribeTestDrives = subscribeToTestDrives((data) => {
+      setTestDrives(data);
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeTestDrives();
+    };
   }, [navigate]);
 
   const handleLogout = async () => {
@@ -162,6 +173,17 @@ export function AdminDashboard() {
     }
   };
 
+  const handleTestDriveAction = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      await updateTestDriveStatus(id, status);
+      setToastMessage(`Randevu ${status === 'approved' ? 'onaylandı' : 'reddedildi'}.`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Randevu güncelleme hatası:', err);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-void flex">
       {/* Sidebar */}
@@ -187,6 +209,22 @@ export function AdminDashboard() {
             className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
             <Plus className="size-4" /> Yeni Ekle
+          </button>
+          <button 
+            onClick={() => setCurrentView('test-drives')}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'test-drives' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+          >
+            <div className="relative">
+              <span className="block size-4 border-[1.5px] border-current rounded-sm flex items-center justify-center">
+                <Check className="size-3" />
+              </span>
+              {testDrives.filter(t => t.status === 'pending').length > 0 && (
+                <span className="absolute -top-1 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold text-void">
+                  {testDrives.filter(t => t.status === 'pending').length}
+                </span>
+              )}
+            </div>
+            Test Sürüşleri
           </button>
         </nav>
 
@@ -244,6 +282,63 @@ export function AdminDashboard() {
               {vehicles.length === 0 && (
                 <div className="text-center py-16">
                   <p className="text-muted mb-4">Envanterde hiç araç bulunmuyor.</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* TEST DRIVES VIEW */}
+        {currentView === 'test-drives' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
+            <h2 className="font-display text-4xl font-light text-foreground mb-10">Test Sürüşü Talepleri</h2>
+            
+            <div className="space-y-4">
+              {testDrives.map(td => (
+                <div key={td.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 border border-border-subtle bg-surface/10 hover:bg-surface/30 transition-colors">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-display text-xl font-medium text-foreground">{td.customerName}</h3>
+                      <span className={`px-2 py-0.5 text-[10px] uppercase tracking-wider border ${
+                        td.status === 'pending' ? 'border-yellow-500/50 text-yellow-500' :
+                        td.status === 'approved' ? 'border-emerald-500/50 text-emerald-500' :
+                        'border-red-500/50 text-red-500'
+                      }`}>
+                        {td.status === 'pending' ? 'Bekliyor' : td.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-4 text-xs text-muted uppercase tracking-wider">
+                      <span>{td.vehicleName}</span>
+                      <span className="text-border-subtle">•</span>
+                      <span>{td.date} {td.time}</span>
+                      <span className="text-border-subtle">•</span>
+                      <span>{td.location}</span>
+                      <span className="text-border-subtle">•</span>
+                      <span>{td.customerPhone}</span>
+                    </div>
+                  </div>
+
+                  {td.status === 'pending' && (
+                    <div className="flex items-center gap-3 md:border-l md:border-border-subtle md:pl-6">
+                      <button
+                        onClick={() => handleTestDriveAction(td.id!, 'approved')}
+                        className="px-6 py-2 border border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-void transition-colors text-xs uppercase tracking-widest font-medium"
+                      >
+                        Onayla
+                      </button>
+                      <button
+                        onClick={() => handleTestDriveAction(td.id!, 'rejected')}
+                        className="px-6 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-void transition-colors text-xs uppercase tracking-widest font-medium"
+                      >
+                        Reddet
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {testDrives.length === 0 && (
+                <div className="text-center py-16">
+                  <p className="text-muted mb-4">Henüz test sürüşü talebi bulunmuyor.</p>
                 </div>
               )}
             </div>
