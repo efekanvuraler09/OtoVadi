@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Database } from 'lucide-react';
+import { Plus, LogOut, Car, Trash2, Edit2, X, Check } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useVehicleStore } from '../../store/useVehicleStore';
@@ -9,14 +9,10 @@ import {
   addVehicleToFirestore,
   updateVehicleInFirestore,
   deleteVehicleFromFirestore,
-  seedVehiclesToFirestore,
 } from '../../services/vehicleService';
-import catalogData from '../../data/vehicles.json';
-import type { Vehicle, VehicleCatalog } from '../../types/vehicle';
+import type { Vehicle } from '../../types/vehicle';
 
 type AdminView = 'list' | 'add' | 'edit';
-
-const seedCatalog = catalogData as VehicleCatalog;
 
 const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any) => (
   <div className="relative group">
@@ -47,7 +43,6 @@ export function AdminDashboard() {
   const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [isSeeding, setIsSeeding] = useState(false);
 
   // Form States for Add New
   const [formData, setFormData] = useState({
@@ -75,25 +70,6 @@ export function AdminDashboard() {
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/admin/login');
-  };
-
-  // === Seed Database ===
-  const handleSeedDatabase = async () => {
-    if (isSeeding) return;
-    setIsSeeding(true);
-    try {
-      const count = await seedVehiclesToFirestore(seedCatalog.vehicles);
-      setToastMessage(`${count} araç Firestore'a başarıyla aktarıldı!`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    } catch (err) {
-      console.error('Seed hatası:', err);
-      setToastMessage('Seed işlemi başarısız oldu. Konsolu kontrol edin.');
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    } finally {
-      setIsSeeding(false);
-    }
   };
 
   // === Add / Update Vehicle ===
@@ -215,14 +191,6 @@ export function AdminDashboard() {
         </nav>
 
         <div className="p-4 border-t border-border-subtle space-y-2">
-          {/* Seed Database Button */}
-          <button 
-            onClick={handleSeedDatabase}
-            disabled={isSeeding}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Database className="size-4" /> {isSeeding ? 'Aktarılıyor...' : 'Veritabanını Başlat'}
-          </button>
           <button 
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors"
@@ -276,7 +244,6 @@ export function AdminDashboard() {
               {vehicles.length === 0 && (
                 <div className="text-center py-16">
                   <p className="text-muted mb-4">Envanterde hiç araç bulunmuyor.</p>
-                  <p className="text-xs text-muted">Soldaki <span className="text-amber-500 font-medium">"Veritabanını Başlat"</span> butonuna tıklayarak başlangıç verilerini yükleyin.</p>
                 </div>
               )}
             </div>
