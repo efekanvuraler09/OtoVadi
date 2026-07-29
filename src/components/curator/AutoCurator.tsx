@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -188,12 +189,12 @@ export function AutoCurator() {
 
             {/* Actions */}
             <div className="flex items-center gap-8">
-              <a 
-                href={`/arac/${recommendedVehicle.slug}`}
+              <Link 
+                to={`/arac/${recommendedVehicle.id}`}
                 className="px-8 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
                 Aracı İncele
-              </a>
+              </Link>
               <button 
                 onClick={resetCurator}
                 className="text-sm font-medium uppercase tracking-widest text-muted hover:text-foreground transition-colors pb-1 border-b border-transparent hover:border-foreground"

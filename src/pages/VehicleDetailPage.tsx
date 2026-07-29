@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Cog, LayoutGrid, Monitor, Sofa, Volume2 } from 'lucide-react';
+import { Cog, LayoutGrid, Monitor, Sofa, Volume2, Loader2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
@@ -23,10 +23,11 @@ const DETAIL_TABS = [
 ] as const;
 
 export function VehicleDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const getVehicleBySlug = useVehicleStore((s) => s.getVehicleBySlug);
-  const vehicle = slug ? getVehicleBySlug(slug) : undefined;
+  const getVehicleById = useVehicleStore((s) => s.getVehicleById);
+  const isLoading = useVehicleStore((s) => s.isLoading);
+  const vehicle = id ? getVehicleById(id) : undefined;
   const tabFromUrl = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState<string>(
     tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl) ? tabFromUrl : 'audio',
@@ -38,6 +39,19 @@ export function VehicleDetailPage() {
       setActiveTab(tabFromUrl);
     }
   }, [tabFromUrl]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-void">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="size-8 animate-spin text-muted" />
+          <p className="font-sans text-xs uppercase tracking-widest text-muted">
+            Araç Verileri Yükleniyor...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!vehicle) {
     return <Navigate to="/" replace />;

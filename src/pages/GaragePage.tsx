@@ -74,10 +74,10 @@ export function GaragePage() {
                 </button>
 
                 {/* Brand & Model */}
-                <div className="z-10 mb-4 cursor-pointer" onClick={() => window.location.href = `/arac/${vehicle.slug}`}>
-                  <h2 className="font-display text-2xl font-semibold tracking-wide text-foreground group-hover:text-foreground/80 transition-colors">
+                <div className="z-10 mb-4 cursor-pointer" onClick={() => window.location.href = `/arac/${vehicle.id}`}>
+                  <h3 className="font-display text-2xl md:text-3xl font-light text-foreground mb-1">
                     {vehicle.brand} {vehicle.model}
-                  </h2>
+                  </h3>
                   <p className="font-sans text-xs uppercase tracking-widest text-muted mt-1">
                     {vehicle.pricing.trim}
                   </p>

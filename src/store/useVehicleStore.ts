@@ -35,6 +35,7 @@ export function countBySegment(vehicles: Vehicle[], segment: VehicleSegment): nu
 }
 
 interface VehicleStore {
+  isLoading: boolean;
   vehicles: Vehicle[];
   featuredVehicles: Vehicle[];
   favorites: string[];
@@ -48,10 +49,12 @@ interface VehicleStore {
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   getVehicleBySlug: (slug: string) => Vehicle | undefined;
+  getVehicleById: (id: string) => Vehicle | undefined;
 }
 
 export const useVehicleStore = create<VehicleStore>()(
   (set, get) => ({
+    isLoading: true,
     vehicles: [],
     featuredVehicles: [],
     favorites: [],
@@ -61,6 +64,7 @@ export const useVehicleStore = create<VehicleStore>()(
 
     /** Firestore onSnapshot tarafından çağrılır */
     setVehicles: (vehicles) => set({
+      isLoading: false,
       vehicles,
       featuredVehicles: vehicles.filter((v) => v.featured),
     }),
@@ -82,5 +86,7 @@ export const useVehicleStore = create<VehicleStore>()(
     isFavorite: (id) => get().favorites.includes(id),
 
     getVehicleBySlug: (slug) => get().vehicles.find((v) => v.slug === slug),
+    
+    getVehicleById: (id) => get().vehicles.find((v) => v.id === id),
   })
 );

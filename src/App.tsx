@@ -45,7 +45,7 @@ export default function App() {
             <Route element={<AppShell />}>
               <Route element={<PageTransition />}>
                 <Route index element={<HomePage />} />
-                <Route path="arac/:slug" element={<VehicleDetailPage />} />
+                <Route path="arac/:id" element={<VehicleDetailPage />} />
                 <Route path="modeller" element={<ModelsPage />} />
                 <Route path="karsilastir" element={<ComparisonPage />} />
                 <Route path="kesif" element={<CuratorPage />} />

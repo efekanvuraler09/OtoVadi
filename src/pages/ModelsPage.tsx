@@ -68,7 +68,7 @@ export function ModelsPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md p-8 overflow-hidden cursor-pointer h-[500px]"
-                onClick={() => window.location.href = `/arac/${vehicle.slug}`}
+                onClick={() => window.location.href = `/arac/${vehicle.id}`}
               >
                 {/* Garage Button */}
                 <button

@@ -131,7 +131,7 @@ export function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden absolute top-16 left-0 right-0 bg-void/95 backdrop-blur-xl border-b border-border-subtle p-6 shadow-2xl flex flex-col gap-6 animate-in slide-in-from-top-2">
+        <div className="xl:hidden fixed inset-x-0 top-16 h-[calc(100vh-4rem)] z-[100] bg-void border-t border-border-subtle p-6 shadow-2xl flex flex-col gap-6 animate-in slide-in-from-top-2 overflow-y-auto">
           {navLinks.map((link) => (
             <Link
               key={link.label}

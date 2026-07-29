@@ -12,7 +12,7 @@ interface VehicleCardProps {
 
 
 export function VehicleCard({ vehicle, index = 0 }: VehicleCardProps) {
-  const detailPath = `/arac/${vehicle.slug}`;
+  const detailPath = `/arac/${vehicle.id}`;
 
   return (
     <motion.article
