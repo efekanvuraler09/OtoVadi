@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
-import { Bookmark, User } from 'lucide-react';
+import { Bookmark, User, Menu, X } from 'lucide-react';
 import { useGarage } from '../../context/GarageContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,6 +24,7 @@ const BrandIcon = () => (
 );
 
 export function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { garagedSlugs } = useGarage();
   const { user, isAdmin, openAuthModal, logout } = useAuth();
   const navLinks = [
@@ -54,14 +56,14 @@ export function Navbar() {
         <div className="flex flex-1 items-center justify-end gap-4 lg:gap-6">
           <nav className="hidden xl:flex items-center gap-4 xl:gap-6">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="group relative text-sm font-medium text-muted transition-colors duration-300 hover:text-foreground"
               >
                 {link.label}
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
           </nav>
           
@@ -113,10 +115,44 @@ export function Navbar() {
             )}
 
             <ThemeToggle />
+            
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="xl:hidden text-muted hover:text-foreground transition-colors ml-2"
+              aria-label="Menü"
+            >
+              {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
           </div>
         </div>
         
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="xl:hidden absolute top-16 left-0 right-0 bg-void/95 backdrop-blur-xl border-b border-border-subtle p-6 shadow-2xl flex flex-col gap-6 animate-in slide-in-from-top-2">
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-lg font-medium tracking-wide text-muted hover:text-foreground border-b border-white/5 pb-2"
+            >
+              {link.label}
+            </Link>
+          ))}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-lg font-medium tracking-wide text-emerald-500 hover:text-emerald-400 border-b border-white/5 pb-2"
+            >
+              Yönetim Paneli
+            </Link>
+          )}
+        </div>
+      )}
     </header>
   );
 }

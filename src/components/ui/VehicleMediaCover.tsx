@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface VehicleMediaCoverProps {
   src: string;
@@ -7,7 +8,7 @@ interface VehicleMediaCoverProps {
   className?: string;
 }
 
-/** Görsel yoksa veya yüklenemezse colorHex gradient'e düşer */
+/** Görsel yoksa veya yüklenemezse fallback gösterir */
 export function VehicleMediaCover({
   src,
   alt,
@@ -17,18 +18,27 @@ export function VehicleMediaCover({
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const showImage = !failed;
+  // Ensure local paths are absolute from root for Vercel
+  const safeSrc = src?.startsWith('http') || src?.startsWith('/') ? src : `/${src}`;
 
   return (
     <>
       <div
-        className="absolute inset-0"
-        style={{ backgroundColor: colorHex }}
+        className="absolute inset-0 flex items-center justify-center transition-colors"
+        style={{ backgroundColor: failed ? 'var(--color-surface, #1f2937)' : colorHex }}
         aria-hidden
-      />
-      {showImage && (
+      >
+        {failed && (
+          <div className="flex flex-col items-center gap-2 text-muted opacity-50">
+            <ImageIcon className="size-8" />
+            <span className="text-[10px] uppercase tracking-widest font-sans">Görsel Bulunamadı</span>
+          </div>
+        )}
+      </div>
+      
+      {!failed && safeSrc && (
         <img
-          src={src}
+          src={safeSrc}
           alt={alt}
           className={`${className} transition-opacity duration-300 ${
             loaded ? 'opacity-100' : 'opacity-0'
