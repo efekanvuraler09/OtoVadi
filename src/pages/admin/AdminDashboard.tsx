@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, LogOut, Car, Trash2, Edit2, X, Check } from 'lucide-react';
+import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Database } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useVehicleStore } from '../../store/useVehicleStore';
-import type { Vehicle } from '../../types/vehicle';
+import {
+  addVehicleToFirestore,
+  updateVehicleInFirestore,
+  deleteVehicleFromFirestore,
+  seedVehiclesToFirestore,
+} from '../../services/vehicleService';
+import catalogData from '../../data/vehicles.json';
+import type { Vehicle, VehicleCatalog } from '../../types/vehicle';
 
 type AdminView = 'list' | 'add' | 'edit';
+
+const seedCatalog = catalogData as VehicleCatalog;
 
 const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any) => (
   <div className="relative group">
@@ -33,13 +42,12 @@ const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any)
 export function AdminDashboard() {
   const navigate = useNavigate();
   const vehicles = useVehicleStore((s) => s.vehicles);
-  const removeVehicle = useVehicleStore((s) => s.removeVehicle);
-  const addVehicle = useVehicleStore((s) => s.addVehicle);
-  const updateVehicle = useVehicleStore((s) => s.updateVehicle);
   
   const [currentView, setCurrentView] = useState<AdminView>('list');
   const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [isSeeding, setIsSeeding] = useState(false);
 
   // Form States for Add New
   const [formData, setFormData] = useState({
@@ -69,13 +77,34 @@ export function AdminDashboard() {
     navigate('/admin/login');
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  // === Seed Database ===
+  const handleSeedDatabase = async () => {
+    if (isSeeding) return;
+    setIsSeeding(true);
+    try {
+      const count = await seedVehiclesToFirestore(seedCatalog.vehicles);
+      setToastMessage(`${count} araç Firestore'a başarıyla aktarıldı!`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Seed hatası:', err);
+      setToastMessage('Seed işlemi başarısız oldu. Konsolu kontrol edin.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  // === Add / Update Vehicle ===
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Construct a basic dummy vehicle object with the provided data
     const newVehicle: Vehicle = {
-      id: `custom-${Date.now()}`,
-      slug: `${formData.brand.toLowerCase()}-${formData.model.toLowerCase()}-${Date.now()}`,
+      id: editingVehicleId || `custom-${Date.now()}`,
+      slug: editingVehicleId 
+        ? (vehicles.find(v => v.id === editingVehicleId)?.slug || `${formData.brand.toLowerCase()}-${formData.model.toLowerCase()}-${Date.now()}`)
+        : `${formData.brand.toLowerCase()}-${formData.model.toLowerCase()}-${Date.now()}`,
       brand: formData.brand,
       model: formData.model,
       year: parseInt(formData.year) || 2024,
@@ -99,32 +128,35 @@ export function AdminDashboard() {
       interactiveGallery: { studioImage: formData.studioImage || formData.heroImage, hotspots: [] }
     };
 
-    if (currentView === 'edit' && editingVehicleId) {
-      updateVehicle(editingVehicleId, {
-        brand: newVehicle.brand,
-        model: newVehicle.model,
-        year: newVehicle.year,
-        pricing: newVehicle.pricing,
-        media: newVehicle.media,
-        engine: newVehicle.engine,
-        performance: newVehicle.performance,
-        interactiveGallery: newVehicle.interactiveGallery
-      });
-      setToastMessage('Araç başarıyla güncellendi.');
-    } else {
-      addVehicle(newVehicle);
-      setToastMessage('Araç başarıyla eklendi.');
+    try {
+      if (currentView === 'edit' && editingVehicleId) {
+        await updateVehicleInFirestore(editingVehicleId, {
+          brand: newVehicle.brand,
+          model: newVehicle.model,
+          year: newVehicle.year,
+          pricing: newVehicle.pricing,
+          media: newVehicle.media,
+          engine: newVehicle.engine,
+          performance: newVehicle.performance,
+          interactiveGallery: newVehicle.interactiveGallery,
+        });
+        setToastMessage('Araç başarıyla güncellendi.');
+      } else {
+        await addVehicleToFirestore(newVehicle);
+        setToastMessage('Araç başarıyla eklendi.');
+      }
+    } catch (err) {
+      console.error('Firestore CRUD hatası:', err);
+      setToastMessage('İşlem başarısız oldu. Konsolu kontrol edin.');
     }
     
-    // Trigger Success
+    // Reset form
     setCurrentView('list');
     setEditingVehicleId(null);
     setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '', trim: '' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
-
-  const [toastMessage, setToastMessage] = useState('');
 
   const handleEditClick = (v: Vehicle) => {
     setFormData({
@@ -143,7 +175,16 @@ export function AdminDashboard() {
     setCurrentView('edit');
   };
 
-
+  const handleDeleteClick = async (id: string) => {
+    try {
+      await deleteVehicleFromFirestore(id);
+      setToastMessage('Araç başarıyla silindi.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Silme hatası:', err);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-void flex">
@@ -173,7 +214,15 @@ export function AdminDashboard() {
           </button>
         </nav>
 
-        <div className="p-4 border-t border-border-subtle">
+        <div className="p-4 border-t border-border-subtle space-y-2">
+          {/* Seed Database Button */}
+          <button 
+            onClick={handleSeedDatabase}
+            disabled={isSeeding}
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-amber-500 hover:text-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Database className="size-4" /> {isSeeding ? 'Aktarılıyor...' : 'Veritabanını Başlat'}
+          </button>
           <button 
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors"
@@ -215,7 +264,7 @@ export function AdminDashboard() {
                       <Edit2 className="size-5 stroke-[1.5]" />
                     </button>
                     <button 
-                      onClick={() => removeVehicle(v.id)}
+                      onClick={() => handleDeleteClick(v.id)}
                       className="p-2 text-muted hover:text-red-500 transition-colors" 
                       aria-label="Sil"
                     >
@@ -225,7 +274,10 @@ export function AdminDashboard() {
                 </div>
               ))}
               {vehicles.length === 0 && (
-                <p className="text-muted py-10">Envanterde hiç araç bulunmuyor.</p>
+                <div className="text-center py-16">
+                  <p className="text-muted mb-4">Envanterde hiç araç bulunmuyor.</p>
+                  <p className="text-xs text-muted">Soldaki <span className="text-amber-500 font-medium">"Veritabanını Başlat"</span> butonuna tıklayarak başlangıç verilerini yükleyin.</p>
+                </div>
               )}
             </div>
           </motion.div>

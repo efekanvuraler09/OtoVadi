@@ -1,9 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import catalogData from '../data/vehicles.json';
-import type { Vehicle, VehicleCatalog, VehicleSegment } from '../types/vehicle';
-
-const catalog = catalogData as VehicleCatalog;
+import type { Vehicle, VehicleSegment } from '../types/vehicle';
 
 function matchesSearch(vehicle: Vehicle, query: string): boolean {
   const q = query.trim().toLowerCase();
@@ -45,61 +41,46 @@ interface VehicleStore {
   selectedVehicleId: string | null;
   selectedSegment: VehicleSegment | null;
   searchQuery: string;
+  setVehicles: (vehicles: Vehicle[]) => void;
   setSearchQuery: (query: string) => void;
   setSelectedSegment: (segment: VehicleSegment | null) => void;
   selectVehicle: (id: string | null) => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   getVehicleBySlug: (slug: string) => Vehicle | undefined;
-  addVehicle: (vehicle: Vehicle) => void;
-  removeVehicle: (id: string) => void;
-  updateVehicle: (id: string, updates: Partial<Vehicle>) => void;
 }
 
 export const useVehicleStore = create<VehicleStore>()(
-  persist(
-    (set, get) => ({
-  vehicles: catalog.vehicles,
-  featuredVehicles: catalog.vehicles.filter((v) => v.featured),
-  favorites: [],
-  selectedVehicleId: null,
-  selectedSegment: null,
-  searchQuery: '',
+  (set, get) => ({
+    vehicles: [],
+    featuredVehicles: [],
+    favorites: [],
+    selectedVehicleId: null,
+    selectedSegment: null,
+    searchQuery: '',
 
-  setSearchQuery: (query) => set({ searchQuery: query }),
-
-  setSelectedSegment: (segment) =>
-    set({ selectedSegment: segment, searchQuery: '' }),
-
-  selectVehicle: (id) => set({ selectedVehicleId: id }),
-
-  toggleFavorite: (id) =>
-    set((state) => ({
-      favorites: state.favorites.includes(id)
-        ? state.favorites.filter((f) => f !== id)
-        : [...state.favorites, id],
-    })),
-
-  isFavorite: (id) => get().favorites.includes(id),
-
-  getVehicleBySlug: (slug) => get().vehicles.find((v) => v.slug === slug),
-
-  addVehicle: (vehicle) => set((state) => ({ 
-    vehicles: [...state.vehicles, vehicle] 
-  })),
-
-  removeVehicle: (id) => set((state) => ({
-    vehicles: state.vehicles.filter((v) => v.id !== id)
-  })),
-
-  updateVehicle: (id, updates) => set((state) => ({
-    vehicles: state.vehicles.map((v) => v.id === id ? { ...v, ...updates } : v)
-  })),
+    /** Firestore onSnapshot tarafından çağrılır */
+    setVehicles: (vehicles) => set({
+      vehicles,
+      featuredVehicles: vehicles.filter((v) => v.featured),
     }),
-    {
-      name: 'otovadi_vehicles_storage',
-    }
-  )
-);
 
-export const catalogMeta = catalog.meta;
+    setSearchQuery: (query) => set({ searchQuery: query }),
+
+    setSelectedSegment: (segment) =>
+      set({ selectedSegment: segment, searchQuery: '' }),
+
+    selectVehicle: (id) => set({ selectedVehicleId: id }),
+
+    toggleFavorite: (id) =>
+      set((state) => ({
+        favorites: state.favorites.includes(id)
+          ? state.favorites.filter((f) => f !== id)
+          : [...state.favorites, id],
+      })),
+
+    isFavorite: (id) => get().favorites.includes(id),
+
+    getVehicleBySlug: (slug) => get().vehicles.find((v) => v.slug === slug),
+  })
+);

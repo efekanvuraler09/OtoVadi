@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { PageTransition } from './components/layout/PageTransition';
@@ -12,11 +13,28 @@ import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
 import { AuthModal } from './components/ui/AuthModal';
+import { subscribeVehicles } from './services/vehicleService';
+import { useVehicleStore } from './store/useVehicleStore';
+
+/** Firestore → Zustand gerçek zamanlı senkronizasyon */
+function FirestoreSync() {
+  const setVehicles = useVehicleStore((s) => s.setVehicles);
+
+  useEffect(() => {
+    const unsubscribe = subscribeVehicles((vehicles) => {
+      setVehicles(vehicles);
+    });
+    return () => unsubscribe();
+  }, [setVehicles]);
+
+  return null;
+}
 
 export default function App() {
   return (
     <AuthProvider>
       <GarageProvider>
+        <FirestoreSync />
         <BrowserRouter>
           <Routes>
             {/* Admin Routes (No Navbar/Footer) */}
@@ -41,3 +59,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+
