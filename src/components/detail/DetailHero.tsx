@@ -85,13 +85,13 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
         </div>
 
         <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-6 md:px-8 lg:px-12">
-          <p className="text-xs font-sans uppercase tracking-mb-wider text-white/60">
+          <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">
             {vehicle.brand} · {vehicle.year}
           </p>
-          <h1 className="mt-1 font-display text-4xl md:text-5xl font-light tracking-wide text-white">
+          <h1 className="mt-1 font-serif text-4xl md:text-5xl font-light tracking-wide text-white/90">
             {vehicle.model}
           </h1>
-          <p className="mt-1 text-sm text-white/70">{vehicle.tagline}</p>
+          <p className="mt-1 text-sm text-white/70 font-light">{vehicle.tagline}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <span className="text-lg font-sans font-light text-white">
               {formatPrice(vehicle.pricing.msrp)}

@@ -8,6 +8,8 @@ import { ComparisonPage } from './pages/ComparisonPage';
 import { CuratorPage } from './pages/CuratorPage';
 import { ModelsPage } from './pages/ModelsPage';
 import { GaragePage } from './pages/GaragePage';
+import { ProfilePage } from './pages/ProfilePage';
+import { AboutPage } from './pages/AboutPage';
 import { GarageProvider } from './context/GarageContext';
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -48,8 +50,10 @@ export default function App() {
                 <Route path="arac/:id" element={<VehicleDetailPage />} />
                 <Route path="modeller" element={<ModelsPage />} />
                 <Route path="karsilastir" element={<ComparisonPage />} />
+                <Route path="hakkimizda" element={<AboutPage />} />
                 <Route path="kesif" element={<CuratorPage />} />
                 <Route path="garajim" element={<GaragePage />} />
+                <Route path="profil" element={<ProfilePage />} />
               </Route>
             </Route>
           </Routes>

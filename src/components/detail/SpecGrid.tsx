@@ -38,8 +38,8 @@ export function SpecGrid({ vehicle }: SpecGridProps) {
           key={label}
           className="rounded-none border border-border-subtle bg-transparent px-3 py-3"
         >
-          <dt className="text-[10px] uppercase tracking-wider text-muted">{label}</dt>
-          <dd className="mt-1 text-sm font-light text-foreground">{value}</dd>
+          <dt className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</dt>
+          <dd className="mt-1.5 text-sm font-light tracking-wide text-foreground">{value}</dd>
         </div>
       ))}
     </dl>

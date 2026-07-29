@@ -67,10 +67,10 @@ export function VehicleDetailPage() {
         {section.items.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between gap-4 border-b border-border-subtle/50 py-2 last:border-0"
+            className="flex justify-between gap-4 border-b border-border-subtle/30 py-3 last:border-0"
           >
-            <dt className="text-xs text-muted">{item.label}</dt>
-            <dd className="text-right text-xs font-medium text-foreground">{item.value}</dd>
+            <dt className="text-xs font-light tracking-wide text-muted">{item.label}</dt>
+            <dd className="text-right text-xs font-light tracking-wide text-foreground">{item.value}</dd>
           </div>
         ))}
       </dl>
@@ -91,14 +91,16 @@ export function VehicleDetailPage() {
       </div>
 
       <div className="px-4 pb-8 md:px-8 lg:mx-auto lg:max-w-4xl lg:px-12 py-10">
-        {/* Hızlı özet */}
         <section className="py-10">
-          <p className="text-sm leading-relaxed text-muted">{vehicle.shortDescription}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Donanımlar</p>
+          <h2 className="text-3xl md:text-4xl font-serif text-white/90 font-light tracking-wide mb-8">
+            {vehicle.shortDescription}
+          </h2>
+          <div className="flex flex-wrap gap-8">
             {vehicle.highlights.map((tag) => (
               <span
                 key={tag}
-                className="rounded-none px-2.5 py-1 text-[11px] font-medium bg-foreground/10 text-foreground/70"
+                className="text-white font-normal"
               >
                 {tag}
               </span>
@@ -191,10 +193,10 @@ export function VehicleDetailPage() {
                 ].map(({ label, value }) => (
                   <div
                     key={label}
-                    className="border border-border-subtle rounded-none px-4 py-3"
+                    className="border border-border-subtle rounded-none px-4 py-4"
                   >
-                    <dt className="text-[10px] uppercase tracking-wider text-muted">{label}</dt>
-                    <dd className="mt-1 text-sm font-semibold text-foreground">{value}</dd>
+                    <dt className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</dt>
+                    <dd className="mt-1.5 text-sm font-light tracking-wide text-foreground">{value}</dd>
                   </div>
                 ))}
               </dl>

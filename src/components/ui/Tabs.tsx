@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 export interface TabItem {
@@ -15,9 +14,9 @@ interface TabsProps {
 
 export function Tabs({ tabs, activeId, onChange }: TabsProps) {
   return (
-    <div className="border border-border-subtle rounded-none p-1 overflow-hidden">
+    <div className="border-b border-white/10 overflow-hidden">
       <div
-        className="flex gap-1 overflow-x-auto scrollbar-none"
+        className="flex gap-6 md:gap-10 overflow-x-auto scrollbar-none px-2 mb-[-1px]"
         role="tablist"
         aria-label="Detay sekmeleri"
       >
@@ -30,18 +29,11 @@ export function Tabs({ tabs, activeId, onChange }: TabsProps) {
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`relative flex shrink-0 items-center gap-1.5 rounded-none px-4 py-2.5 text-xs font-semibold transition-colors ${
-                isActive ? 'text-void' : 'text-muted hover:text-foreground'
+              className={`relative flex shrink-0 items-center gap-2 pb-4 pt-2 text-[10px] md:text-xs uppercase tracking-[0.2em] transition-colors duration-300 border-b ${
+                isActive ? 'text-white font-normal border-white/80' : 'text-gray-500 hover:text-gray-400 font-light border-transparent'
               }`}
             >
-              {isActive && (
-                <motion.span
-                  layoutId="detail-tab"
-                  className="absolute inset-0 rounded-none bg-foreground"
-                  transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-1.5">
+              <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}
                 {tab.label}
               </span>

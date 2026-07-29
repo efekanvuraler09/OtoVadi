@@ -44,7 +44,7 @@ export function MultimediaList({ features }: MultimediaListProps) {
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-semibold text-foreground">{feature.name}</h4>
+                  <h4 className="text-sm font-light tracking-wide text-foreground">{feature.name}</h4>
                   {feature.highlight && (
                     <span className="rounded-none bg-foreground/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-foreground/70">
                       Öne çıkan

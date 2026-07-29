@@ -18,7 +18,7 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
   return (
     <section className="relative w-full overflow-hidden bg-void">
       <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12">
-        <h2 className="font-display text-2xl font-light tracking-wide text-foreground mb-6">İnteraktif İnceleme</h2>
+        <h2 className="font-serif text-2xl font-light tracking-wide text-foreground mb-6">İnteraktif İnceleme</h2>
         
         <div className="relative aspect-[16/9] w-full bg-surface border border-border-subtle overflow-hidden group">
           <img 
@@ -63,7 +63,7 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
                 <div className="border border-border-subtle bg-void/80 backdrop-blur-md p-5 shadow-2xl">
                   {hotspots.map((spot) => spot.id === activeHotspot && (
                     <div key={spot.id}>
-                      <h3 className="font-display text-lg font-semibold tracking-wide text-foreground mb-2">
+                      <h3 className="font-serif text-lg font-light tracking-wide text-foreground mb-2">
                         {spot.title}
                       </h3>
                       <p className="font-sans text-sm leading-relaxed text-muted">

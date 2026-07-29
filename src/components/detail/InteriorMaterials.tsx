@@ -22,8 +22,8 @@ export function InteriorMaterials({ materials }: InteriorMaterialsProps) {
           className="flex items-start justify-between gap-4 rounded-none border border-border-subtle bg-transparent px-4 py-3"
         >
           <div>
-            <p className="text-xs font-medium text-muted">{zoneLabels[item.zone]}</p>
-            <p className="mt-0.5 text-sm font-semibold text-foreground">{item.material}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-light text-muted">{zoneLabels[item.zone]}</p>
+            <p className="mt-1 text-sm font-light tracking-wide text-foreground">{item.material}</p>
             {item.finish && (
               <p className="text-[10px] text-muted">{item.finish}</p>
             )}

@@ -1,24 +1,20 @@
-import { Home, Compass, Heart, User } from 'lucide-react';
+import { Home, Sparkles, Scale, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useVehicleStore } from '../../store/useVehicleStore';
 
 const navItems = [
-  { id: 'home', label: 'Keşfet', icon: Home, to: '/' },
-  { id: 'catalog', label: 'Katalog', icon: Compass, to: '/#catalog' },
-  { id: 'favorites', label: 'Favoriler', icon: Heart, to: '/favoriler' },
-  { id: 'profile', label: 'Profil', icon: User, to: '/' },
+  { id: 'home', label: 'Ana Sayfa', icon: Home, to: '/' },
+  { id: 'kesif', label: 'Akıllı Keşif', icon: Sparkles, to: '/kesif' },
+  { id: 'karsilastir', label: 'Karşılaştır', icon: Scale, to: '/karsilastir' },
+  { id: 'profile', label: 'Profil', icon: User, to: '/profil' },
 ] as const;
 
 export function BottomNav() {
   const location = useLocation();
-  const favoritesCount = useVehicleStore((s) => s.favorites.length);
 
   const isActive = (to: string) => {
-    if (to === '/favoriler') return location.pathname === '/favoriler';
-    if (to === '/#catalog') return location.pathname === '/' && location.hash === '#catalog';
-    if (to === '/') return location.pathname === '/' && location.hash !== '#catalog';
-    return false;
+    if (to === '/') return location.pathname === '/';
+    return location.pathname.startsWith(to);
   };
 
   return (
@@ -49,11 +45,6 @@ export function BottomNav() {
                       className={`size-5 ${active ? 'text-foreground' : 'text-muted'}`}
                       strokeWidth={active ? 2.25 : 1.75}
                     />
-                    {id === 'favorites' && favoritesCount > 0 && (
-                      <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-none bg-foreground text-[9px] font-bold text-void">
-                        {favoritesCount}
-                      </span>
-                    )}
                   </span>
                   <span
                     className={`relative z-10 text-[10px] font-medium ${active ? 'text-foreground' : 'text-muted'}`}

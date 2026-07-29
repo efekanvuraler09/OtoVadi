@@ -4,6 +4,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { Bookmark, User, Menu, X } from 'lucide-react';
 import { useGarage } from '../../context/GarageContext';
 import { useAuth } from '../../context/AuthContext';
+import { useVehicleStore } from '../../store/useVehicleStore';
 
 // Minimalist custom SVG for OtoVadi - representing an O (circle) and a V (road/needle)
 const BrandIcon = () => (
@@ -27,11 +28,12 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { garagedSlugs } = useGarage();
   const { user, isAdmin, openAuthModal, logout } = useAuth();
+  const setSelectedSegment = useVehicleStore((s) => s.setSelectedSegment);
   const navLinks = [
     { label: 'Modeller', href: '/modeller' },
     { label: 'Akıllı Keşif', href: '/kesif' },
     { label: 'Karşılaştır', href: '/karsilastir' },
-    { label: 'Hakkımızda', href: '#' },
+    { label: 'Hakkımızda', href: '/hakkimizda' },
   ];
 
   return (
@@ -43,6 +45,10 @@ export function Navbar() {
           <Link 
             to="/" 
             aria-label="Ana Sayfa"
+            onClick={() => {
+              setSelectedSegment(null);
+              setIsMobileMenuOpen(false);
+            }}
             className="group flex items-center gap-3 transition-opacity duration-300 hover:opacity-80"
           >
             <BrandIcon />
@@ -132,7 +138,9 @@ export function Navbar() {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="xl:hidden fixed inset-x-0 top-16 h-[calc(100vh-4rem)] z-[100] bg-void border-t border-border-subtle p-6 shadow-2xl flex flex-col gap-6 animate-in slide-in-from-top-2 overflow-y-auto">
-          {navLinks.map((link) => (
+          {navLinks
+            .filter((link) => link.label !== 'Akıllı Keşif' && link.label !== 'Karşılaştır')
+            .map((link) => (
             <Link
               key={link.label}
               to={link.href}

@@ -41,7 +41,7 @@ export function FinanceCalculator({ price }: FinanceCalculatorProps) {
         {/* Controls Column */}
         <div className="flex-1 w-full space-y-12">
           <div>
-            <h3 className="font-display text-2xl font-light text-foreground mb-8">Akıllı Finansman</h3>
+            <h3 className="font-serif text-2xl font-light text-foreground mb-8">Akıllı Finansman</h3>
             
             {/* Downpayment Slider */}
             <div className="space-y-4">
@@ -102,7 +102,7 @@ export function FinanceCalculator({ price }: FinanceCalculatorProps) {
               transition={{ duration: 0.3 }}
               className="text-center lg:text-right"
             >
-              <span className="font-display text-6xl md:text-7xl lg:text-8xl font-light text-foreground tracking-tighter">
+              <span className="font-serif text-6xl md:text-7xl lg:text-8xl font-light text-foreground tracking-tighter">
                 {formatCurrency(monthlyPayment)}
               </span>
             </motion.div>
