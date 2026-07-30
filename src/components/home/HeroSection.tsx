@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { countActiveSegments, getHeroStats } from '../../lib/catalogStats';
+import { getHeroStats } from '../../lib/catalogStats';
 import { useVehicleStore } from '../../store/useVehicleStore';
 
 interface HeroSectionProps {

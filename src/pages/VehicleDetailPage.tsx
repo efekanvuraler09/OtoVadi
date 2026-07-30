@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Cog, LayoutGrid, Monitor, Sofa, Volume2, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
