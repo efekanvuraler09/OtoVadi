@@ -4,23 +4,7 @@ export type Transmission = 'automatic' | 'cvt' | 'dct' | 'manual';
 export type BodyType = 'sedan' | 'suv' | 'hatchback' | 'pickup' | 'muscle-car';
 
 /** Klasman: B/C/D/E/F + gövde tipi (sedan veya suv) */
-export type VehicleSegment =
-  | 'b-sedan'
-  | 'c-sedan'
-  | 'd-sedan'
-  | 'e-sedan'
-  | 'f-sedan'
-  | 'b-suv'
-  | 'c-suv'
-  | 'd-suv'
-  | 'e-suv'
-  | 'f-suv'
-  | 'b-hatchback'
-  | 'c-hatchback'
-  | 'd-hatchback'
-  | 'pickup-midsize'
-  | 'pickup-fullsize'
-  | 'muscle-car';
+export type VehicleSegment = 'b' | 'c' | 'd' | 'e' | 'f' | '-';
 
 export interface AudioTrack {
   id: string;

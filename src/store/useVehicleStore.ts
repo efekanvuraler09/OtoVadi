@@ -23,15 +23,21 @@ export function filterVehicles(
   vehicles: Vehicle[],
   query: string,
   segment: VehicleSegment | null,
+  bodyType: BodyType | null
 ): Vehicle[] {
   return vehicles.filter((v) => {
-    if (segment && v.segment !== segment) return false;
+    if (bodyType && v.bodyType !== bodyType) return false;
+    if (segment && segment !== '-' && v.segment !== segment) return false;
     return matchesSearch(v, query);
   });
 }
 
-export function countBySegment(vehicles: Vehicle[], segment: VehicleSegment): number {
-  return vehicles.filter((v) => v.segment === segment).length;
+export function countBySegment(vehicles: Vehicle[], segment: VehicleSegment, bodyType: BodyType): number {
+  return vehicles.filter((v) => {
+    if (v.bodyType !== bodyType) return false;
+    if (segment !== '-' && v.segment !== segment) return false;
+    return true;
+  }).length;
 }
 
 interface VehicleStore {
@@ -41,10 +47,11 @@ interface VehicleStore {
   favorites: string[];
   selectedVehicleId: string | null;
   selectedSegment: VehicleSegment | null;
+  selectedBodyType: BodyType | null;
   searchQuery: string;
   setVehicles: (vehicles: Vehicle[]) => void;
   setSearchQuery: (query: string) => void;
-  setSelectedSegment: (segment: VehicleSegment | null) => void;
+  setSelectedCategory: (bodyType: BodyType | null, segment: VehicleSegment | null) => void;
   selectVehicle: (id: string | null) => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -60,6 +67,7 @@ export const useVehicleStore = create<VehicleStore>()(
     favorites: [],
     selectedVehicleId: null,
     selectedSegment: null,
+    selectedBodyType: null,
     searchQuery: '',
 
     /** Firestore onSnapshot tarafından çağrılır */
@@ -71,8 +79,8 @@ export const useVehicleStore = create<VehicleStore>()(
 
     setSearchQuery: (query) => set({ searchQuery: query }),
 
-    setSelectedSegment: (segment) =>
-      set({ selectedSegment: segment, searchQuery: '' }),
+    setSelectedCategory: (bodyType, segment) =>
+      set({ selectedBodyType: bodyType, selectedSegment: segment, searchQuery: '' }),
 
     selectVehicle: (id) => set({ selectedVehicleId: id }),
 

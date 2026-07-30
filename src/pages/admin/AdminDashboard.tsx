@@ -36,6 +36,49 @@ const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any)
   </div>
 );
 
+const FloatingSelect = ({ id, label, value, options, onChange, disabled }: any) => (
+  <div className={`relative group pt-2 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+    <select 
+      id={id} 
+      required 
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className="peer w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors appearance-none disabled:text-muted"
+    >
+      {options.map((opt: any) => (
+        <option key={opt.value} value={opt.value} className="bg-void text-foreground">{opt.label}</option>
+      ))}
+    </select>
+    <label 
+      htmlFor={id} 
+      className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground"
+    >
+      {label}
+    </label>
+  </div>
+);
+
+const FloatingTextarea = ({ id, label, value, onChange, rows = 3 }: any) => (
+  <div className="relative group">
+    <textarea 
+      id={id} 
+      required 
+      value={value}
+      onChange={onChange}
+      rows={rows}
+      className="peer w-full bg-transparent border-b border-border-subtle focus:border-foreground py-2 text-foreground font-sans outline-none transition-colors resize-none" 
+      placeholder=" " 
+    />
+    <label 
+      htmlFor={id} 
+      className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+    >
+      {label}
+    </label>
+  </div>
+);
+
 export function AdminDashboard() {
   const navigate = useNavigate();
   const vehicles = useVehicleStore((s) => s.vehicles);
@@ -49,14 +92,24 @@ export function AdminDashboard() {
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
+    tagline: '',
     year: '',
     price: '',
     heroImage: '',
     studioImage: '',
     engine: '',
+    displacementCc: '',
     hp: '',
+    torqueNm: '',
+    fuelType: 'petrol',
     zeroTo100: '',
-    trim: ''
+    topSpeedKmh: '',
+    transmission: 'automatic',
+    drivetrain: 'fwd',
+    bodyType: 'sedan',
+    segment: 'c',
+    trim: '',
+    shortDescription: ''
   });
 
   const [testDrives, setTestDrives] = useState<TestDriveRequest[]>([]);
@@ -83,6 +136,37 @@ export function AdminDashboard() {
     navigate('/admin/login');
   };
 
+  const handleMigration = async () => {
+    if (!window.confirm('DİKKAT: Sadece multimedya ve iç mekan donanımları doldurulacak. Motor, Performans, Kasa Tipi gibi temel veriler DEĞİŞMEYECEK. Onaylıyor musunuz?')) return;
+    
+    setToastMessage('Donanım verileri güncelleniyor, lütfen bekleyin...');
+    setShowToast(true);
+    
+    try {
+      for (const v of vehicles) {
+        await updateVehicleInFirestore(v.id, {
+          multimedia: [
+            { id: 'm1', name: 'Premium Ses Sistemi', category: 'audio', description: 'Gelişmiş surround ses deneyimi.', highlight: true },
+            { id: 'm2', name: 'Apple CarPlay & Android Auto', category: 'connectivity', description: 'Kablosuz akıllı telefon entegrasyonu.', highlight: true },
+            { id: 'm3', name: 'Geniş Dokunmatik Ekran', category: 'infotainment', description: 'Yüksek çözünürlüklü multimedya sistemi.', highlight: false },
+            { id: 'm4', name: 'Ambiyans Aydınlatma', category: 'comfort', description: 'Özelleştirilebilir iç mekan aydınlatması.', highlight: false }
+          ],
+          interiorMaterials: [
+            { zone: 'seats', material: 'Premium Deri', colorName: 'Siyah', sustainable: false },
+            { zone: 'dashboard', material: 'Alüminyum Detaylar', colorName: 'Antrasit', sustainable: false },
+            { zone: 'steering', material: 'Nappa Deri', colorName: 'Siyah', sustainable: false },
+            { zone: 'headliner', material: 'Kumaş / Alcantara', colorName: 'Siyah', sustainable: false }
+          ],
+          shortDescription: `${v.brand} kalitesi ve yenilikçi teknolojilerle donatılmış, sürüş keyfini en üst seviyeye çıkaran premium model. Sınıfının referans standartlarını belirliyor.`
+        });
+      }
+      setToastMessage('Tüm donanım verileri başarıyla dolduruldu.');
+    } catch (err) {
+      console.error('Migration hatası:', err);
+      setToastMessage('Güncelleme sırasında hata oluştu!');
+    }
+  };
+
   // === Add / Update Vehicle ===
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,16 +179,32 @@ export function AdminDashboard() {
       brand: formData.brand,
       model: formData.model,
       year: parseInt(formData.year) || 2024,
-      segment: 'c-suv',
-      bodyType: 'suv',
-      bodyStyle: 'SUV',
-      tagline: 'Yeni Eklenen Araç',
-      shortDescription: 'Admin paneli üzerinden eklendi.',
+      segment: (formData.bodyType === 'muscle-car' || formData.bodyType === 'pickup') ? '-' : formData.segment as any,
+      bodyType: formData.bodyType as any,
+      bodyStyle: formData.bodyType.toUpperCase(),
+      tagline: formData.tagline || 'Yeni Eklenen Araç',
+      shortDescription: formData.shortDescription || 'Gelişmiş mühendislik ve premium donanımla sunulan ikonik model.',
       pricing: { currency: 'TRY', msrp: parseInt(formData.price) || 0, trim: formData.trim || '' },
       media: { heroImage: formData.heroImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop', gallery: [], thumbnail: formData.heroImage || formData.studioImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=600&auto=format&fit=crop', colorHex: '#000' },
       audio: { idle: { id: '1', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' }, exhaust: { id: '2', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' } },
-      engine: { code: formData.engine || '1.0', displacementCc: 1000, cylinders: 4, configuration: 'inline', aspiration: 'turbocharged', powerHp: parseInt(formData.hp) || 100, powerKw: 75, torqueNm: 200, fuelType: 'petrol' },
-      performance: { zeroTo100Kmh: parseFloat(formData.zeroTo100) || 10.0, topSpeedKmh: 200, transmission: 'automatic', gears: 7, drivetrain: 'fwd' },
+      engine: { 
+        code: formData.engine || '1.0', 
+        displacementCc: parseInt(formData.displacementCc) || 1000, 
+        cylinders: 4, 
+        configuration: 'inline', 
+        aspiration: 'turbocharged', 
+        powerHp: parseInt(formData.hp) || 100, 
+        powerKw: Math.round((parseInt(formData.hp) || 100) * 0.7457), 
+        torqueNm: parseInt(formData.torqueNm) || 200, 
+        fuelType: formData.fuelType as any 
+      },
+      performance: { 
+        zeroTo100Kmh: parseFloat(formData.zeroTo100) || 10.0, 
+        topSpeedKmh: parseInt(formData.topSpeedKmh) || 200, 
+        transmission: formData.transmission as any, 
+        gears: 7, 
+        drivetrain: formData.drivetrain as any 
+      },
       dimensions: { lengthMm: 4500, widthMm: 1800, heightMm: 1600, wheelbaseMm: 2700, bootCapacityL: 500, curbWeightKg: 1500 },
       multimedia: [],
       interiorMaterials: [],
@@ -121,6 +221,11 @@ export function AdminDashboard() {
           brand: newVehicle.brand,
           model: newVehicle.model,
           year: newVehicle.year,
+          segment: newVehicle.segment,
+          bodyType: newVehicle.bodyType,
+          bodyStyle: newVehicle.bodyStyle,
+          tagline: newVehicle.tagline,
+          shortDescription: newVehicle.shortDescription,
           pricing: newVehicle.pricing,
           media: newVehicle.media,
           engine: newVehicle.engine,
@@ -140,7 +245,8 @@ export function AdminDashboard() {
     // Reset form
     setCurrentView('list');
     setEditingVehicleId(null);
-    setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '', trim: '' });
+    setFormData({ brand: '', model: '', tagline: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
+
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
@@ -149,14 +255,24 @@ export function AdminDashboard() {
     setFormData({
       brand: v.brand,
       model: v.model,
+      tagline: v.tagline || '',
       year: v.year.toString(),
       price: v.pricing.msrp.toString(),
       heroImage: v.media.heroImage,
       studioImage: v.interactiveGallery?.studioImage || v.media.heroImage,
       engine: v.engine.code,
+      displacementCc: v.engine.displacementCc?.toString() || '',
       hp: v.engine.powerHp.toString(),
+      torqueNm: v.engine.torqueNm?.toString() || '',
+      fuelType: v.engine.fuelType || 'petrol',
       zeroTo100: v.performance.zeroTo100Kmh.toString(),
-      trim: v.pricing.trim || ''
+      topSpeedKmh: v.performance.topSpeedKmh?.toString() || '',
+      transmission: v.performance.transmission || 'automatic',
+      drivetrain: v.performance.drivetrain || 'fwd',
+      bodyType: v.bodyType || 'sedan',
+      segment: v.segment === '-' ? 'c' : (v.segment || 'c'),
+      trim: v.pricing.trim || '',
+      shortDescription: v.shortDescription || ''
     });
     setEditingVehicleId(v.id);
     setCurrentView('edit');
@@ -204,7 +320,7 @@ export function AdminDashboard() {
             onClick={() => {
               setCurrentView('add');
               setEditingVehicleId(null);
-              setFormData({ brand: '', model: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', hp: '', zeroTo100: '', trim: '' });
+              setFormData({ brand: '', model: '', tagline: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
             }}
             className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
@@ -229,6 +345,13 @@ export function AdminDashboard() {
         </nav>
 
         <div className="p-4 border-t border-border-subtle space-y-2">
+          <button 
+            onClick={handleMigration}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs tracking-wider border border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-void transition-colors mb-4"
+          >
+            Donanımları Doldur
+          </button>
+
           <button 
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors"
@@ -360,7 +483,7 @@ export function AdminDashboard() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-surface/80 border border-border-subtle p-10 shadow-2xl z-10"
+              className="relative w-full max-w-2xl bg-surface/90 border border-border-subtle p-10 shadow-2xl z-10 max-h-[90vh] overflow-y-auto pb-24"
             >
               <button 
                 onClick={() => setCurrentView('list')}
@@ -379,16 +502,77 @@ export function AdminDashboard() {
                   <FloatingInput id="model" label="Model" value={formData.model} onChange={(e: any) => setFormData({...formData, model: e.target.value})} />
                 </div>
                 
+                <div className="grid grid-cols-2 gap-8">
+                  <FloatingSelect id="bodyType" label="Kasa Tipi" value={formData.bodyType} onChange={(e: any) => setFormData({...formData, bodyType: e.target.value})} options={[
+                    {label: 'Sedan', value: 'sedan'},
+                    {label: 'SUV', value: 'suv'},
+                    {label: 'Hatchback', value: 'hatchback'},
+                    {label: 'Muscle Car', value: 'muscle-car'},
+                    {label: 'Pick-up', value: 'pickup'}
+                  ]} />
+                  <FloatingSelect id="segment" label="Segment" value={formData.segment} onChange={(e: any) => setFormData({...formData, segment: e.target.value})} disabled={formData.bodyType === 'muscle-car' || formData.bodyType === 'pickup'} options={[
+                    {label: 'B', value: 'b'},
+                    {label: 'C', value: 'c'},
+                    {label: 'D', value: 'd'},
+                    {label: 'E', value: 'e'},
+                    {label: 'F', value: 'f'}
+                  ]} />
+                </div>
+
+                <div className="grid grid-cols-1">
+                  <FloatingInput id="tagline" label="Alt Başlık (Örn: Premium Kompakt Sedan)" value={formData.tagline} onChange={(e: any) => setFormData({...formData, tagline: e.target.value})} />
+                </div>
+                
+                <div className="grid grid-cols-1 pt-4">
+                  <FloatingTextarea id="shortDescription" label="Donanım Özeti / Araç Açıklaması" value={formData.shortDescription} onChange={(e: any) => setFormData({...formData, shortDescription: e.target.value})} />
+                </div>
+                
                 <div className="grid grid-cols-3 gap-8">
                   <FloatingInput id="year" label="Üretim Yılı" type="number" value={formData.year} onChange={(e: any) => setFormData({...formData, year: e.target.value})} />
                   <FloatingInput id="trim" label="Paket (Örn: M Sport)" value={formData.trim} onChange={(e: any) => setFormData({...formData, trim: e.target.value})} />
                   <FloatingInput id="price" label="Fiyat (TL)" type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} />
                 </div>
 
+                <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                  <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Teknik Özellikler</h3>
+                </div>
+
                 <div className="grid grid-cols-3 gap-8">
-                  <FloatingInput id="engine" label="Motor Tipi" value={formData.engine} onChange={(e: any) => setFormData({...formData, engine: e.target.value})} />
+                  <FloatingInput id="engine" label="Motor Kodu/Tipi" value={formData.engine} onChange={(e: any) => setFormData({...formData, engine: e.target.value})} />
+                  <FloatingInput id="displacementCc" label="Motor Hacmi (CC)" type="number" value={formData.displacementCc} onChange={(e: any) => setFormData({...formData, displacementCc: e.target.value})} />
                   <FloatingInput id="hp" label="Beygir (HP)" type="number" value={formData.hp} onChange={(e: any) => setFormData({...formData, hp: e.target.value})} />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-8">
+                  <FloatingInput id="torqueNm" label="Tork (Nm)" type="number" value={formData.torqueNm} onChange={(e: any) => setFormData({...formData, torqueNm: e.target.value})} />
                   <FloatingInput id="zero" label="0-100 (sn)" type="number" step="0.1" value={formData.zeroTo100} onChange={(e: any) => setFormData({...formData, zeroTo100: e.target.value})} />
+                  <FloatingInput id="topSpeedKmh" label="Maks Hız (Kmh)" type="number" value={formData.topSpeedKmh} onChange={(e: any) => setFormData({...formData, topSpeedKmh: e.target.value})} />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-8">
+                  <FloatingSelect id="fuelType" label="Yakıt Tipi" value={formData.fuelType} onChange={(e: any) => setFormData({...formData, fuelType: e.target.value})} options={[
+                    {label: 'Benzin (Petrol)', value: 'petrol'},
+                    {label: 'Dizel (Diesel)', value: 'diesel'},
+                    {label: 'Hibrit (Hybrid)', value: 'hybrid'},
+                    {label: 'Plug-in Hibrit', value: 'plug-in-hybrid'},
+                    {label: 'Elektrik (Electric)', value: 'electric'}
+                  ]} />
+                  <FloatingSelect id="transmission" label="Vites Tipi" value={formData.transmission} onChange={(e: any) => setFormData({...formData, transmission: e.target.value})} options={[
+                    {label: 'Otomatik (Automatic)', value: 'automatic'},
+                    {label: 'CVT', value: 'cvt'},
+                    {label: 'Çift Kavrama (DCT)', value: 'dct'},
+                    {label: 'Manuel (Manual)', value: 'manual'}
+                  ]} />
+                  <FloatingSelect id="drivetrain" label="Çekiş Tipi" value={formData.drivetrain} onChange={(e: any) => setFormData({...formData, drivetrain: e.target.value})} options={[
+                    {label: 'Önden Çekiş (FWD)', value: 'fwd'},
+                    {label: 'Arkadan İtiş (RWD)', value: 'rwd'},
+                    {label: 'Dört Çeker (AWD)', value: 'awd'},
+                    {label: '4x4 (4WD)', value: '4wd'}
+                  ]} />
+                </div>
+
+                <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                  <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Görseller</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-8">

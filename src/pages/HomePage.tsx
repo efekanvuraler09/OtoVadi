@@ -12,20 +12,36 @@ export function HomePage() {
   const searchQuery = useVehicleStore((s) => s.searchQuery);
   const setSearchQuery = useVehicleStore((s) => s.setSearchQuery);
   const selectedSegment = useVehicleStore((s) => s.selectedSegment);
-  const setSelectedSegment = useVehicleStore((s) => s.setSelectedSegment);
+  const selectedBodyType = useVehicleStore((s) => s.selectedBodyType);
+  const setSelectedCategory = useVehicleStore((s) => s.setSelectedCategory);
 
-  const segmentInfo = selectedSegment ? getSegmentOption(selectedSegment) : null;
+  const segmentInfo = (selectedSegment && selectedBodyType) ? getSegmentOption(selectedSegment, selectedBodyType) : null;
 
   const filteredVehicles = useMemo(
-    () => filterVehicles(vehicles, searchQuery, selectedSegment),
-    [vehicles, searchQuery, selectedSegment],
+    () => filterVehicles(vehicles, searchQuery, selectedSegment, selectedBodyType),
+    [vehicles, searchQuery, selectedSegment, selectedBodyType],
   );
 
   return (
     <>
       <HeroSection showCatalogCta={!selectedSegment} />
 
-      {!selectedSegment ? (
+      {/* GLOBAL SEARCH BAR */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-12 pb-4">
+        <div className="border border-border-subtle bg-transparent flex min-h-14 items-center gap-4 rounded-none px-6 w-full shadow-sm hover:border-foreground/50 transition-colors focus-within:border-foreground">
+          <Search className="size-5 shrink-0 text-muted" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Katalogda marka veya model ara..."
+            className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted"
+            aria-label="Araç ara"
+          />
+        </div>
+      </div>
+
+      {!selectedBodyType && !searchQuery ? (
         <SegmentPicker />
       ) : (
         <section id="catalog" className="scroll-mt-4 px-4 pt-6 md:px-8 lg:px-12 py-16">
@@ -34,19 +50,24 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <button
-              type="button"
-              onClick={() => setSelectedSegment(null)}
-              className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
-            >
-              <ArrowLeft className="size-4" />
-              Klasman Değiştir
-            </button>
+            {(selectedBodyType || searchQuery) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory(null, null);
+                  setSearchQuery('');
+                }}
+                className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
+              >
+                <ArrowLeft className="size-4" />
+                Geri Dön
+              </button>
+            )}
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-left">
                 <p className="text-xs font-medium uppercase tracking-mb-wider text-muted">
-                  {segmentInfo?.label}
+                  {segmentInfo ? segmentInfo.label : (searchQuery ? 'Arama Sonuçları' : '')}
                 </p>
                 <h2 className="mt-1 text-xl font-display font-light tracking-wide text-foreground md:text-2xl">
                   Araç Kataloğu
@@ -55,18 +76,6 @@ export function HomePage() {
                   {filteredVehicles.length} araç
                   {searchQuery ? ` · "${searchQuery}"` : ''}
                 </p>
-              </div>
-
-              <div className="border border-border-subtle bg-transparent flex min-h-12 items-center gap-3 rounded-none px-4 md:max-w-xs md:flex-1">
-                <Search className="size-4 shrink-0 text-muted" />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Marka veya model ara..."
-                  className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
-                  aria-label="Araç ara"
-                />
               </div>
             </div>
           </motion.div>
@@ -92,7 +101,10 @@ export function HomePage() {
                 )}
                 <button
                   type="button"
-                  onClick={() => setSelectedSegment(null)}
+                  onClick={() => {
+                    setSelectedCategory(null, null);
+                    setSearchQuery('');
+                  }}
                   className="text-sm font-medium text-muted underline hover:text-foreground transition-colors"
                 >
                   Başka klasman seç

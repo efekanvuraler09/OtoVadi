@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import type { BodyType, VehicleSegment } from '../../types/vehicle';
 import { SEGMENT_OPTIONS, getSegmentsByBodyType } from '../../data/segments';
 import { countBySegment, useVehicleStore } from '../../store/useVehicleStore';
+import type { SegmentOption } from '../../data/segments';
 
 const BODY_TYPES: {
   id: BodyType;
@@ -18,13 +19,13 @@ const BODY_TYPES: {
 
 export function SegmentPicker() {
   const vehicles = useVehicleStore((s) => s.vehicles);
-  const setSelectedSegment = useVehicleStore((s) => s.setSelectedSegment);
+  const setSelectedCategory = useVehicleStore((s) => s.setSelectedCategory);
   const [bodyType, setBodyType] = useState<BodyType>('sedan');
 
   const segments = getSegmentsByBodyType(bodyType);
 
-  const handleSelect = (segment: VehicleSegment) => {
-    setSelectedSegment(segment);
+  const handleSelect = (seg: SegmentOption) => {
+    setSelectedCategory(seg.bodyType, seg.segment);
     requestAnimationFrame(() => {
       document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
     });
@@ -68,17 +69,17 @@ export function SegmentPicker() {
 
       <ul className="flex flex-col">
         {segments.map((seg, index) => {
-          const count = countBySegment(vehicles, seg.id);
+          const count = countBySegment(vehicles, seg.segment, seg.bodyType);
           return (
             <motion.li
-              key={seg.id}
+              key={seg.segment + seg.bodyType}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
             >
               <button
                 type="button"
-                onClick={() => handleSelect(seg.id)}
+                onClick={() => handleSelect(seg)}
                 className="group flex w-full min-h-[80px] items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 bg-transparent px-2 py-4 text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-foreground/10 text-lg font-light text-foreground">
