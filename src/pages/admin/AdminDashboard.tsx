@@ -153,37 +153,6 @@ export function AdminDashboard() {
     navigate('/admin/login');
   };
 
-  const handleMigration = async () => {
-    if (!window.confirm('DİKKAT: Sadece multimedya ve iç mekan donanımları doldurulacak. Motor, Performans, Kasa Tipi gibi temel veriler DEĞİŞMEYECEK. Onaylıyor musunuz?')) return;
-    
-    setToastMessage('Donanım verileri güncelleniyor, lütfen bekleyin...');
-    setShowToast(true);
-    
-    try {
-      for (const v of vehicles) {
-        await updateVehicleInFirestore(v.id, {
-          multimedia: [
-            { id: 'm1', name: 'Premium Ses Sistemi', category: 'audio', description: 'Gelişmiş surround ses deneyimi.', highlight: true },
-            { id: 'm2', name: 'Apple CarPlay & Android Auto', category: 'connectivity', description: 'Kablosuz akıllı telefon entegrasyonu.', highlight: true },
-            { id: 'm3', name: 'Geniş Dokunmatik Ekran', category: 'infotainment', description: 'Yüksek çözünürlüklü multimedya sistemi.', highlight: false },
-            { id: 'm4', name: 'Ambiyans Aydınlatma', category: 'comfort', description: 'Özelleştirilebilir iç mekan aydınlatması.', highlight: false }
-          ],
-          interiorMaterials: [
-            { zone: 'seats', material: 'Premium Deri', colorName: 'Siyah', sustainable: false },
-            { zone: 'dashboard', material: 'Alüminyum Detaylar', colorName: 'Antrasit', sustainable: false },
-            { zone: 'steering', material: 'Nappa Deri', colorName: 'Siyah', sustainable: false },
-            { zone: 'headliner', material: 'Kumaş / Alcantara', colorName: 'Siyah', sustainable: false }
-          ],
-          shortDescription: `${v.brand} kalitesi ve yenilikçi teknolojilerle donatılmış, sürüş keyfini en üst seviyeye çıkaran premium model. Sınıfının referans standartlarını belirliyor.`
-        });
-      }
-      setToastMessage('Tüm donanım verileri başarıyla dolduruldu.');
-    } catch (err) {
-      console.error('Migration hatası:', err);
-      setToastMessage('Güncelleme sırasında hata oluştu!');
-    }
-  };
-
   // === Add / Update Vehicle ===
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -365,13 +334,6 @@ export function AdminDashboard() {
         </nav>
 
         <div className="p-4 border-t border-border-subtle space-y-2">
-          <button 
-            onClick={handleMigration}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs tracking-wider border border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-void transition-colors mb-4"
-          >
-            Donanımları Doldur
-          </button>
-
           <button 
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors"
