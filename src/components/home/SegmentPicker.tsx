@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import type { BodyType, VehicleSegment } from '../../types/vehicle';
+import type { BodyType } from '../../types/vehicle';
 import { SEGMENT_OPTIONS, getSegmentsByBodyType } from '../../data/segments';
 import { countBySegment, useVehicleStore } from '../../store/useVehicleStore';
 import type { SegmentOption } from '../../data/segments';

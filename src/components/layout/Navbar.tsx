@@ -28,7 +28,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { garagedSlugs } = useGarage();
   const { user, isAdmin, openAuthModal, logout } = useAuth();
-  const setSelectedSegment = useVehicleStore((s) => s.setSelectedSegment);
+  const setSelectedCategory = useVehicleStore((s) => s.setSelectedCategory);
   const navLinks = [
     { label: 'Modeller', href: '/modeller' },
     { label: 'Akıllı Keşif', href: '/kesif' },
@@ -46,7 +46,7 @@ export function Navbar() {
             to="/" 
             aria-label="Ana Sayfa"
             onClick={() => {
-              setSelectedSegment(null);
+              setSelectedCategory(null, null);
               setIsMobileMenuOpen(false);
             }}
             className="group flex items-center gap-3 transition-opacity duration-300 hover:opacity-80"

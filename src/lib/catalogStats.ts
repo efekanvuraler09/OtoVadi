@@ -20,13 +20,13 @@ export function getBodyTypesWithVehicles(vehicles: Vehicle[]): BodyType[] {
 
 export function getSegmentsWithVehicles(vehicles: Vehicle[], bodyType: BodyType) {
   return SEGMENT_OPTIONS.filter(
-    (seg) => seg.bodyType === bodyType && vehicles.some((v) => v.segment === seg.id),
+    (seg) => seg.bodyType === bodyType && vehicles.some((v) => v.segment === seg.segment && v.bodyType === seg.bodyType),
   );
 }
 
 export function countActiveSegments(vehicles: Vehicle[]): number {
   return SEGMENT_OPTIONS.filter((seg) =>
-    vehicles.some((v) => v.segment === seg.id),
+    vehicles.some((v) => v.segment === seg.segment && v.bodyType === seg.bodyType),
   ).length;
 }
 

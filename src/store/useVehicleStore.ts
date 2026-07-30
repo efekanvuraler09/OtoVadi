@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Vehicle, VehicleSegment } from '../types/vehicle';
+import type { Vehicle, VehicleSegment, BodyType } from '../types/vehicle';
 
 function matchesSearch(vehicle: Vehicle, query: string): boolean {
   const q = query.trim().toLowerCase();
