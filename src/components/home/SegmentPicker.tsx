@@ -102,7 +102,7 @@ export function SegmentPicker() {
       </ul>
 
       <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">
-        Toplam {SEGMENT_OPTIONS.length} klasman · {vehicles.length} araç kayıtlı
+        Toplam {new Set(vehicles.map(v => v.bodyType)).size} klasman · {vehicles.length} araç kayıtlı
       </p>
     </section>
   );

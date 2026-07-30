@@ -59,6 +59,23 @@ const FloatingSelect = ({ id, label, value, options, onChange, disabled }: any) 
   </div>
 );
 
+// Helper function to generate clean slug from strings
+const generateSlug = (brand: string, model: string, year: string) => {
+  const text = `${brand} ${model} ${year}`;
+  const turkishMap: { [key: string]: string } = {
+    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
+    'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u'
+  };
+  
+  return text
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, match => turkishMap[match]) // Replace Turkish chars
+    .toLowerCase() // Lowercase
+    .trim() // Trim whitespace
+    .replace(/[^a-z0-9\s-]/g, '') // Remove invalid chars
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Remove duplicate hyphens
+};
+
 const FloatingTextarea = ({ id, label, value, onChange, rows = 3 }: any) => (
   <div className="relative group">
     <textarea 
@@ -171,11 +188,14 @@ export function AdminDashboard() {
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Yalnızca yeni araç eklenirken çalışır (Düzenlemede mevcut id korunur)
+    const generatedSlug = generateSlug(formData.brand, formData.model, formData.year || '2024');
+    
     const newVehicle: Vehicle = {
-      id: editingVehicleId || `custom-${Date.now()}`,
+      id: editingVehicleId || generatedSlug,
       slug: editingVehicleId 
-        ? (vehicles.find(v => v.id === editingVehicleId)?.slug || `${formData.brand.toLowerCase()}-${formData.model.toLowerCase()}-${Date.now()}`)
-        : `${formData.brand.toLowerCase()}-${formData.model.toLowerCase()}-${Date.now()}`,
+        ? (vehicles.find(v => v.id === editingVehicleId)?.slug || generatedSlug)
+        : generatedSlug,
       brand: formData.brand,
       model: formData.model,
       year: parseInt(formData.year) || 2024,

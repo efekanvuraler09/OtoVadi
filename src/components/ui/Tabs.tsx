@@ -29,12 +29,11 @@ export function Tabs({ tabs, activeId, onChange }: TabsProps) {
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`relative flex shrink-0 items-center gap-2 pb-4 pt-2 text-[10px] md:text-xs uppercase tracking-[0.2em] transition-colors duration-300 border-b ${
-                isActive ? 'text-white font-normal border-white/80' : 'text-gray-500 hover:text-gray-400 font-light border-transparent'
+              className={`relative flex shrink-0 items-center pb-4 pt-2 font-display text-base md:text-xl tracking-wide transition-all duration-300 border-b-2 ${
+                isActive ? 'text-white font-normal border-white' : 'text-neutral-500 hover:text-neutral-300 font-light border-transparent hover:border-white/30'
               }`}
             >
-              <span className="relative z-10 flex items-center gap-2">
-                {tab.icon}
+              <span className="relative z-10 flex items-center">
                 {tab.label}
               </span>
             </button>

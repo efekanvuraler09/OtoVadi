@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useVehicleStore } from '../store/useVehicleStore';
 import { useGarage } from '../context/GarageContext';
 import { useAuth } from '../context/AuthContext';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Search } from 'lucide-react';
 
 
 export function ModelsPage() {
@@ -11,12 +11,21 @@ export function ModelsPage() {
   const { garagedSlugs, addVehicle, removeVehicle, loadingSlug } = useGarage();
   const { user, openAuthModal } = useAuth();
   const [filter, setFilter] = useState<'all' | 'suv' | 'sedan' | 'eco'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredVehicles = vehicles.filter((v) => {
-    if (filter === 'all') return true;
-    if (filter === 'suv') return v.bodyType === 'suv';
-    if (filter === 'sedan') return v.bodyType === 'sedan';
-    if (filter === 'eco') return v.engine.fuelType === 'hybrid' || v.engine.fuelType === 'electric' || v.engine.fuelType === 'plug-in-hybrid';
+    // Kategori Filtresi
+    if (filter === 'suv' && v.bodyType !== 'suv') return false;
+    if (filter === 'sedan' && v.bodyType !== 'sedan') return false;
+    if (filter === 'eco' && !(v.engine.fuelType === 'hybrid' || v.engine.fuelType === 'electric' || v.engine.fuelType === 'plug-in-hybrid')) return false;
+    
+    // Arama Filtresi
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const text = `${v.brand} ${v.model} ${v.tagline}`.toLowerCase();
+      if (!text.includes(q)) return false;
+    }
+
     return true;
   });
 
@@ -32,12 +41,27 @@ export function ModelsPage() {
       <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 flex flex-col items-center">
         
         {/* Header */}
-        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground text-center mb-12 tracking-wide">
+        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground text-center mb-8 tracking-wide">
           Koleksiyonu Keşfedin
         </h1>
 
+        {/* Search Bar */}
+        <div className="w-full max-w-2xl mb-8">
+          <div className="border border-border-subtle bg-transparent flex min-h-14 items-center gap-4 rounded-none px-6 w-full shadow-sm hover:border-foreground/50 transition-colors focus-within:border-foreground">
+            <Search className="size-5 shrink-0 text-muted" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Marka, model veya anahtar kelime ara..."
+              className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted"
+              aria-label="Araç ara"
+            />
+          </div>
+        </div>
+
         {/* Filters */}
-        <div className="flex flex-wrap items-center justify-center gap-8 mb-20">
+        <div className="flex flex-wrap items-center justify-center gap-8 mb-16">
           {filterOptions.map((opt) => (
             <button
               key={opt.id}

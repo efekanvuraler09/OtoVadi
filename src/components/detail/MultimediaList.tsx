@@ -24,37 +24,26 @@ interface MultimediaListProps {
 
 export function MultimediaList({ features }: MultimediaListProps) {
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col gap-8 py-6">
       {features.map((feature) => {
         const Icon = feature.icon ? iconMap[feature.icon] ?? Monitor : Monitor;
         return (
           <li
             key={feature.id}
-            className={`rounded-none border p-4 bg-transparent ${
-              feature.highlight
-                ? 'border-foreground/20'
-                : 'border-border-subtle'
-            }`}
+            className="flex flex-col gap-4 border-b border-neutral-800/50 pb-6"
           >
-            <div className="flex gap-3">
-              <div
-                className="flex size-10 shrink-0 items-center justify-center rounded-none bg-foreground/10"
-              >
-                <Icon className="size-5 text-foreground" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-light tracking-wide text-foreground">{feature.name}</h4>
-                  {feature.highlight && (
-                    <span className="rounded-none bg-foreground/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-foreground/70">
-                      Öne çıkan
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted">{feature.description}</p>
-                <p className="mt-1.5 text-[10px] capitalize text-muted/80">{feature.category}</p>
+            <div className="flex items-center gap-4">
+              <Icon className="size-6 text-neutral-400 shrink-0" strokeWidth={1} />
+              <div className="flex items-center gap-4 flex-wrap">
+                <h4 className="font-display text-2xl md:text-3xl font-light tracking-wide text-white">{feature.name}</h4>
+                {feature.highlight && (
+                  <span className="rounded-none border border-neutral-700 px-2 py-1 text-[10px] font-medium uppercase tracking-widest text-neutral-400">
+                    ÖNE ÇIKAN
+                  </span>
+                )}
               </div>
             </div>
+            <p className="text-base font-light leading-relaxed text-neutral-400 md:pl-10">{feature.description}</p>
           </li>
         );
       })}

@@ -43,28 +43,28 @@ export function ComparisonEngine() {
   );
 
   const renderStat = (label: string, value: string | number) => (
-    <div className="flex flex-col items-center py-6">
-      <span className="text-[10px] uppercase tracking-widest text-muted mb-3">{label}</span>
-      <span className="font-display text-4xl md:text-5xl font-light text-foreground">{value}</span>
+    <div className="flex flex-col items-center py-6 min-w-0 px-2 text-center">
+      <span className="text-[10px] uppercase tracking-widest text-muted mb-3 truncate max-w-full">{label}</span>
+      <span className="font-display text-2xl sm:text-3xl md:text-5xl font-light text-foreground break-words max-w-full truncate" title={String(value)}>{value}</span>
     </div>
   );
 
   const renderFeatureRow = (vehicle: Vehicle) => {
     return (
-      <div className="flex flex-col w-full px-4 md:px-12 mt-12 gap-8">
+      <div className="flex flex-col w-full px-2 sm:px-4 md:px-12 mt-12 gap-8 min-w-0">
         <div className="flex justify-center border-b border-border-subtle pb-4">
-          <span className="text-xs uppercase tracking-widest text-muted">Öne Çıkan Donanımlar</span>
+          <span className="text-xs uppercase tracking-widest text-muted truncate">Öne Çıkan Donanımlar</span>
         </div>
         <div className="flex flex-col gap-6">
           {COMPARE_FEATURES.map((feature) => {
             const hasFeature = vehicle.highlights.includes(feature);
             return (
-              <div key={feature} className="flex flex-col items-center gap-2">
-                <span className="text-sm font-medium text-foreground">{feature}</span>
+              <div key={feature} className="flex flex-col items-center gap-2 min-w-0 text-center">
+                <span className="text-xs sm:text-sm font-medium text-foreground truncate max-w-full" title={feature}>{feature}</span>
                 {hasFeature ? (
-                  <Check className="size-5 text-emerald-500 stroke-[1.5]" />
+                  <Check className="size-5 text-emerald-500 stroke-[1.5] shrink-0" />
                 ) : (
-                  <Minus className="size-5 text-muted/30 stroke-[1]" />
+                  <Minus className="size-5 text-muted/30 stroke-[1] shrink-0" />
                 )}
               </div>
             );
@@ -115,15 +115,15 @@ export function ComparisonEngine() {
   };
 
   return (
-    <section className="w-full min-h-screen bg-void pt-16">
-      <div className="mx-auto max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
+    <section className="w-full min-h-screen bg-void pt-16 overflow-x-auto">
+      <div className="mx-auto min-w-[600px] max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
         {/* Left Column */}
-        <div className="border-r border-border-subtle">
+        <div className="border-r border-border-subtle min-w-0">
           {renderColumn(leftVehicle, setLeftId)}
         </div>
         
         {/* Right Column */}
-        <div>
+        <div className="min-w-0">
           {renderColumn(rightVehicle, setRightId)}
         </div>
       </div>

@@ -11,7 +11,7 @@ interface HeroSectionProps {
 export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
   const vehicles = useVehicleStore((s) => s.vehicles);
   const vehicleCount = vehicles.length;
-  const activeSegmentCount = useMemo(() => countActiveSegments(vehicles), [vehicles]);
+  const activeSegmentCount = useMemo(() => new Set(vehicles.map(v => v.bodyType)).size, [vehicles]);
   const heroStats = useMemo(() => getHeroStats(vehicles), [vehicles]);
 
   return (

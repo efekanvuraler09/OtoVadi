@@ -15,11 +15,11 @@ import { TestDriveModal } from '../components/ui/TestDriveModal';
 import { useVehicleStore } from '../store/useVehicleStore';
 
 const DETAIL_TABS = [
-  { id: 'audio', label: 'Ses', icon: <Volume2 className="size-3.5" /> },
-  { id: 'tech', label: 'Teknik', icon: <Cog className="size-3.5" /> },
-  { id: 'media', label: 'Multimedya', icon: <Monitor className="size-3.5" /> },
-  { id: 'interior', label: 'İç Mekan', icon: <Sofa className="size-3.5" /> },
-  { id: 'dims', label: 'Boyutlar', icon: <LayoutGrid className="size-3.5" /> },
+  { id: 'audio', label: 'Ses' },
+  { id: 'tech', label: 'Teknik' },
+  { id: 'media', label: 'Multimedya' },
+  { id: 'interior', label: 'İç Mekan' },
+  { id: 'dims', label: 'Boyutlar' },
 ] as const;
 
 export function VehicleDetailPage() {
@@ -182,7 +182,7 @@ export function VehicleDetailPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <dl className="grid grid-cols-2 gap-3">
+              <dl className="grid grid-cols-2 gap-x-8 gap-y-12 py-6">
                 {[
                   { label: 'Uzunluk', value: `${dimensions.lengthMm} mm` },
                   { label: 'Genişlik', value: `${dimensions.widthMm} mm` },
@@ -193,10 +193,10 @@ export function VehicleDetailPage() {
                 ].map(({ label, value }) => (
                   <div
                     key={label}
-                    className="border border-border-subtle rounded-none px-4 py-4"
+                    className="flex flex-col gap-2 border-b border-neutral-800/50 pb-4"
                   >
-                    <dt className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</dt>
-                    <dd className="mt-1.5 text-sm font-light tracking-wide text-foreground">{value}</dd>
+                    <dt className="font-display text-lg md:text-xl text-neutral-400 capitalize">{label}</dt>
+                    <dd className="text-4xl md:text-5xl font-light tracking-wide text-white">{value}</dd>
                   </div>
                 ))}
               </dl>

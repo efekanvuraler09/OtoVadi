@@ -119,7 +119,7 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
 
   return (
     <div
-      className={`border border-border-subtle rounded-none ${compact ? 'p-3' : 'p-4 md:p-5'}`}
+      className={`border-b border-neutral-800/50 ${compact ? 'pb-4' : 'pb-6'}`}
     >
       <audio ref={audioRef} src={track.src} preload="metadata" />
 
@@ -142,11 +142,11 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
         </motion.button>
 
         <div className="min-w-0 flex-1">
-          <p className={`font-semibold text-foreground ${compact ? 'text-sm' : 'text-base'}`}>
+          <h4 className={`font-display font-light tracking-wide text-white ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
             {track.label}
-          </p>
+          </h4>
           {!compact && (
-            <p className="mt-0.5 text-xs leading-relaxed text-muted line-clamp-2">
+            <p className="mt-1 text-base font-light text-neutral-400">
               {track.description}
             </p>
           )}
@@ -154,8 +154,8 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
           {unavailable ? (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-amber-400/90">
               <AlertCircle className="size-3.5 shrink-0" />
-              <span>
-                Ses dosyası henüz yüklenmedi — <code className="text-[10px]">public/audio</code>
+              <span className="font-light">
+                Ses dosyası henüz yüklenmedi — <code className="text-[10px] bg-neutral-800/50 px-1 py-0.5 rounded-sm">public/audio</code>
               </span>
             </div>
           ) : (

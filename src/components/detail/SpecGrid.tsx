@@ -21,25 +21,25 @@ const drivetrainLabels: Record<string, string> = {
 
 export function SpecGrid({ vehicle }: SpecGridProps) {
   const specs = [
-    { label: 'Motor', value: `${vehicle.engine.displacementCc} cc · ${vehicle.engine.configuration}` },
-    { label: 'Güç', value: `${vehicle.engine.powerHp} hp (${vehicle.engine.powerKw} kW)` },
+    { label: 'Motor', value: `${vehicle.engine.displacementCc} cc` },
+    { label: 'Güç', value: `${vehicle.engine.powerHp} hp` },
     { label: 'Tork', value: `${vehicle.engine.torqueNm} Nm` },
     { label: 'Yakıt', value: fuelLabels[vehicle.engine.fuelType] ?? vehicle.engine.fuelType },
     { label: '0–100', value: `${vehicle.performance.zeroTo100Kmh} sn` },
     { label: 'Maks. Hız', value: `${vehicle.performance.topSpeedKmh} km/s` },
     { label: 'Çekiş', value: drivetrainLabels[vehicle.performance.drivetrain] ?? vehicle.performance.drivetrain },
-    { label: 'Vites', value: `${vehicle.performance.gears} vites · ${vehicle.performance.transmission}` },
+    { label: 'Vites', value: vehicle.performance.transmission },
   ];
 
   return (
-    <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4 py-6">
       {specs.map(({ label, value }) => (
         <div
           key={label}
-          className="rounded-none border border-border-subtle bg-transparent px-3 py-3"
+          className="flex flex-col gap-2 border-b border-neutral-800/50 pb-4"
         >
-          <dt className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</dt>
-          <dd className="mt-1.5 text-sm font-light tracking-wide text-foreground">{value}</dd>
+          <dt className="font-display text-lg md:text-xl text-neutral-400 capitalize">{label}</dt>
+          <dd className="text-4xl md:text-5xl font-light tracking-wide text-white">{value}</dd>
         </div>
       ))}
     </dl>
