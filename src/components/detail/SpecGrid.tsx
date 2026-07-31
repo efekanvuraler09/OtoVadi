@@ -36,10 +36,10 @@ export function SpecGrid({ vehicle }: SpecGridProps) {
       {specs.map(({ label, value }) => (
         <div
           key={label}
-          className="flex flex-col gap-2 border-b border-neutral-800/50 pb-4"
+          className="flex flex-col gap-2 border-b border-border-subtle pb-4"
         >
-          <dt className="font-display text-lg md:text-xl text-neutral-400 capitalize">{label}</dt>
-          <dd className="text-4xl md:text-5xl font-light tracking-wide text-white">{value}</dd>
+          <dt className="font-display text-lg md:text-xl text-gray-500 dark:text-neutral-400 capitalize">{label}</dt>
+          <dd className="text-4xl md:text-5xl font-light tracking-wide text-foreground">{value}</dd>
         </div>
       ))}
     </dl>

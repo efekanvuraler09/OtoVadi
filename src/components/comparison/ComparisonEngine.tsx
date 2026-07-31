@@ -42,12 +42,45 @@ export function ComparisonEngine() {
     </div>
   );
 
-  const renderStat = (label: string, value: string | number) => (
-    <div className="flex flex-col items-center py-6 min-w-0 px-2 text-center">
-      <span className="text-[10px] uppercase tracking-widest text-muted mb-3 truncate max-w-full">{label}</span>
-      <span className="font-display text-2xl sm:text-3xl md:text-5xl font-light text-foreground break-words max-w-full truncate" title={String(value)}>{value}</span>
-    </div>
-  );
+  const parseNumber = (val: string | number): number => {
+    if (typeof val === 'number') return val;
+    const match = val.match(/[\d.]+/);
+    return match ? parseFloat(match[0]) : NaN;
+  };
+
+  const renderStat = (
+    label: string, 
+    myValue: string | number, 
+    opponentValue?: string | number, 
+    type: 'higher' | 'lower' | 'neutral' = 'neutral'
+  ) => {
+    let isWinner = false;
+    
+    if (type !== 'neutral' && opponentValue !== undefined) {
+      const myNum = parseNumber(myValue);
+      const oppNum = parseNumber(opponentValue);
+      
+      if (myNum !== oppNum && !Number.isNaN(myNum) && !Number.isNaN(oppNum)) {
+        if (type === 'higher') {
+          isWinner = myNum > oppNum;
+        } else {
+          isWinner = myNum < oppNum;
+        }
+      }
+    }
+
+    return (
+      <div className="flex flex-col items-center py-6 min-w-0 px-2 text-center">
+        <span className="text-[10px] uppercase tracking-widest text-muted mb-3 truncate max-w-full">{label}</span>
+        <span 
+          className={`font-display text-2xl sm:text-3xl md:text-5xl font-light break-words max-w-full truncate transition-colors duration-500 ${isWinner ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'}`} 
+          title={String(myValue)}
+        >
+          {myValue}
+        </span>
+      </div>
+    );
+  };
 
   const renderFeatureRow = (vehicle: Vehicle) => {
     return (
@@ -74,7 +107,7 @@ export function ComparisonEngine() {
     );
   };
 
-  const renderColumn = (vehicle: Vehicle, setVehicle: (id: string) => void) => {
+  const renderColumn = (vehicle: Vehicle, setVehicle: (id: string) => void, otherVehicle: Vehicle) => {
     return (
       <div className="flex flex-col w-full pb-20">
         <div className="sticky top-16 z-20 bg-void/90 backdrop-blur-md pb-4">
@@ -101,11 +134,13 @@ export function ComparisonEngine() {
 
         {/* Stats */}
         <div className="flex flex-col gap-4">
-          {renderStat('Motor', vehicle.engine.code)}
-          {renderStat('Güç', `${vehicle.engine.powerHp} HP`)}
-          {renderStat('Tork', `${vehicle.engine.torqueNm} Nm`)}
-          {renderStat('0-100 km/s', `${vehicle.performance.zeroTo100Kmh} sn`)}
-          {renderStat('Bagaj', `${vehicle.dimensions.bootCapacityL} L`)}
+          {renderStat('Motor', vehicle.engine.code, otherVehicle.engine.code, 'neutral')}
+          {renderStat('Güç', `${vehicle.engine.powerHp} HP`, `${otherVehicle.engine.powerHp} HP`, 'higher')}
+          {renderStat('Tork', `${vehicle.engine.torqueNm} Nm`, `${otherVehicle.engine.torqueNm} Nm`, 'higher')}
+          {renderStat('Maks. Hız', `${vehicle.performance.topSpeedKmh} km/s`, `${otherVehicle.performance.topSpeedKmh} km/s`, 'higher')}
+          {renderStat('0-100 km/s', `${vehicle.performance.zeroTo100Kmh} sn`, `${otherVehicle.performance.zeroTo100Kmh} sn`, 'lower')}
+          {renderStat('Ağırlık', `${vehicle.dimensions.curbWeightKg} kg`, `${otherVehicle.dimensions.curbWeightKg} kg`, 'lower')}
+          {renderStat('Bagaj', `${vehicle.dimensions.bootCapacityL} L`, `${otherVehicle.dimensions.bootCapacityL} L`, 'higher')}
         </div>
 
         {/* Features */}
@@ -119,12 +154,12 @@ export function ComparisonEngine() {
       <div className="mx-auto min-w-[600px] max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
         {/* Left Column */}
         <div className="border-r border-border-subtle min-w-0">
-          {renderColumn(leftVehicle, setLeftId)}
+          {renderColumn(leftVehicle, setLeftId, rightVehicle)}
         </div>
         
         {/* Right Column */}
         <div className="min-w-0">
-          {renderColumn(rightVehicle, setRightId)}
+          {renderColumn(rightVehicle, setRightId, leftVehicle)}
         </div>
       </div>
     </section>

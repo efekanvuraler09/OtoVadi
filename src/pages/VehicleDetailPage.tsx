@@ -93,14 +93,14 @@ export function VehicleDetailPage() {
       <div className="px-4 pb-8 md:px-8 lg:mx-auto lg:max-w-4xl lg:px-12 py-10">
         <section className="py-10">
           <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Donanımlar</p>
-          <h2 className="text-3xl md:text-4xl font-serif text-white/90 font-light tracking-wide mb-8">
+          <h2 className="text-3xl md:text-4xl font-serif text-foreground/90 font-light tracking-wide mb-8">
             {vehicle.shortDescription}
           </h2>
           <div className="flex flex-wrap gap-8">
             {vehicle.highlights.map((tag) => (
               <span
                 key={tag}
-                className="text-white font-normal"
+                className="text-foreground font-normal"
               >
                 {tag}
               </span>
@@ -193,10 +193,10 @@ export function VehicleDetailPage() {
                 ].map(({ label, value }) => (
                   <div
                     key={label}
-                    className="flex flex-col gap-2 border-b border-neutral-800/50 pb-4"
+                    className="flex flex-col gap-2 border-b border-border-subtle pb-4"
                   >
-                    <dt className="font-display text-lg md:text-xl text-neutral-400 capitalize">{label}</dt>
-                    <dd className="text-4xl md:text-5xl font-light tracking-wide text-white">{value}</dd>
+                    <dt className="font-display text-lg md:text-xl text-gray-500 dark:text-neutral-400 capitalize">{label}</dt>
+                    <dd className="text-4xl md:text-5xl font-light tracking-wide text-foreground">{value}</dd>
                   </div>
                 ))}
               </dl>

@@ -30,7 +30,7 @@ export function Tabs({ tabs, activeId, onChange }: TabsProps) {
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
               className={`relative flex shrink-0 items-center pb-4 pt-2 font-display text-base md:text-xl tracking-wide transition-all duration-300 border-b-2 ${
-                isActive ? 'text-white font-normal border-white' : 'text-neutral-500 hover:text-neutral-300 font-light border-transparent hover:border-white/30'
+                isActive ? 'text-foreground font-normal border-foreground' : 'text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-300 font-light border-transparent hover:border-foreground/30'
               }`}
             >
               <span className="relative z-10 flex items-center">

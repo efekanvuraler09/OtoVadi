@@ -142,11 +142,11 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
         </motion.button>
 
         <div className="min-w-0 flex-1">
-          <h4 className={`font-display font-light tracking-wide text-white ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
+          <h4 className={`font-display font-light tracking-wide text-foreground ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
             {track.label}
           </h4>
           {!compact && (
-            <p className="mt-1 text-base font-light text-neutral-400">
+            <p className="mt-1 text-base font-light text-gray-500 dark:text-neutral-400">
               {track.description}
             </p>
           )}

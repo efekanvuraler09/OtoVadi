@@ -30,20 +30,20 @@ export function MultimediaList({ features }: MultimediaListProps) {
         return (
           <li
             key={feature.id}
-            className="flex flex-col gap-4 border-b border-neutral-800/50 pb-6"
+            className="flex flex-col gap-4 border-b border-border-subtle pb-6"
           >
             <div className="flex items-center gap-4">
-              <Icon className="size-6 text-neutral-400 shrink-0" strokeWidth={1} />
+              <Icon className="size-6 text-gray-500 dark:text-neutral-400 shrink-0" strokeWidth={1} />
               <div className="flex items-center gap-4 flex-wrap">
-                <h4 className="font-display text-2xl md:text-3xl font-light tracking-wide text-white">{feature.name}</h4>
+                <h4 className="font-display text-2xl md:text-3xl font-light tracking-wide text-foreground">{feature.name}</h4>
                 {feature.highlight && (
-                  <span className="rounded-none border border-neutral-700 px-2 py-1 text-[10px] font-medium uppercase tracking-widest text-neutral-400">
+                  <span className="rounded-none border border-border-subtle px-2 py-1 text-[10px] font-medium uppercase tracking-widest text-gray-500 dark:text-neutral-400">
                     ÖNE ÇIKAN
                   </span>
                 )}
               </div>
             </div>
-            <p className="text-base font-light leading-relaxed text-neutral-400 md:pl-10">{feature.description}</p>
+            <p className="text-base font-light leading-relaxed text-gray-500 dark:text-neutral-400 md:pl-10">{feature.description}</p>
           </li>
         );
       })}
