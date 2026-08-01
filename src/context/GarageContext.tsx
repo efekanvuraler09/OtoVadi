@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from './AuthContext';
 
@@ -40,7 +40,12 @@ export function GarageProvider({ children }: { children: ReactNode }) {
           if (isMounted) setGaragedSlugs(data.savedVehicles || []);
         } else {
           // Initialize empty garage for new user
-          await setDoc(userRef, { savedVehicles: [] });
+          await setDoc(userRef, { 
+            savedVehicles: [],
+            displayName: user.displayName || user.email?.split('@')[0] || 'Bilinmeyen Kullanıcı',
+            email: user.email || '',
+            updatedAt: serverTimestamp()
+          }, { merge: true });
           if (isMounted) setGaragedSlugs([]);
         }
       } catch (error) {
@@ -60,9 +65,12 @@ export function GarageProvider({ children }: { children: ReactNode }) {
     setLoadingSlug(slug);
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        savedVehicles: arrayUnion(slug)
-      });
+      await setDoc(userRef, {
+        savedVehicles: arrayUnion(slug),
+        displayName: user.displayName || user.email?.split('@')[0] || 'Bilinmeyen Kullanıcı',
+        email: user.email || '',
+        updatedAt: serverTimestamp()
+      }, { merge: true });
       setGaragedSlugs((prev) => [...prev, slug]);
       showToast(`${name} kalıcı olarak garajınıza eklendi.`);
     } catch (error) {
@@ -77,9 +85,12 @@ export function GarageProvider({ children }: { children: ReactNode }) {
     setLoadingSlug(slug);
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        savedVehicles: arrayRemove(slug)
-      });
+      await setDoc(userRef, {
+        savedVehicles: arrayRemove(slug),
+        displayName: user.displayName || user.email?.split('@')[0] || 'Bilinmeyen Kullanıcı',
+        email: user.email || '',
+        updatedAt: serverTimestamp()
+      }, { merge: true });
       setGaragedSlugs((prev) => prev.filter((s) => s !== slug));
       showToast(`${name} garajınızdan çıkarıldı.`);
     } catch (error) {
