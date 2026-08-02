@@ -91,7 +91,7 @@ export function ModelsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md p-8 overflow-hidden cursor-pointer h-[500px]"
+                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md overflow-hidden cursor-pointer h-[500px]"
                 onClick={() => window.location.href = `/arac/${vehicle.id}`}
               >
                 {/* Garage Button */}
@@ -127,7 +127,7 @@ export function ModelsPage() {
                 </button>
 
                 {/* Brand & Model */}
-                <div className="z-10 text-center mb-4">
+                <div className="z-20 text-center px-8 pt-8 pb-4">
                   <h2 className="font-display text-2xl font-semibold tracking-wide text-foreground">
                     {vehicle.brand} {vehicle.model}
                   </h2>
@@ -136,13 +136,17 @@ export function ModelsPage() {
                   </p>
                 </div>
 
-                {/* Studio Image */}
-                <div className="relative flex-1 flex items-center justify-center my-6 z-10 pointer-events-none">
+                {/* Studio Image - Edge to Edge */}
+                <div className="relative flex-1 w-full flex items-center justify-center z-10 pointer-events-none overflow-hidden">
                   <img
                     src={vehicle.interactiveGallery?.studioImage || vehicle.media.heroImage}
                     alt={`${vehicle.brand} ${vehicle.model}`}
-                    className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 z-0"
                   />
+                  
+                  {/* Gradients to blend image into card background */}
+                  <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-[#0a0a0a] to-transparent z-10" />
+                  <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10" />
                 </div>
 
                 {/* Hover Specs (Slide Up) */}
@@ -162,7 +166,7 @@ export function ModelsPage() {
                 </div>
 
                 {/* Static Bottom CTA */}
-                <div className="z-10 flex justify-center mt-auto opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+                <div className="z-20 flex justify-center mt-auto px-8 pb-8 pt-4 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
                   <span className="text-xs uppercase tracking-widest text-muted underline underline-offset-4 decoration-border-subtle hover:text-foreground hover:decoration-foreground transition-colors">
                     Detayları İncele
                   </span>

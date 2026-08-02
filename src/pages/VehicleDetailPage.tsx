@@ -90,9 +90,9 @@ export function VehicleDetailPage() {
         <InteractiveGallery vehicle={vehicle} />
       </div>
 
-      <div className="px-4 pb-8 md:px-8 lg:mx-auto lg:max-w-4xl lg:px-12 py-10">
+      <div className="mx-auto w-full max-w-7xl px-6 pb-8 py-10 md:px-12 lg:px-24">
         <section className="py-10">
-          <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Donanımlar</p>
+          <p className="font-display text-lg md:text-xl text-gray-500 dark:text-neutral-400 capitalize mb-4">Donanımlar</p>
           <h2 className="text-3xl md:text-4xl font-serif text-foreground/90 font-light tracking-wide mb-8">
             {vehicle.shortDescription}
           </h2>
