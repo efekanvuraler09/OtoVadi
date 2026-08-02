@@ -16,9 +16,9 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
   const { studioImage, hotspots } = vehicle.interactiveGallery;
 
   return (
-    <section className="relative w-full bg-void pt-8 pb-16">
-      <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 mb-8">
-        <h2 className="font-serif text-3xl font-light tracking-wide text-foreground text-center md:text-left">İnteraktif İnceleme</h2>
+    <section className="relative w-full bg-void pt-4">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 mb-4">
+        <h2 className="text-center text-xs md:text-sm uppercase tracking-[0.3em] text-muted/60">İnteraktif İnceleme</h2>
       </div>
       
       {/* Edge-to-edge container */}

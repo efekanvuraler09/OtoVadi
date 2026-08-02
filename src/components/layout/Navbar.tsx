@@ -5,6 +5,9 @@ import { Bookmark, User, Menu, X } from 'lucide-react';
 import { useGarage } from '../../context/GarageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useVehicleStore } from '../../store/useVehicleStore';
+import driverNotesPatchData from '../../data/driverNotesPatch.json';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 
 // Minimalist custom SVG for OtoVadi - representing an O (circle) and a V (road/needle)
 const BrandIcon = () => (
@@ -29,6 +32,32 @@ export function Navbar() {
   const { garagedSlugs } = useGarage();
   const { user, isAdmin, openAuthModal, logout } = useAuth();
   const setSelectedCategory = useVehicleStore((s) => s.setSelectedCategory);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleSeedNotes = async () => {
+    try {
+      const vehicles = useVehicleStore.getState().vehicles;
+      
+      let count = 0;
+      for (const noteGroup of driverNotesPatchData) {
+        const matchedVehicle = vehicles.find(v => v.id === noteGroup.id || v.slug === noteGroup.id);
+        if (matchedVehicle) {
+          const vehicleRef = doc(db, 'vehicles', matchedVehicle.id);
+          await updateDoc(vehicleRef, {
+            driverNotes: noteGroup.driverNotes
+          });
+          count++;
+        }
+      }
+      
+      setToastMessage(`${count} Aracın Sürücü Notları Yaması Başarıyla Eklendi!`);
+      setTimeout(() => setToastMessage(null), 3000);
+    } catch (error) {
+      console.error('Seed Error:', error);
+      alert('Tohumlama sırasında hata oluştu.');
+    }
+  };
+
   const navLinks = [
     { label: 'Modeller', href: '/modeller' },
     { label: 'Akıllı Keşif', href: '/kesif' },
@@ -65,7 +94,7 @@ export function Navbar() {
               <Link
                 key={link.label}
                 to={link.href}
-                className="group relative text-sm font-medium text-muted transition-colors duration-300 hover:text-foreground"
+                className="group relative text-sm font-medium text-muted transition-colors duration-300 hover:text-foreground whitespace-nowrap"
               >
                 {link.label}
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
@@ -132,6 +161,16 @@ export function Navbar() {
               </button>
             )}
 
+            {/* Seed Button (Temporary) */}
+            {isAdmin && (
+              <button
+                onClick={handleSeedNotes}
+                className="text-[10px] uppercase tracking-widest bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-colors hidden md:block whitespace-nowrap px-3 py-1.5 border border-emerald-500/20"
+              >
+                Notları Aktar
+              </button>
+            )}
+
             <ThemeToggle />
             
             {/* Mobile Menu Toggle */}
@@ -146,6 +185,14 @@ export function Navbar() {
         </div>
         
       </div>
+
+      {/* Temporary Toast */}
+      {toastMessage && (
+        <div className="fixed top-20 right-4 md:right-8 lg:right-12 z-50 bg-emerald-500 text-white px-6 py-3 shadow-2xl font-sans text-sm tracking-wide flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+          <div className="size-2 rounded-full bg-white animate-pulse" />
+          {toastMessage}
+        </div>
+      )}
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (

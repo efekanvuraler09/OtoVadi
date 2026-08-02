@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Info } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
@@ -20,6 +20,7 @@ const DETAIL_TABS = [
   { id: 'media', label: 'Multimedya' },
   { id: 'interior', label: 'İç Mekan' },
   { id: 'dims', label: 'Boyutlar' },
+  { id: 'notes', label: 'Sürücü Notları' },
 ] as const;
 
 export function VehicleDetailPage() {
@@ -86,7 +87,7 @@ export function VehicleDetailPage() {
     >
       <DetailHero vehicle={vehicle} onOpenTestDrive={() => setIsTestDriveOpen(true)} />
 
-      <div className="py-10">
+      <div className="py-2">
         <InteractiveGallery vehicle={vehicle} />
       </div>
 
@@ -200,6 +201,47 @@ export function VehicleDetailPage() {
                   </div>
                 ))}
               </dl>
+            </motion.div>
+          )}
+
+          {activeTab === 'notes' && (
+            <motion.div
+              key="notes"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col gap-4"
+            >
+              {vehicle.driverNotes && vehicle.driverNotes.length > 0 ? (
+                vehicle.driverNotes.map((note, idx) => (
+                  <div key={idx} className="bg-muted/30 border-l-2 border-foreground/20 p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
+                    <div className="mt-1 shrink-0">
+                      <Info className="size-6 text-foreground/60" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-serif text-xl tracking-wide text-foreground">
+                        {note.title}
+                      </h3>
+                      <p className="font-sans text-sm md:text-base leading-relaxed text-muted">
+                        {note.description}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-muted/30 border-l-2 border-foreground/20 p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
+                  <div className="mt-1 shrink-0">
+                    <Info className="size-6 text-foreground/60" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-serif text-xl tracking-wide text-foreground">
+                      Bilgi Bulunamadı
+                    </h3>
+                    <p className="font-sans text-sm md:text-base leading-relaxed text-muted">
+                      Bu araç için henüz kaydedilmiş bir sürücü notu bulunmamaktadır.
+                    </p>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </div>

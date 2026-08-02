@@ -112,6 +112,12 @@ export interface InteractiveGalleryData {
   hotspots: Hotspot[];
 }
 
+export interface DriverNote {
+  title: string;
+  description: string;
+  type: 'info' | 'warning' | 'error';
+}
+
 export interface VehiclePricing {
   currency: 'EUR' | 'USD' | 'TRY';
   msrp: number;
@@ -143,6 +149,7 @@ export interface Vehicle {
   accentColor: 'blue' | 'red';
   interactiveGallery?: InteractiveGalleryData;
   modelPath?: string;
+  driverNotes?: DriverNote[];
 }
 
 export interface VehicleCatalogMeta {

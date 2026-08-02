@@ -1,0 +1,191 @@
+[
+  {
+    "brand": "Audi", "model": "A3 Sedan",
+    "driverNotes": [
+      { "title": "S-Tronic Kavrama Hassasiyeti", "description": "Yoğun dur-kalk trafikte kuru kavramalı şanzımanda ısınma ve titreme gözlemlenebilir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Audi", "model": "A6 45 TFSI",
+    "driverNotes": [
+      { "title": "Mild-Hybrid Akü Arızası", "description": "48V hafif hibrit sistemindeki alternatör jeneratörü arızaları nadir de olsa rapor edilmektedir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Audi", "model": "Q5 45 TFSI",
+    "driverNotes": [
+      { "title": "Cam Tavan Sesi", "description": "Bozuk yollarda panoramik cam tavanın ray mekanizmasından trim sesleri gelebilmektedir. Fitil bakımı önerilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "BMW", "model": "2 Series Gran Coupe",
+    "driverNotes": [
+      { "title": "Önden Çekiş Karakteristiği", "description": "Klasik BMW arkadan itiş hissiyatından farklı olarak, limitlerde önden kayma (understeer) eğilimi gösterir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "BMW", "model": "320i",
+    "driverNotes": [
+      { "title": "Rüzgar Sesi Yalıtımı", "description": "Yüksek otoban hızlarında A sütunu ve yan aynalardan kabin içine rüzgar sesi alabilmektedir. Akustik cam opsiyonu önemlidir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "BMW", "model": "X3 20d",
+    "driverNotes": [
+      { "title": "xDrive Transfer Kutusu", "description": "Farklı aşınmış veya yanlış ebatlı lastik kullanımları transfer kutusuna zarar verebilmektedir. 4 lastiğin eşit aşınması kritiktir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Chevrolet", "model": "Camaro ZL1",
+    "driverNotes": [
+      { "title": "Görüş Açıları", "description": "Alçak tavan yapısı ve kalın C sütunları nedeniyle çapraz ve arka görüş açıları oldukça kısıtlıdır.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Citroen", "model": "C4X",
+    "driverNotes": [
+      { "title": "Multimedya Gecikmesi", "description": "Bilgi-eğlence ekranı ilk çalışmada veya Apple CarPlay geçişlerinde zaman zaman donmalar yaşatabilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Dodge", "model": "Challenger R/T",
+    "driverNotes": [
+      { "title": "Hemi Tick Sesi", "description": "5.7L V8 motorlarda subap iticilerinden kaynaklanan ve 'Hemi Tick' olarak bilinen ritmik tıkırtı sesi duyulabilir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Dodge", "model": "Challenger SRT Hellcat",
+    "driverNotes": [
+      { "title": "Supercharger Isınması", "description": "Pist veya yoğun performanslı kullanımlarda 'Heat Soak' (aşırı ısınma) nedeniyle güç kesintisi yaşanabilir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Dodge", "model": "Charger R/T",
+    "driverNotes": [
+      { "title": "İç Mekan Malzeme Kalitesi", "description": "Kapı panelleri ve konsol birleşim yerlerinden, özellikle bozuk zeminlerde trim sesleri gelebilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Dodge", "model": "Charger SRT Hellcat",
+    "driverNotes": [
+      { "title": "Fren Diski Aşınması", "description": "Aracın yüksek ağırlığı ve gücü nedeniyle Brembo fren diskleri ve balataları beklenenden çok daha hızlı tükenmektedir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Fiat", "model": "Egea Sedan",
+    "driverNotes": [
+      { "title": "1.4 Fire Yağ Eksiltme", "description": "Özellikle 1.4 atmosferik motorlarda belirli bir kilometre sonrasında kronik yağ eksiltme gözlemlenmektedir. Periyodik kontrol şarttır.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Ford", "model": "Focus Sedan",
+    "driverNotes": [
+      { "title": "8 İleri Şanzıman Kararsızlığı", "description": "Düşük hızlarda ve yokuşlarda 8 ileri tork konvertörlü şanzımanın vites seçimlerinde kararsızlık (vuruntu) yaşanabilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Ford", "model": "Mustang",
+    "driverNotes": [
+      { "title": "10 İleri Otomatik Geçişleri", "description": "Günlük kullanımda 10 ileri şanzımanın sürekli vites atlama (hunting) eğilimi sürüş pürüzsüzlüğünü etkileyebilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Ford", "model": "Mustang GT",
+    "driverNotes": [
+      { "title": "MT82 Şanzıman Sertliği", "description": "Manuel versiyonlarda 2. ve 3. vites geçişlerinde soğukken kemikli ve sert bir hissiyat vardır.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Ford", "model": "Ranger Raptor",
+    "driverNotes": [
+      { "title": "DPF ve Enjektör", "description": "2.0 Bi-Turbo dizel motorlarda ağır off-road sonrası enjektör kirlenmesi ve DPF uyarısı görülebilmektedir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Honda", "model": "Civic Sedan",
+    "driverNotes": [
+      { "title": "Direksiyon Kutusu", "description": "Uzun otoyol sürüşlerinde direksiyonda hafif takılma/yapışma hissi yaşanabilir. Servis yazılım güncellemesi gerektirir.", "type": "warning" },
+      { "title": "Yol Sesi", "description": "Japon otomobili karakteri olarak yüksek hızlarda kabin içine belirgin lastik ve yol sesi almaktadır.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Hyundai", "model": "Elantra",
+    "driverNotes": [
+      { "title": "IVT Şanzıman Sesi", "description": "Sabit hızlarda hızlanırken sürekli değişken (CVT/IVT) şanzımanın tek düze motor bağırma sesi konforu etkileyebilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Hyundai", "model": "Tucson", "trim": "Elite Plus",
+    "driverNotes": [
+      { "title": "DPF (Dizel Partikül Filtresi) Hassasiyeti", "description": "Özellikle 1.6 CRDi dizel motorlarda, sürekli düşük devirli ve dur-kalk şehir içi kullanımlarda DPF dolum uyarısı sıklıkla rapor edilmektedir. Sistemin kendini temizleyebilmesi için periyodik otoyol sürüşleri tavsiye edilir.", "type": "warning" },
+      { "title": "Kavrama Isınması (DCT)", "description": "Yoğun trafikte yokuş yukarı dur-kalk yaparken çift kavramalı şanzımanın ısınma uyarısı verebildiği gözlemlenmiştir. Yokuşlarda frene tam basılması veya Auto-Hold kullanılması önerilir.", "type": "warning" },
+      { "title": "Elite Plus Elektronik Uyarıları", "description": "Hız limit asistanı (ISLA) ve şerit takip asistanı (LFA) ülkemizdeki silik şeritlerde ve tabelalarda bazen aşırı duyarlı tepkiler verebilmektedir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Kia", "model": "Cerato / K4 Sedan",
+    "driverNotes": [
+      { "title": "Süspansiyon Sertliği", "description": "Özellikle 17 veya 18 inç jantlı üst donanımlarda süspansiyon ayarı rakiplerine göre daha serttir, çukurlarda vuruntu yapabilir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Lexus", "model": "NX 350h",
+    "driverNotes": [
+      { "title": "E-CVT Karakteri", "description": "Ani hızlanmalarda e-CVT şanzımanın yarattığı 'lastik uzama' (rubber-band) etkisi sportif sürüş hissiyatını törpülemektedir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz", "model": "E 300",
+    "driverNotes": [
+      { "title": "Piano Black Çizilmeleri", "description": "Orta konsolda yoğun olarak kullanılan parlak siyah yüzeyler mikro çiziklere ve toz tutmaya karşı aşırı hassastır.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz", "model": "GLC 300",
+    "driverNotes": [
+      { "title": "Tam Tur Dönüş Sesi", "description": "Soğuk havalarda direksiyon tam tur çevriliyken manevra yapıldığında ön lastiklerden 'atlama/sürtme' sesi gelebilir (Crabbing efekti).", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Opel", "model": "Astra",
+    "driverNotes": [
+      { "title": "Triger Kayışı Hassasiyeti", "description": "PureTech tabanlı motorlarda, yağ içinde çalışan triger kayışının erken şişme ve dökülme riski vardır. Doğru spesifikasyonda yağ kullanımı hayati önem taşır.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Peugeot", "model": "408",
+    "driverNotes": [
+      { "title": "i-Cockpit Görüş Açısı", "description": "Küçük direksiyon simidi ve üstte konumlandırılan gösterge paneli, bazı sürücü boylarında ekranın yarısının görünmesini engelleyebilmektedir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Skoda", "model": "Octavia",
+    "driverNotes": [
+      { "title": "Kuru Kavrama Aşınması", "description": "DSG şanzımanda özellikle İstanbul gibi yoğun trafikli şehirlerde 60-80 bin km civarında kavrama değişimi ihtiyacı doğabilmektedir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Volkswagen", "model": "Tiguan",
+    "driverNotes": [
+      { "title": "Su Tahliye Kanalları", "description": "Panoramik cam tavanlı modellerde su tahliye kanallarının tıkanması sonucu kabin içine ve A sütununa su alma kroniği mevcuttur. Düzenli temizlik gerektirir.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Volvo", "model": "S60",
+    "driverNotes": [
+      { "title": "Fren Diski Çarpılması", "description": "Yüksek performanslı sürüşlerden sonra sıcakken oto yıkamaya girilmesi ön fren disklerinin hızlıca çarpılmasına (direksiyon titremesine) yol açmaktadır.", "type": "warning" }
+    ]
+  },
+  {
+    "brand": "Volvo", "model": "XC60 B5",
+    "driverNotes": [
+      { "title": "Google Automotive Yazılımı", "description": "Android tabanlı yeni multimedya sistemi ara sıra çevrimdışı kalma veya GPS sinyali kaybetme sorunları yaşatabilmektedir.", "type": "info" }
+    ]
+  },
+  {
+    "brand": "Volkswagen", "model": "Golf 8",
+    "driverNotes": [
+      { "title": "Multimedya ve SOS Hataları", "description": "Bilgi-eğlence ekranının donması, dokunmatik tuşların tepkisizleşmesi ve Acil Çağrı (SOS) sisteminin hata vermesi çok yaygın bir yazılım sorunudur.", "type": "warning" }
+    ]
+  }
+]

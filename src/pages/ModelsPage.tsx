@@ -91,7 +91,7 @@ export function ModelsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md overflow-hidden cursor-pointer h-[500px]"
+                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md overflow-hidden cursor-pointer h-full min-h-[420px]"
                 onClick={() => window.location.href = `/arac/${vehicle.id}`}
               >
                 {/* Garage Button */}
@@ -137,7 +137,7 @@ export function ModelsPage() {
                 </div>
 
                 {/* Studio Image - Edge to Edge */}
-                <div className="relative flex-1 w-full flex items-center justify-center z-10 pointer-events-none overflow-hidden">
+                <div className="relative w-full aspect-[4/3] md:aspect-[3/2] flex items-center justify-center z-10 pointer-events-none overflow-hidden my-auto">
                   <img
                     src={vehicle.interactiveGallery?.studioImage || vehicle.media.heroImage}
                     alt={`${vehicle.brand} ${vehicle.model}`}

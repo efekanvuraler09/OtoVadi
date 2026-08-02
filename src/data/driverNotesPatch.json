@@ -1,0 +1,20 @@
+[
+  {
+    "id": "citroen-c4x-2024",
+    "driverNotes": [
+      { "title": "Multimedya Gecikmesi", "description": "Bilgi-eğlence ekranı ilk çalışmada veya Apple CarPlay geçişlerinde zaman zaman donmalar yaşatabilir.", "type": "info" }
+    ]
+  },
+  {
+    "id": "peugeot-408-sedan-2024",
+    "driverNotes": [
+      { "title": "i-Cockpit Görüş Açısı", "description": "Küçük direksiyon simidi ve üstte konumlandırılan gösterge paneli, bazı sürücü boylarında ekranın yarısının görünmesini engelleyebilmektedir.", "type": "info" }
+    ]
+  },
+  {
+    "id": "opel-astra-sedan-2024",
+    "driverNotes": [
+      { "title": "Triger Kayışı Hassasiyeti", "description": "PureTech tabanlı motorlarda, yağ içinde çalışan triger kayışının erken şişme ve dökülme riski vardır. Doğru spesifikasyonda yağ kullanımı hayati önem taşır.", "type": "warning" }
+    ]
+  }
+]
