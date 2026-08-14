@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, LogOut, Car, Trash2, Edit2, X, Check } from 'lucide-react';
+import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Newspaper } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useVehicleStore } from '../../store/useVehicleStore';
@@ -11,9 +11,10 @@ import {
   deleteVehicleFromFirestore,
 } from '../../services/vehicleService';
 import { subscribeToTestDrives, updateTestDriveStatus, type TestDriveRequest } from '../../services/testDriveService';
+import { saveCarOfTheDay, subscribeCarOfTheDay, type CarOfTheDayData } from '../../services/carOfTheDayService';
 import type { Vehicle } from '../../types/vehicle';
 
-type AdminView = 'list' | 'add' | 'edit' | 'test-drives';
+type AdminView = 'list' | 'add' | 'edit' | 'test-drives' | 'car-of-day';
 
 const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any) => (
   <div className="relative group">
@@ -131,6 +132,13 @@ export function AdminDashboard() {
 
   const [testDrives, setTestDrives] = useState<TestDriveRequest[]>([]);
 
+  // Car of the Day form state
+  const [cotdForm, setCotdForm] = useState<CarOfTheDayData>({
+    title: '', spotText: '', imageUrl: '', articleText: '',
+    engine: '', power: '', torque: '', weight: '',
+    acceleration: '', topSpeed: '', conclusion: '', verdictScore: '',
+  });
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -142,9 +150,16 @@ export function AdminDashboard() {
       setTestDrives(data);
     });
 
+    const unsubscribeCotd = subscribeCarOfTheDay((data) => {
+      if (data) {
+        setCotdForm(data);
+      }
+    });
+
     return () => {
       unsubscribeAuth();
       unsubscribeTestDrives();
+      unsubscribeCotd();
     };
   }, [navigate]);
 
@@ -289,19 +304,36 @@ export function AdminDashboard() {
     }
   };
 
+  const handleCotdSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await saveCarOfTheDay(cotdForm);
+      setToastMessage('Günün Aracı başarıyla güncellendi.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Günün Aracı kaydetme hatası:', err);
+      setToastMessage('İşlem başarısız oldu. Konsolu kontrol edin.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-void flex">
       {/* Sidebar */}
       <aside className="w-64 border-r border-border-subtle flex flex-col pt-8">
         <div className="px-8 mb-12">
-          <h1 className="font-display text-2xl font-bold tracking-wide text-foreground">OtoVadi</h1>
-          <p className="font-sans text-[10px] uppercase tracking-widest text-muted">Admin Panel</p>
+          <Link to="/" className="block cursor-pointer transition-opacity hover:opacity-80 select-none outline-none focus:outline-none">
+            <h1 className="font-display text-2xl font-bold tracking-wide text-foreground">OtoVadi</h1>
+            <p className="font-sans text-[10px] uppercase tracking-widest text-muted">Admin Panel</p>
+          </Link>
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
           <button 
             onClick={() => setCurrentView('list')}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'list' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'list' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
             <Car className="size-4" /> Araçlar
           </button>
@@ -311,13 +343,13 @@ export function AdminDashboard() {
               setEditingVehicleId(null);
               setFormData({ brand: '', model: '', tagline: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
             }}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
             <Plus className="size-4" /> Yeni Ekle
           </button>
           <button 
             onClick={() => setCurrentView('test-drives')}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors ${currentView === 'test-drives' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'test-drives' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
             <div className="relative">
               <span className="block size-4 border-[1.5px] border-current rounded-sm flex items-center justify-center">
@@ -331,12 +363,18 @@ export function AdminDashboard() {
             </div>
             Test Sürüşleri
           </button>
+          <button 
+            onClick={() => setCurrentView('car-of-day')}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'car-of-day' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+          >
+            <Newspaper className="size-4" /> Günün Aracı
+          </button>
         </nav>
 
         <div className="p-4 border-t border-border-subtle space-y-2">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide text-muted hover:text-red-500 transition-colors select-none outline-none focus:outline-none"
           >
             <LogOut className="size-4" /> Çıkış Yap
           </button>
@@ -447,6 +485,83 @@ export function AdminDashboard() {
                 </div>
               )}
             </div>
+          </motion.div>
+        )}
+
+        {/* CAR OF THE DAY VIEW */}
+        {currentView === 'car-of-day' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto">
+            <h2 className="font-display text-4xl font-light text-foreground mb-10">Günün Aracı — Editöryal</h2>
+
+            <form onSubmit={handleCotdSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 gap-8">
+                <FloatingInput id="cotd-title" label="Başlık (Örn: Küçük Sporcu)" value={cotdForm.title} onChange={(e: any) => setCotdForm({...cotdForm, title: e.target.value})} />
+              </div>
+
+              <div className="grid grid-cols-1 gap-8">
+                <FloatingInput id="cotd-spot" label="Spot Metni" value={cotdForm.spotText} onChange={(e: any) => setCotdForm({...cotdForm, spotText: e.target.value})} />
+              </div>
+
+              <div className="grid grid-cols-1 gap-8">
+                <FloatingInput id="cotd-image" label="Görsel URL (Dış bağlantı)" value={cotdForm.imageUrl} onChange={(e: any) => setCotdForm({...cotdForm, imageUrl: e.target.value})} />
+              </div>
+
+              <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Teknik Veriler</h3>
+              </div>
+
+              <div className="grid grid-cols-3 gap-8">
+                <FloatingInput id="cotd-engine" label="Motor Hacmi" value={cotdForm.engine} onChange={(e: any) => setCotdForm({...cotdForm, engine: e.target.value})} />
+                <FloatingInput id="cotd-power" label="Güç (HP)" value={cotdForm.power} onChange={(e: any) => setCotdForm({...cotdForm, power: e.target.value})} />
+                <FloatingInput id="cotd-torque" label="Maks Tork" value={cotdForm.torque} onChange={(e: any) => setCotdForm({...cotdForm, torque: e.target.value})} />
+              </div>
+
+              <div className="grid grid-cols-3 gap-8">
+                <FloatingInput id="cotd-weight" label="Ağırlık" value={cotdForm.weight} onChange={(e: any) => setCotdForm({...cotdForm, weight: e.target.value})} />
+                <FloatingInput id="cotd-accel" label="0-100 km/s" value={cotdForm.acceleration} onChange={(e: any) => setCotdForm({...cotdForm, acceleration: e.target.value})} />
+                <FloatingInput id="cotd-topspeed" label="Maks Hız" value={cotdForm.topSpeed} onChange={(e: any) => setCotdForm({...cotdForm, topSpeed: e.target.value})} />
+              </div>
+
+              <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Makale İçeriği</h3>
+              </div>
+
+              <div className="grid grid-cols-1">
+                <FloatingTextarea id="cotd-article" label="Makale Metni (Paragrafları boş satır ile ayırın)" value={cotdForm.articleText} onChange={(e: any) => setCotdForm({...cotdForm, articleText: e.target.value})} rows={12} />
+              </div>
+
+              <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Sonuç / Değerlendirme</h3>
+              </div>
+
+              <div className="grid grid-cols-1 gap-8">
+                <FloatingTextarea id="cotd-conclusion" label="Sonuç Metni" value={cotdForm.conclusion} onChange={(e: any) => setCotdForm({...cotdForm, conclusion: e.target.value})} rows={3} />
+              </div>
+
+              <div className="grid grid-cols-1 gap-8">
+                <FloatingInput id="cotd-score" label="Puan (Örn: 8.7)" value={cotdForm.verdictScore} onChange={(e: any) => setCotdForm({...cotdForm, verdictScore: e.target.value})} />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => setCotdForm({
+                    title: '', spotText: '', imageUrl: '', articleText: '',
+                    engine: '', power: '', torque: '', weight: '',
+                    acceleration: '', topSpeed: '', conclusion: '', verdictScore: ''
+                  })}
+                  className="w-full sm:w-1/3 py-4 border border-red-500/50 text-red-500 font-sans text-sm font-medium uppercase tracking-widest hover:bg-red-500 hover:text-white transition-colors"
+                >
+                  Formu Temizle
+                </button>
+                <button 
+                  type="submit"
+                  className="w-full sm:flex-1 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
+                >
+                  Günün Aracını Kaydet
+                </button>
+              </div>
+            </form>
           </motion.div>
         )}
 

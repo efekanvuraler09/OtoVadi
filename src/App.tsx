@@ -10,6 +10,7 @@ import { ModelsPage } from './pages/ModelsPage';
 import { GaragePage } from './pages/GaragePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AboutPage } from './pages/AboutPage';
+import { CarOfTheDayPage } from './pages/CarOfTheDayPage';
 import { MyAppointments } from './pages/MyAppointments';
 import { GarageProvider } from './context/GarageContext';
 import { AdminLogin } from './pages/admin/AdminLogin';
@@ -56,6 +57,7 @@ export default function App() {
                 <Route path="garajim" element={<GaragePage />} />
                 <Route path="profil" element={<ProfilePage />} />
                 <Route path="randevularim" element={<MyAppointments />} />
+                <Route path="gunun-araci" element={<CarOfTheDayPage />} />
               </Route>
             </Route>
           </Routes>
