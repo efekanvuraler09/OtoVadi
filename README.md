@@ -11,6 +11,8 @@ Projeyi anında incelemek, premium arayüzü ve dinamik tema geçişlerini deney
 
 ## 🚀 Öne Çıkan Özellikler
 
+* **Akıllı Keşif:** Yapay zeka destekli eşleştirme algoritması sayesinde, kullanıcıların yaşam tarzlarına, ihtiyaçlarına ve beklentilerine en uygun premium araçları saniyeler içinde bulmalarını sağlayan yenilikçi dijital asistan.
+* **İnteraktif Karşılaştırma:** Farklı otomobil modellerini motor, performans, donanım ve detaylı teknik veriler açısından yan yana getirerek derinlemesine analiz ve kıyaslama yapma imkanı sunan dinamik arayüz.
 * **Günün Aracı (Editoryal Modül):** Klasik basılı otomobil dergisi mizanpajında tasarlanmış, sütunlu yazı akışı ve büyük tipografisiyle dikkat çeken, admin panelinden anlık güncellenebilen dinamik makale sayfası.
 * **Gerçek Hayat Sürücü Notları:** Onlarca araç için kronik sorunlar, şanzıman hassasiyetleri, yalıtım karakterleri ve gerçek sürücü uyarılarının yer aldığı detaylı veri sekmesi.
 * **Dinamik Yönetim Paneli (CMS):** Firebase Firestore entegrasyonu ile vitrindeki içeriklerin (Günün aracı, araç listesi vb.) koda dokunmadan tek tıkla yönetilebilmesi.
