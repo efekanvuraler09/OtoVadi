@@ -35,6 +35,8 @@ export function Navbar() {
     { label: 'Akıllı Keşif', href: '/kesif' },
     { label: 'Karşılaştır', href: '/karsilastir' },
     { label: 'Günün Aracı', href: '/gunun-araci' },
+    { label: 'Koleksiyonlar', href: '/koleksiyonlar' },
+    { label: 'Ruh İkizi', href: '/ruh-ikizi' },
     { label: 'Hakkımızda', href: '/hakkimizda' },
   ];
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, Info } from 'lucide-react';
+import { Loader2, Info, Maximize2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
@@ -12,6 +12,7 @@ import { FinanceCalculator } from '../components/detail/FinanceCalculator';
 import { Accordion } from '../components/ui/Accordion';
 import { Tabs } from '../components/ui/Tabs';
 import { TestDriveModal } from '../components/ui/TestDriveModal';
+import { AtmosphereStage } from '../components/detail/AtmosphereStage';
 import { useVehicleStore } from '../store/useVehicleStore';
 
 const DETAIL_TABS = [
@@ -34,6 +35,7 @@ export function VehicleDetailPage() {
     tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl) ? tabFromUrl : 'audio',
   );
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [isAtmosphereOpen, setIsAtmosphereOpen] = useState(false);
 
   useEffect(() => {
     if (tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl)) {
@@ -86,6 +88,20 @@ export function VehicleDetailPage() {
       transition={{ duration: 0.3 }}
     >
       <DetailHero vehicle={vehicle} onOpenTestDrive={() => setIsTestDriveOpen(true)} />
+
+      {/* ── Atmosfer Sahne Butonu ── */}
+      <div className="flex justify-center py-5">
+        <motion.button
+          type="button"
+          onClick={() => setIsAtmosphereOpen(true)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className="group flex items-center gap-3 border border-border-subtle bg-void/80 px-7 py-3 font-sans text-xs uppercase tracking-[0.2em] text-muted backdrop-blur-sm transition-all duration-300 hover:border-foreground/30 hover:bg-foreground hover:text-void"
+        >
+          <Maximize2 className="size-4 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
+          <span>Atmosferi Yaşa</span>
+        </motion.button>
+      </div>
 
       <div className="py-2">
         <InteractiveGallery vehicle={vehicle} />
@@ -254,6 +270,12 @@ export function VehicleDetailPage() {
         vehicle={vehicle} 
         isOpen={isTestDriveOpen} 
         onClose={() => setIsTestDriveOpen(false)} 
+      />
+
+      <AtmosphereStage
+        vehicle={vehicle}
+        isOpen={isAtmosphereOpen}
+        onClose={() => setIsAtmosphereOpen(false)}
       />
     </motion.div>
   );

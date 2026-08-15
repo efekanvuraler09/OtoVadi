@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Newspaper } from 'lucide-react';
+import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Newspaper, Library } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useVehicleStore } from '../../store/useVehicleStore';
@@ -12,9 +12,15 @@ import {
 } from '../../services/vehicleService';
 import { subscribeToTestDrives, updateTestDriveStatus, type TestDriveRequest } from '../../services/testDriveService';
 import { saveCarOfTheDay, subscribeCarOfTheDay, type CarOfTheDayData } from '../../services/carOfTheDayService';
+import {
+  subscribeCollections,
+  createCollection,
+  deleteCollection as deleteCollectionFromFirestore,
+} from '../../services/collectionService';
 import type { Vehicle } from '../../types/vehicle';
+import type { VehicleCollection, CollectionEntry } from '../../types/collection';
 
-type AdminView = 'list' | 'add' | 'edit' | 'test-drives' | 'car-of-day';
+type AdminView = 'list' | 'add' | 'edit' | 'test-drives' | 'car-of-day' | 'collections';
 
 const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any) => (
   <div className="relative group">
@@ -139,6 +145,17 @@ export function AdminDashboard() {
     acceleration: '', topSpeed: '', conclusion: '', verdictScore: '',
   });
 
+  // Collections state
+  const [collections, setCollections] = useState<VehicleCollection[]>([]);
+  const [colForm, setColForm] = useState({
+    title: '',
+    subtitle: '',
+    coverImage: '',
+    curatorNote: '',
+    closingNote: '',
+  });
+  const [colEntries, setColEntries] = useState<{ vehicleId: string; editorialNote: string }[]>([]);
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -156,10 +173,15 @@ export function AdminDashboard() {
       }
     });
 
+    const unsubscribeCollections = subscribeCollections((cols) => {
+      setCollections(cols);
+    });
+
     return () => {
       unsubscribeAuth();
       unsubscribeTestDrives();
       unsubscribeCotd();
+      unsubscribeCollections();
     };
   }, [navigate]);
 
@@ -319,6 +341,76 @@ export function AdminDashboard() {
     }
   };
 
+  // === Collection Handlers ===
+  const generateCollectionSlug = (title: string) => {
+    const turkishMap: Record<string, string> = {
+      'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
+      'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u'
+    };
+    return title
+      .replace(/[çğıöşüÇĞİÖŞÜ]/g, m => turkishMap[m])
+      .toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
+  const handleColSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const entries: CollectionEntry[] = colEntries
+        .filter(e => e.vehicleId)
+        .map((e, i) => ({ vehicleId: e.vehicleId, editorialNote: e.editorialNote, position: i }));
+
+      await createCollection({
+        slug: generateCollectionSlug(colForm.title),
+        title: colForm.title,
+        subtitle: colForm.subtitle,
+        coverImage: colForm.coverImage,
+        curatorNote: colForm.curatorNote,
+        closingNote: colForm.closingNote || undefined,
+        entries,
+        isPublished: true,
+      });
+
+      setColForm({ title: '', subtitle: '', coverImage: '', curatorNote: '', closingNote: '' });
+      setColEntries([]);
+      setToastMessage('Koleksiyon başarıyla oluşturuldu.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Koleksiyon oluşturma hatası:', err);
+      setToastMessage('İşlem başarısız oldu.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const handleDeleteCollection = async (id: string) => {
+    try {
+      await deleteCollectionFromFirestore(id);
+      setToastMessage('Koleksiyon silindi.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('Koleksiyon silme hatası:', err);
+    }
+  };
+
+  const addColEntry = () => {
+    setColEntries([...colEntries, { vehicleId: '', editorialNote: '' }]);
+  };
+
+  const removeColEntry = (index: number) => {
+    setColEntries(colEntries.filter((_, i) => i !== index));
+  };
+
+  const updateColEntry = (index: number, field: 'vehicleId' | 'editorialNote', value: string) => {
+    const updated = [...colEntries];
+    updated[index] = { ...updated[index], [field]: value };
+    setColEntries(updated);
+  };
+
   return (
     <div className="w-full min-h-screen bg-void flex">
       {/* Sidebar */}
@@ -368,6 +460,12 @@ export function AdminDashboard() {
             className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'car-of-day' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
             <Newspaper className="size-4" /> Günün Aracı
+          </button>
+          <button 
+            onClick={() => setCurrentView('collections')}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'collections' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
+          >
+            <Library className="size-4" /> Koleksiyonlar
           </button>
         </nav>
 
@@ -562,6 +660,112 @@ export function AdminDashboard() {
                 </button>
               </div>
             </form>
+          </motion.div>
+        )}
+
+        {/* COLLECTIONS VIEW */}
+        {currentView === 'collections' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto">
+            <h2 className="font-display text-4xl font-light text-foreground mb-10">Koleksiyonlar</h2>
+
+            {/* Existing Collections */}
+            {collections.length > 0 && (
+              <div className="mb-14 space-y-4">
+                <h3 className="font-sans text-xs uppercase tracking-widest text-muted mb-4">Mevcut Koleksiyonlar</h3>
+                {collections.map(c => (
+                  <div key={c.id} className="flex items-center gap-6 p-5 border border-border-subtle bg-surface/10 hover:bg-surface/30 transition-colors">
+                    {c.coverImage && (
+                      <img src={c.coverImage} alt={c.title} className="w-24 h-16 object-cover flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-display text-lg text-foreground truncate">{c.title}</h4>
+                      <p className="text-xs text-muted mt-1">{c.entries.length} araç · {c.isPublished ? 'Yayında' : 'Taslak'}</p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteCollection(c.id)}
+                      className="p-2 text-muted hover:text-red-500 transition-colors flex-shrink-0"
+                      aria-label="Sil"
+                    >
+                      <Trash2 className="size-5 stroke-[1.5]" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* New Collection Form */}
+            <div className="border-t border-border-subtle pt-10">
+              <h3 className="font-sans text-xs uppercase tracking-widest text-muted mb-8">Yeni Koleksiyon Oluştur</h3>
+
+              <form onSubmit={handleColSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 gap-8">
+                  <FloatingInput id="col-title" label="Koleksiyon Başlığı" value={colForm.title} onChange={(e: any) => setColForm({...colForm, title: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-1 gap-8">
+                  <FloatingInput id="col-subtitle" label="Alt Başlık" value={colForm.subtitle} onChange={(e: any) => setColForm({...colForm, subtitle: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-1 gap-8">
+                  <FloatingInput id="col-cover" label="Kapak Görseli URL" value={colForm.coverImage} onChange={(e: any) => setColForm({...colForm, coverImage: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-1 gap-8">
+                  <FloatingTextarea id="col-curator" label="Küratör Notu" value={colForm.curatorNote} onChange={(e: any) => setColForm({...colForm, curatorNote: e.target.value})} rows={4} />
+                </div>
+                <div className="grid grid-cols-1 gap-8">
+                  <FloatingTextarea id="col-closing" label="Kapanış Notu (Opsiyonel)" value={colForm.closingNote} onChange={(e: any) => setColForm({...colForm, closingNote: e.target.value})} rows={2} />
+                </div>
+
+                {/* Vehicle Entries */}
+                <div className="mt-8 mb-4 border-b border-border-subtle pb-2">
+                  <h3 className="font-sans text-xs uppercase tracking-widest text-muted">Koleksiyon Araçları</h3>
+                </div>
+
+                {colEntries.map((entry, i) => (
+                  <div key={i} className="border border-border-subtle p-5 space-y-4 relative">
+                    <button
+                      type="button"
+                      onClick={() => removeColEntry(i)}
+                      className="absolute top-3 right-3 text-muted hover:text-red-500 transition-colors"
+                    >
+                      <X className="size-4" />
+                    </button>
+
+                    <FloatingSelect
+                      id={`col-vehicle-${i}`}
+                      label={`Araç ${i + 1}`}
+                      value={entry.vehicleId}
+                      onChange={(e: any) => updateColEntry(i, 'vehicleId', e.target.value)}
+                      options={[
+                        { label: '— Araç Seçin —', value: '' },
+                        ...vehicles.map(v => ({ label: `${v.brand} ${v.model} (${v.year})`, value: v.id }))
+                      ]}
+                    />
+
+                    <FloatingTextarea
+                      id={`col-note-${i}`}
+                      label="Editöryal Not"
+                      value={entry.editorialNote}
+                      onChange={(e: any) => updateColEntry(i, 'editorialNote', e.target.value)}
+                      rows={2}
+                    />
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addColEntry}
+                  className="w-full py-3 border border-dashed border-border-subtle text-muted hover:text-foreground hover:border-foreground/30 transition-colors text-sm tracking-wide flex items-center justify-center gap-2"
+                >
+                  <Plus className="size-4" /> Araç Ekle
+                </button>
+
+                <button
+                  type="submit"
+                  className="w-full py-4 mt-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
+                >
+                  Koleksiyonu Yayınla
+                </button>
+              </form>
+            </div>
           </motion.div>
         )}
 

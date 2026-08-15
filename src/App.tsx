@@ -11,6 +11,9 @@ import { GaragePage } from './pages/GaragePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AboutPage } from './pages/AboutPage';
 import { CarOfTheDayPage } from './pages/CarOfTheDayPage';
+import { SoulTwinPage } from './pages/SoulTwinPage';
+import { CollectionsPage } from './pages/CollectionsPage';
+import { CollectionDetailPage } from './pages/CollectionDetailPage';
 import { MyAppointments } from './pages/MyAppointments';
 import { GarageProvider } from './context/GarageContext';
 import { AdminLogin } from './pages/admin/AdminLogin';
@@ -58,6 +61,9 @@ export default function App() {
                 <Route path="profil" element={<ProfilePage />} />
                 <Route path="randevularim" element={<MyAppointments />} />
                 <Route path="gunun-araci" element={<CarOfTheDayPage />} />
+                <Route path="ruh-ikizi" element={<SoulTwinPage />} />
+                <Route path="koleksiyonlar" element={<CollectionsPage />} />
+                <Route path="koleksiyonlar/:slug" element={<CollectionDetailPage />} />
               </Route>
             </Route>
           </Routes>
