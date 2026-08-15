@@ -92,10 +92,10 @@ export function CollectionDetailPage() {
       {/* ══════════════ CURATOR NOTE ══════════════ */}
       <div className="mx-auto max-w-3xl px-6 py-16 md:px-12 md:py-20">
         <div className="border-l border-foreground/15 pl-6 md:pl-10">
-          <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted mb-4">
+          <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-6 block">
             Küratör Notu
-          </p>
-          <p className="font-serif text-lg font-light leading-relaxed text-foreground/80 md:text-xl">
+          </span>
+          <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] text-foreground/90">
             {col.curatorNote}
           </p>
         </div>
@@ -139,34 +139,34 @@ export function CollectionDetailPage() {
 
               {/* Vehicle Info */}
               <div className="mb-4">
-                <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
+                <p className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase">
                   {v.brand} · {v.year}
                 </p>
-                <h2 className="mt-1 font-display text-3xl font-light tracking-wide text-foreground md:text-4xl">
+                <h2 className="mt-2 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
                   {v.model}
                 </h2>
-                <p className="mt-1 font-sans text-sm text-muted">
+                <p className="mt-3 font-display text-lg md:text-xl font-light text-muted">
                   {v.tagline}
                 </p>
               </div>
 
               {/* Quick Specs */}
-              <div className="mb-6 flex flex-wrap gap-6">
-                <span className="font-sans text-xs text-muted">
-                  <span className="text-foreground font-light">{v.engine.powerHp}</span> HP
+              <div className="mb-8 flex flex-wrap gap-8 border-y border-foreground/5 py-4 mt-6">
+                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
+                  <span className="font-display text-foreground/90 font-light text-xl mr-2">{v.engine.powerHp}</span> HP
                 </span>
-                <span className="font-sans text-xs text-muted">
-                  <span className="text-foreground font-light">{v.performance.zeroTo100Kmh}s</span> 0-100
+                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
+                  <span className="font-display text-foreground/90 font-light text-xl mr-2">{v.performance.zeroTo100Kmh}s</span> 0-100
                 </span>
-                <span className="font-sans text-xs text-muted">
-                  <span className="text-foreground font-light">{formatPrice(v.pricing.msrp)}</span>
+                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
+                  <span className="font-display text-foreground/90 font-light text-xl">{formatPrice(v.pricing.msrp)}</span>
                 </span>
               </div>
 
               {/* Editorial Note */}
               {entry.editorialNote && (
-                <div className="mb-6 border-l border-foreground/10 pl-5">
-                  <p className="font-serif text-base font-light italic leading-relaxed text-foreground/60 md:text-lg">
+                <div className="mb-8 border-l border-border-subtle pl-6 md:pl-8 py-2">
+                  <p className="font-display text-xl md:text-2xl leading-[1.6] text-foreground/80 italic">
                     "{entry.editorialNote}"
                   </p>
                 </div>
@@ -175,7 +175,7 @@ export function CollectionDetailPage() {
               {/* CTA */}
               <Link
                 to={`/arac/${v.id}`}
-                className="group inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] text-muted transition-colors duration-300 hover:text-foreground"
+                className="group inline-flex items-center gap-3 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.4em] font-medium text-muted transition-colors duration-300 hover:text-foreground"
               >
                 <span>İncele</span>
                 <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
@@ -200,10 +200,10 @@ export function CollectionDetailPage() {
       {col.closingNote && (
         <div className="mx-auto max-w-3xl px-6 pb-20 md:px-12">
           <div className="border-t border-border-subtle pt-12 text-center">
-            <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted mb-4">
+            <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-6 block">
               Kapanış
-            </p>
-            <p className="font-serif text-lg font-light leading-relaxed text-foreground/60 md:text-xl">
+            </span>
+            <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] text-foreground/90">
               {col.closingNote}
             </p>
           </div>

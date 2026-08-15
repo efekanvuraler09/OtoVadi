@@ -30,10 +30,10 @@ function FloatingSpec({ label, value, index }: FloatingSpecProps) {
       }}
       className="flex flex-col items-center gap-1 md:items-start"
     >
-      <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40">
+      <span className="font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/40">
         {label}
       </span>
-      <span className="font-display text-3xl font-light tracking-wide text-white/90 md:text-5xl lg:text-6xl">
+      <span className="font-display text-3xl font-light tracking-wider text-white/90 md:text-5xl lg:text-6xl">
         {value}
       </span>
     </motion.div>
@@ -148,7 +148,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute right-6 top-8 z-10 flex items-center gap-2.5 border border-white/10 bg-black/40 px-5 py-3 font-sans text-[10px] uppercase tracking-[0.3em] text-white/50 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/60 hover:text-white/80 md:right-12 md:top-12"
+            className="absolute right-6 top-8 z-10 flex items-center gap-3 border border-white/10 bg-black/40 px-6 py-3.5 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/60 hover:text-white/80 md:right-12 md:top-12"
             aria-label="Sahneden çık"
           >
             <span className="hidden sm:inline">Sahneden Çık</span>
@@ -162,13 +162,13 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
           >
-            <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/35">
+            <p className="font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/40">
               {vehicle.brand} · {vehicle.year}
             </p>
-            <h2 className="mt-1 font-display text-2xl font-light tracking-wide text-white/80 md:text-3xl">
+            <h2 className="mt-2 font-display text-3xl font-light tracking-widest text-white/90 md:text-4xl lg:text-5xl">
               {vehicle.model}
             </h2>
-            <p className="mt-1 font-sans text-xs font-light italic text-white/30">
+            <p className="mt-2 font-display text-sm md:text-base font-light text-white/40">
               {vehicle.tagline}
             </p>
           </motion.div>

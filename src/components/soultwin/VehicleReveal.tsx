@@ -34,13 +34,13 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
         className="text-center"
       >
-        <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-white/30">
+        <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-muted">
           Sizin Ruh İkiziniz
         </p>
-        <h2 className="mt-3 font-display text-4xl font-light tracking-wide text-white/90 md:text-5xl">
+        <h2 className="mt-3 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
           {vehicle.brand} {vehicle.model}
         </h2>
-        <p className="mt-2 font-sans text-sm font-light italic text-white/35">
+        <p className="mt-2 font-sans text-sm font-light italic text-muted">
           {vehicle.tagline}
         </p>
       </motion.div>
@@ -78,32 +78,32 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         className="flex flex-wrap items-center justify-center gap-6 text-center md:gap-10"
       >
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/30">
+          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
             Uyumluluk
           </span>
-          <span className="font-display text-3xl font-light text-white/90">
+          <span className="font-display text-3xl font-light text-foreground">
             %{affinityPercent}
           </span>
         </div>
 
-        <div className="h-8 w-[1px] bg-white/10" />
+        <div className="h-8 w-[1px] bg-border-subtle" />
 
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/30">
+          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
             Güç
           </span>
-          <span className="font-display text-3xl font-light text-white/90">
+          <span className="font-display text-3xl font-light text-foreground">
             {vehicle.engine.powerHp} HP
           </span>
         </div>
 
-        <div className="h-8 w-[1px] bg-white/10" />
+        <div className="h-8 w-[1px] bg-border-subtle" />
 
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/30">
+          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
             Fiyat
           </span>
-          <span className="font-display text-3xl font-light text-white/90">
+          <span className="font-display text-3xl font-light text-foreground">
             {formatPrice(vehicle.pricing.msrp)}
           </span>
         </div>
@@ -117,7 +117,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
       >
         <Link
           to={`/arac/${vehicle.id}`}
-          className="group flex items-center gap-3 border border-white/10 bg-white/[0.03] px-8 py-3.5 font-sans text-xs uppercase tracking-[0.2em] text-white/60 transition-all duration-300 hover:border-white/30 hover:bg-white/[0.08] hover:text-white"
+          className="group flex items-center gap-3 border border-foreground/10 bg-foreground/5 px-8 py-3.5 font-sans text-xs uppercase tracking-[0.2em] text-foreground/60 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
         >
           <span>Aracı İncele</span>
           <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />

@@ -15,6 +15,7 @@ import { saveCarOfTheDay, subscribeCarOfTheDay, type CarOfTheDayData } from '../
 import {
   subscribeCollections,
   createCollection,
+  updateCollection,
   deleteCollection as deleteCollectionFromFirestore,
 } from '../../services/collectionService';
 import type { Vehicle } from '../../types/vehicle';
@@ -155,6 +156,7 @@ export function AdminDashboard() {
     closingNote: '',
   });
   const [colEntries, setColEntries] = useState<{ vehicleId: string; editorialNote: string }[]>([]);
+  const [editingColId, setEditingColId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -362,28 +364,59 @@ export function AdminDashboard() {
         .filter(e => e.vehicleId)
         .map((e, i) => ({ vehicleId: e.vehicleId, editorialNote: e.editorialNote, position: i }));
 
-      await createCollection({
-        slug: generateCollectionSlug(colForm.title),
-        title: colForm.title,
-        subtitle: colForm.subtitle,
-        coverImage: colForm.coverImage,
-        curatorNote: colForm.curatorNote,
-        closingNote: colForm.closingNote || undefined,
-        entries,
-        isPublished: true,
-      });
+      if (editingColId) {
+        await updateCollection(editingColId, {
+          title: colForm.title,
+          subtitle: colForm.subtitle,
+          coverImage: colForm.coverImage,
+          curatorNote: colForm.curatorNote,
+          closingNote: colForm.closingNote || undefined,
+          entries,
+        });
+        setToastMessage('Koleksiyon başarıyla güncellendi.');
+      } else {
+        await createCollection({
+          slug: generateCollectionSlug(colForm.title),
+          title: colForm.title,
+          subtitle: colForm.subtitle,
+          coverImage: colForm.coverImage,
+          curatorNote: colForm.curatorNote,
+          closingNote: colForm.closingNote || undefined,
+          entries,
+          isPublished: true,
+        });
+        setToastMessage('Koleksiyon başarıyla oluşturuldu.');
+      }
 
-      setColForm({ title: '', subtitle: '', coverImage: '', curatorNote: '', closingNote: '' });
-      setColEntries([]);
-      setToastMessage('Koleksiyon başarıyla oluşturuldu.');
+      resetColForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
-      console.error('Koleksiyon oluşturma hatası:', err);
+      console.error('Koleksiyon kaydetme hatası:', err);
       setToastMessage('İşlem başarısız oldu.');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
+  };
+
+  const handleEditColClick = (col: VehicleCollection) => {
+    setColForm({
+      title: col.title,
+      subtitle: col.subtitle,
+      coverImage: col.coverImage,
+      curatorNote: col.curatorNote,
+      closingNote: col.closingNote || '',
+    });
+    setColEntries(
+      col.entries.map(e => ({ vehicleId: e.vehicleId, editorialNote: e.editorialNote }))
+    );
+    setEditingColId(col.id);
+  };
+
+  const resetColForm = () => {
+    setColForm({ title: '', subtitle: '', coverImage: '', curatorNote: '', closingNote: '' });
+    setColEntries([]);
+    setEditingColId(null);
   };
 
   const handleDeleteCollection = async (id: string) => {
@@ -666,7 +699,9 @@ export function AdminDashboard() {
         {/* COLLECTIONS VIEW */}
         {currentView === 'collections' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto">
-            <h2 className="font-display text-4xl font-light text-foreground mb-10">Koleksiyonlar</h2>
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="font-display text-4xl font-light text-foreground">Koleksiyonlar</h2>
+            </div>
 
             {/* Existing Collections */}
             {collections.length > 0 && (
@@ -681,21 +716,32 @@ export function AdminDashboard() {
                       <h4 className="font-display text-lg text-foreground truncate">{c.title}</h4>
                       <p className="text-xs text-muted mt-1">{c.entries.length} araç · {c.isPublished ? 'Yayında' : 'Taslak'}</p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteCollection(c.id)}
-                      className="p-2 text-muted hover:text-red-500 transition-colors flex-shrink-0"
-                      aria-label="Sil"
-                    >
-                      <Trash2 className="size-5 stroke-[1.5]" />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => handleEditColClick(c)}
+                        className="p-2 text-muted hover:text-foreground transition-colors"
+                        aria-label="Düzenle"
+                      >
+                        <Edit2 className="size-5 stroke-[1.5]" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCollection(c.id)}
+                        className="p-2 text-muted hover:text-red-500 transition-colors"
+                        aria-label="Sil"
+                      >
+                        <Trash2 className="size-5 stroke-[1.5]" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* New Collection Form */}
+            {/* Collection Form */}
             <div className="border-t border-border-subtle pt-10">
-              <h3 className="font-sans text-xs uppercase tracking-widest text-muted mb-8">Yeni Koleksiyon Oluştur</h3>
+              <h3 className="font-sans text-xs uppercase tracking-widest text-muted mb-8">
+                {editingColId ? 'Koleksiyonu Düzenle' : 'Yeni Koleksiyon Oluştur'}
+              </h3>
 
               <form onSubmit={handleColSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 gap-8">
@@ -758,12 +804,21 @@ export function AdminDashboard() {
                   <Plus className="size-4" /> Araç Ekle
                 </button>
 
-                <button
-                  type="submit"
-                  className="w-full py-4 mt-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
-                >
-                  Koleksiyonu Yayınla
-                </button>
+                <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                  <button
+                    type="button"
+                    onClick={resetColForm}
+                    className="w-full sm:w-1/3 py-4 border border-border-subtle text-muted font-sans text-sm font-medium uppercase tracking-widest hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/5 transition-all"
+                  >
+                    Formu Temizle / İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-full sm:flex-1 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
+                  >
+                    {editingColId ? 'Koleksiyonu Güncelle' : 'Koleksiyonu Yayınla'}
+                  </button>
+                </div>
               </form>
             </div>
           </motion.div>

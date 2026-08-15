@@ -17,7 +17,7 @@ export function DNARadar({ dna }: DNARadarProps) {
       className="flex w-full max-w-md flex-col gap-5"
     >
       <div className="mb-2 text-center">
-        <p className="font-sans text-[10px] uppercase tracking-[0.35em] text-white/30">
+        <p className="font-sans text-[10px] uppercase tracking-[0.35em] text-muted">
           Sürücü DNA Profiliniz
         </p>
       </div>
@@ -36,21 +36,21 @@ export function DNARadar({ dna }: DNARadarProps) {
         >
           {/* Label & Value */}
           <div className="flex items-baseline justify-between">
-            <span className="font-sans text-[11px] uppercase tracking-[0.25em] text-white/50">
+            <span className="font-sans text-[11px] uppercase tracking-[0.25em] text-muted">
               {DNA_LABELS[dim]}
             </span>
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 + index * 0.15, duration: 0.5 }}
-              className="font-display text-lg font-light text-white/80"
+              className="font-display text-lg font-light text-foreground/80"
             >
               %{dna[dim]}
             </motion.span>
           </div>
 
           {/* Bar Track */}
-          <div className="relative h-[2px] w-full overflow-hidden bg-white/[0.06]">
+          <div className="relative h-[2px] w-full overflow-hidden bg-border-subtle">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${dna[dim]}%` }}
@@ -59,7 +59,7 @@ export function DNARadar({ dna }: DNARadarProps) {
                 duration: 1.2,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-white/60 to-white/30"
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-foreground/60 to-foreground/30"
             />
             {/* Glow tip */}
             <motion.div
@@ -70,7 +70,7 @@ export function DNARadar({ dna }: DNARadarProps) {
                 duration: 1.2,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
-              className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/50"
+              className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/50"
               style={{
                 boxShadow: '0 0 8px rgba(255,255,255,0.3), 0 0 16px rgba(255,255,255,0.1)',
               }}

@@ -55,7 +55,7 @@ export function SoulTwinPage() {
   }, [handleStart]);
 
   return (
-    <div className="min-h-dvh bg-black">
+    <div className="min-h-dvh bg-void">
       <AnimatePresence mode="wait">
         {/* ════════════════ INTRO SCREEN ════════════════ */}
         {stage === 'intro' && (
@@ -87,16 +87,16 @@ export function SoulTwinPage() {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
-                className="flex size-16 items-center justify-center border border-white/[0.08] bg-white/[0.02]"
+                className="flex size-16 items-center justify-center border border-foreground/10 bg-foreground/5"
               >
-                <Dna className="size-7 text-white/40" strokeWidth={1} />
+                <Dna className="size-7 text-muted" strokeWidth={1} />
               </motion.div>
 
-              <h1 className="font-display text-4xl font-light tracking-wide text-white/90 md:text-5xl lg:text-6xl">
+              <h1 className="font-display text-4xl font-light tracking-wide text-foreground md:text-5xl lg:text-6xl">
                 Ruh İkizini Bul
               </h1>
 
-              <p className="max-w-md font-sans text-base font-light leading-relaxed text-white/35 md:text-lg">
+              <p className="max-w-md font-display text-xl font-light leading-[1.6] text-muted md:text-2xl">
                 Teknik özellikler bir aracı tanımlar.
                 <br />
                 Ama sizi tanımlayan ne?
@@ -106,7 +106,7 @@ export function SoulTwinPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
-                className="mt-2 font-sans text-xs font-light text-white/20"
+                className="mt-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] font-light text-muted"
               >
                 5 soruyla otomotiv DNA'nızı keşfedin
               </motion.p>
@@ -119,7 +119,7 @@ export function SoulTwinPage() {
                 transition={{ delay: 1.0, duration: 0.5 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                className="mt-6 border border-white/15 bg-white/[0.03] px-10 py-4 font-sans text-xs uppercase tracking-[0.25em] text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/[0.08] hover:text-white"
+                className="mt-8 border border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
               >
                 Başla
               </motion.button>
@@ -165,7 +165,7 @@ export function SoulTwinPage() {
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: '6rem', opacity: 1 }}
               transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}
-              className="h-[1px] bg-gradient-to-r from-transparent via-white/15 to-transparent"
+              className="h-[1px] bg-gradient-to-r from-transparent via-border-subtle to-transparent"
             />
 
             {/* Vehicle Reveal */}
@@ -178,7 +178,7 @@ export function SoulTwinPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.0, duration: 0.5 }}
-              className="flex items-center gap-2.5 font-sans text-[10px] uppercase tracking-[0.3em] text-white/25 transition-colors duration-300 hover:text-white/50"
+              className="flex items-center gap-2.5 font-sans text-[10px] uppercase tracking-[0.3em] text-muted transition-colors duration-300 hover:text-foreground/70"
             >
               <RotateCcw className="size-3.5" strokeWidth={1.5} />
               <span>Testi Tekrarla</span>

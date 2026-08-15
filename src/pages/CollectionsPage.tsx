@@ -40,13 +40,13 @@ export function CollectionsPage() {
     >
       {/* ── Header ── */}
       <div className="mx-auto max-w-7xl px-6 pb-6 pt-20 md:px-12 lg:px-24">
-        <p className="font-sans text-[10px] uppercase tracking-[0.35em] text-muted">
+        <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-4 block">
           Küratörlü Sergiler
-        </p>
-        <h1 className="mt-3 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
+        </span>
+        <h1 className="font-display text-5xl md:text-7xl font-normal text-foreground tracking-tight">
           Koleksiyonlar
         </h1>
-        <p className="mt-3 max-w-lg font-sans text-sm font-light leading-relaxed text-muted">
+        <p className="mt-6 text-lg md:text-xl font-light text-muted max-w-2xl leading-relaxed">
           Her araç bir hikâye anlatır. Bazı hikâyeler birlikte daha güçlüdür.
         </p>
       </div>

@@ -16,7 +16,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: 'easeInOut' }}
-      className="flex min-h-dvh flex-col bg-black"
+      className="flex min-h-dvh flex-col bg-void"
     >
       {/* ── Progress & Question Prompt ── */}
       <div className="relative z-10 flex flex-col items-center gap-4 px-6 pb-4 pt-24 md:pt-28">
@@ -27,16 +27,16 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
               key={i}
               className={`h-[3px] transition-all duration-500 ${
                 i < currentStep
-                  ? 'w-6 bg-white/70'
+                  ? 'w-6 bg-foreground/70'
                   : i === currentStep
-                    ? 'w-8 bg-white'
-                    : 'w-4 bg-white/20'
+                    ? 'w-8 bg-foreground'
+                    : 'w-4 bg-foreground/20'
               }`}
             />
           ))}
         </div>
 
-        <p className="font-sans text-[10px] uppercase tracking-[0.35em] text-white/30">
+        <p className="font-display text-[11px] uppercase tracking-[0.5em] text-muted">
           {currentStep + 1} / {totalSteps}
         </p>
 
@@ -44,7 +44,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7, ease: 'easeOut' }}
-          className="max-w-xl text-center font-display text-2xl font-light leading-relaxed tracking-wide text-white/90 md:text-3xl lg:text-4xl"
+          className="max-w-xl text-center font-display text-2xl font-light leading-relaxed tracking-wide text-foreground md:text-3xl lg:text-4xl"
         >
           {question.prompt}
         </motion.h2>
@@ -61,32 +61,32 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.985 }}
-          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-white/[0.06] bg-white/[0.03] p-8 backdrop-blur-sm transition-all duration-500 hover:border-white/15 hover:bg-white/[0.06] md:p-12"
+          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm transition-all duration-500 hover:border-foreground/20 hover:bg-foreground/10 md:p-12"
         >
           {/* Subtle glow on hover */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-          <span className="relative mb-4 font-sans text-[10px] uppercase tracking-[0.4em] text-white/25">
+          <span className="relative mb-4 font-display text-[10px] uppercase tracking-[0.5em] text-muted md:text-[11px]">
             A
           </span>
-          <span className="relative font-display text-3xl font-light tracking-wide text-white/90 md:text-4xl lg:text-5xl">
+          <span className="relative font-display text-3xl font-light tracking-wide text-foreground md:text-4xl lg:text-5xl">
             {question.optionA.label}
           </span>
-          <span className="relative mt-4 max-w-xs text-center font-sans text-sm font-light leading-relaxed text-white/40 md:text-base">
+          <span className="relative mt-5 max-w-xs text-center font-display text-base font-light leading-relaxed text-muted md:text-lg">
             {question.optionA.description}
           </span>
 
           {/* Bottom accent line */}
-          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-white/30 transition-all duration-500 group-hover:w-2/3" />
+          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-500 group-hover:w-2/3" />
         </motion.button>
 
         {/* Divider */}
         <div className="flex items-center justify-center md:flex-col">
-          <div className="h-[1px] w-12 bg-white/10 md:h-12 md:w-[1px]" />
-          <span className="mx-3 font-sans text-[9px] uppercase tracking-[0.3em] text-white/15 md:mx-0 md:my-3">
+          <div className="h-[1px] w-12 bg-border-subtle md:h-12 md:w-[1px]" />
+          <span className="mx-3 font-display text-[9px] uppercase tracking-[0.5em] text-muted md:mx-0 md:my-3">
             veya
           </span>
-          <div className="h-[1px] w-12 bg-white/10 md:h-12 md:w-[1px]" />
+          <div className="h-[1px] w-12 bg-border-subtle md:h-12 md:w-[1px]" />
         </div>
 
         {/* Option B */}
@@ -98,21 +98,21 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.985 }}
-          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-white/[0.06] bg-white/[0.03] p-8 backdrop-blur-sm transition-all duration-500 hover:border-white/15 hover:bg-white/[0.06] md:p-12"
+          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm transition-all duration-500 hover:border-foreground/20 hover:bg-foreground/10 md:p-12"
         >
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-bl from-white/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-bl from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-          <span className="relative mb-4 font-sans text-[10px] uppercase tracking-[0.4em] text-white/25">
+          <span className="relative mb-4 font-display text-[10px] uppercase tracking-[0.5em] text-muted md:text-[11px]">
             B
           </span>
-          <span className="relative font-display text-3xl font-light tracking-wide text-white/90 md:text-4xl lg:text-5xl">
+          <span className="relative font-display text-3xl font-light tracking-wide text-foreground md:text-4xl lg:text-5xl">
             {question.optionB.label}
           </span>
-          <span className="relative mt-4 max-w-xs text-center font-sans text-sm font-light leading-relaxed text-white/40 md:text-base">
+          <span className="relative mt-5 max-w-xs text-center font-display text-base font-light leading-relaxed text-muted md:text-lg">
             {question.optionB.description}
           </span>
 
-          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-white/30 transition-all duration-500 group-hover:w-2/3" />
+          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-500 group-hover:w-2/3" />
         </motion.button>
       </div>
     </motion.div>
