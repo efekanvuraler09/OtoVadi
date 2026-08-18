@@ -45,6 +45,11 @@
   h1, h2, h3 {
     @apply font-display;
   }
+
+  /* Prevent blinking text caret on non-input areas */
+  *:not(input):not(textarea):not([contenteditable="true"]) {
+    caret-color: transparent;
+  }
 }
 
 @layer utilities {

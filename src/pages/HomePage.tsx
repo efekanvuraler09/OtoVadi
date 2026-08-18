@@ -6,8 +6,10 @@ import { SegmentPicker } from '../components/home/SegmentPicker';
 import { VehicleCard } from '../components/home/VehicleCard';
 import { getSegmentOption } from '../data/segments';
 import { filterVehicles, useVehicleStore } from '../store/useVehicleStore';
+import { useI18n } from '../i18n/useI18n';
 
 export function HomePage() {
+  const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
   const searchQuery = useVehicleStore((s) => s.searchQuery);
   const setSearchQuery = useVehicleStore((s) => s.setSearchQuery);
@@ -28,14 +30,14 @@ export function HomePage() {
 
       {/* GLOBAL SEARCH BAR */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-12 pb-4">
-        <div className="border border-border-subtle bg-transparent flex min-h-14 items-center gap-4 rounded-none px-6 w-full shadow-sm hover:border-foreground/50 transition-colors focus-within:border-foreground">
+        <div className="border border-border-subtle bg-transparent flex min-h-14 items-center gap-4 rounded-none px-6 w-full hover:border-foreground/50 transition-colors focus-within:border-foreground">
           <Search className="size-5 shrink-0 text-muted" />
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Katalogda marka veya model ara..."
-            className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted"
+            placeholder={t.catalog.searchPlaceholder}
+            className="w-full bg-transparent font-display text-base font-light tracking-wide text-foreground outline-none placeholder:text-muted"
             aria-label="Araç ara"
           />
         </div>

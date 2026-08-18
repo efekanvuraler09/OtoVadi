@@ -12,10 +12,12 @@ import {
   type MatchResult,
 } from '../utils/dnaEngine';
 import { useVehicleStore } from '../store/useVehicleStore';
+import { useI18n } from '../i18n/useI18n';
 
 type Stage = 'intro' | 'quiz' | 'result';
 
 export function SoulTwinPage() {
+  const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
   const [stage, setStage] = useState<Stage>('intro');
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -93,13 +95,13 @@ export function SoulTwinPage() {
               </motion.div>
 
               <h1 className="font-display text-4xl font-light tracking-wide text-foreground md:text-5xl lg:text-6xl">
-                Ruh İkizini Bul
+                {t.soulTwin.findSoulTwin}
               </h1>
 
               <p className="max-w-md font-display text-xl font-light leading-[1.6] text-muted md:text-2xl">
-                Teknik özellikler bir aracı tanımlar.
+                {t.soulTwin.introDesc1}
                 <br />
-                Ama sizi tanımlayan ne?
+                {t.soulTwin.introDesc2}
               </p>
 
               <motion.p
@@ -108,7 +110,7 @@ export function SoulTwinPage() {
                 transition={{ delay: 0.8, duration: 0.6 }}
                 className="mt-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] font-light text-muted"
               >
-                5 soruyla otomotiv DNA'nızı keşfedin
+                {t.soulTwin.introDesc3}
               </motion.p>
 
               <motion.button
@@ -119,9 +121,9 @@ export function SoulTwinPage() {
                 transition={{ delay: 1.0, duration: 0.5 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                className="mt-8 border border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
+                className="mt-8 border border-border-subtle/50 dark:border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 dark:text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
               >
-                Başla
+                {t.soulTwin.startTest}
               </motion.button>
             </motion.div>
           </motion.div>
@@ -163,26 +165,30 @@ export function SoulTwinPage() {
             {/* Divider */}
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: '6rem', opacity: 1 }}
-              transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}
-              className="h-[1px] bg-gradient-to-r from-transparent via-border-subtle to-transparent"
+              animate={{ width: 100, opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="h-px bg-border-subtle"
             />
 
-            {/* Vehicle Reveal */}
+            {/* Soul Twin Reveal */}
             <VehicleReveal match={match} />
 
-            {/* Restart */}
-            <motion.button
-              type="button"
-              onClick={handleRestart}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.0, duration: 0.5 }}
-              className="flex items-center gap-2.5 font-sans text-[10px] uppercase tracking-[0.3em] text-muted transition-colors duration-300 hover:text-foreground/70"
+            {/* Actions */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5, duration: 0.6 }}
+              className="flex items-center gap-6"
             >
-              <RotateCcw className="size-3.5" strokeWidth={1.5} />
-              <span>Testi Tekrarla</span>
-            </motion.button>
+              <button
+                type="button"
+                onClick={handleRestart}
+                className="group flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-muted transition-colors hover:text-foreground md:text-[11px]"
+              >
+                <RotateCcw className="size-4 transition-transform group-hover:-rotate-90" />
+                <span>{t.soulTwin.retakeTest}</span>
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

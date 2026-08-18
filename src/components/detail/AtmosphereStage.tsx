@@ -1,7 +1,9 @@
 import { useEffect, useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
+import { useI18n } from '../../i18n/useI18n';
 
 interface AtmosphereStageProps {
   vehicle: Vehicle;
@@ -43,6 +45,7 @@ function FloatingSpec({ label, value, index }: FloatingSpecProps) {
 /* ── Main Stage Component ───────────────────────────────────────── */
 
 export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStageProps) {
+  const { t } = useI18n();
   const [imageLoaded, setImageLoaded] = useState(false);
 
   /* ── ESC key handler ── */
@@ -85,7 +88,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
     ? vehicle.media.heroImage
     : `/${vehicle.media.heroImage}`;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -148,10 +151,10 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute right-6 top-8 z-10 flex items-center gap-3 border border-white/10 bg-black/40 px-6 py-3.5 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/60 hover:text-white/80 md:right-12 md:top-12"
-            aria-label="Sahneden çık"
+            className="absolute right-6 top-6 z-10 flex items-center gap-3 rounded-full border border-neutral-700 bg-neutral-900/80 px-5 py-2.5 font-sans text-xs font-medium uppercase tracking-[0.2em] text-neutral-300 backdrop-blur-md transition-all duration-300 hover:border-neutral-500 hover:text-white md:right-8 md:top-8 dark:bg-neutral-800/80"
+            aria-label={t.catalog.exitStage}
           >
-            <span className="hidden sm:inline">Sahneden Çık</span>
+            <span className="hidden sm:inline">{t.catalog.exitStage}</span>
             <X className="size-4" strokeWidth={1.5} />
           </motion.button>
 
@@ -189,7 +192,8 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 

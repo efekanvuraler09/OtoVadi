@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { useI18n } from '../../i18n/useI18n';
 
 type CuratorState = 'prompt' | 'analyzing' | 'result';
 
@@ -32,9 +33,10 @@ const TypewriterText = ({ text, speed = 30 }: { text: string; speed?: number }) 
 
 export function AutoCurator() {
   const vehicles = useVehicleStore((s) => s.vehicles);
+  const { t } = useI18n();
   const [currentState, setCurrentState] = useState<CuratorState>('prompt');
   const [inputValue, setInputValue] = useState('');
-  const [loadingText, setLoadingText] = useState('OtoVadi verileri analiz ediliyor...');
+  const [loadingText, setLoadingText] = useState(t.smartDiscovery.loading1);
   const [recommendedVehicle, setRecommendedVehicle] = useState<Vehicle | null>(null);
   const [aiReasoning, setAiReasoning] = useState('');
 
@@ -49,7 +51,7 @@ export function AutoCurator() {
     }
 
     setCurrentState('analyzing');
-    setLoadingText('OtoVadi verileri yapay zeka ile analiz ediliyor...');
+    setLoadingText(t.smartDiscovery.loading2);
 
     try {
       const stockInfo = JSON.stringify(vehicles.map(v => ({
@@ -61,7 +63,7 @@ export function AutoCurator() {
         highlights: v.highlights
       })));
 
-      const aiPrompt = `Sen lüks bir otomotiv danışmanısın. Aşağıda JSON formatında verilen stok listesinden, kullanıcının isteğine en uygun olan 1 aracı seç. İlk satıra SADECE seçtiğin aracın ID'sini yaz. İkinci satırdan itibaren neden bu aracı seçtiğini lüks ve asil bir dille açıkla. Kesinlikle JSON veya Markdown formatı kullanma.\nYanıtını son derece profesyonel, lüks bir dille ve KUSURSUZ bir Türkçe dilbilgisiyle yaz. Asla imla hatası veya kelimelerde harf eksikliği yapma.\n\nKullanıcı İsteği: "${inputValue}"\n\nAraç Listesi: ${stockInfo}`;
+      const aiPrompt = `${t.smartDiscovery.aiPromptDesc}\n\nKullanıcı İsteği: "${inputValue}"\n\nAraç Listesi: ${stockInfo}`;
 
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
@@ -81,7 +83,7 @@ export function AutoCurator() {
       console.error("Gemini SDK Hatası:", error);
       // Fallback
       setRecommendedVehicle(vehicles[0]);
-      setAiReasoning("Sistemlerimizde olağanüstü bir yoğunluk var ancak lüks danışmanlarımız sizin için bu özel aracı uygun gördü...");
+      setAiReasoning(t.smartDiscovery.fallbackReason);
       setCurrentState('result');
     }
   };
@@ -90,7 +92,7 @@ export function AutoCurator() {
     setInputValue('');
     setRecommendedVehicle(null);
     setCurrentState('prompt');
-    setLoadingText('OtoVadi verileri analiz ediliyor...');
+    setLoadingText(t.smartDiscovery.loading1);
   };
 
   return (
@@ -109,7 +111,7 @@ export function AutoCurator() {
           >
             <Sparkles className="size-8 text-muted mb-8" strokeWidth={1} />
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground text-center mb-12 tracking-wide">
-              Nasıl bir yaşam tarzınız var?
+              {t.smartDiscovery.title}
             </h1>
             <form onSubmit={handleSearch} className="w-full relative group">
               <input
@@ -117,7 +119,7 @@ export function AutoCurator() {
                 autoFocus
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Örn: Geniş ailem var ve teknolojik bir SUV arıyorum..."
+                placeholder={t.smartDiscovery.placeholder}
                 className="w-full bg-transparent border-b border-border-subtle focus:border-foreground/50 pb-4 text-center font-sans text-lg md:text-xl text-foreground placeholder:text-muted/50 focus:outline-none transition-colors"
               />
               <button 
@@ -169,7 +171,7 @@ export function AutoCurator() {
           >
             {/* Recommendation Reason */}
             <div className="max-w-2xl text-center mb-12">
-              <p className="font-sans text-sm uppercase tracking-widest text-emerald-500/80 mb-6">Mükemmel Eşleşme</p>
+              <p className="font-sans text-sm uppercase tracking-widest text-emerald-500/80 mb-6">{t.smartDiscovery.perfectMatch}</p>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight">
                 {recommendedVehicle.brand} {recommendedVehicle.model}
               </h2>
@@ -193,13 +195,13 @@ export function AutoCurator() {
                 to={`/arac/${recommendedVehicle.id}`}
                 className="px-8 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
-                Aracı İncele
+                {t.smartDiscovery.inspectVehicle}
               </Link>
               <button 
                 onClick={resetCurator}
                 className="text-sm font-medium uppercase tracking-widest text-muted hover:text-foreground transition-colors pb-1 border-b border-transparent hover:border-foreground"
               >
-                Yeniden Ara
+                {t.smartDiscovery.searchAgain}
               </button>
             </div>
 

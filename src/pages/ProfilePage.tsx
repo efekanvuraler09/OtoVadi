@@ -1,18 +1,26 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Shield, Save, Camera, Loader2 } from 'lucide-react';
+import { User, Mail, Shield, Save, Camera, Loader2, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { getUserProfile, updateUserProfile } from '../services/userService';
+import { updateProfile } from 'firebase/auth';
 
 export function ProfilePage() {
   const { user, isAdmin } = useAuth();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
     if (user) {
+      setFirstName(user.displayName?.split(' ')[0] || '');
+      setLastName(user.displayName?.split(' ').slice(1).join(' ') || '');
       getUserProfile(user.uid).then(profile => {
         if (profile?.photoURL) {
           setPhotoURL(profile.photoURL);
@@ -84,6 +92,30 @@ export function ProfilePage() {
     }
   };
 
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      setIsSaving(true);
+      const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+      // Update in Firebase Auth
+      await updateProfile(user, { displayName });
+
+      // Update in Firestore
+      await updateUserProfile(user.uid, { displayName });
+
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (err) {
+      console.error('Profil güncellenirken hata oluştu:', err);
+      alert('Profil güncellenirken bir hata oluştu.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (!user) {
     return <Navigate to="/" replace />;
   }
@@ -123,11 +155,11 @@ export function ProfilePage() {
               className="hidden"
             />
           </div>
-          <h1 className="font-serif text-3xl font-light tracking-wide text-foreground">Profil Ayarları</h1>
-          <p className="mt-2 text-sm text-muted">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
+          <h1 className="font-display text-3xl font-light tracking-wide text-foreground">Profil Ayarları</h1>
+          <p className="mt-2 font-display text-base font-light tracking-wide text-muted">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
         </header>
 
-        <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-8" onSubmit={handleSave}>
           <div className="space-y-6 rounded-none border border-border-subtle bg-surface p-6 md:p-10">
             <h2 className="text-xs uppercase tracking-[0.2em] text-muted border-b border-border-subtle/30 pb-4">
               Kişisel Bilgiler
@@ -141,7 +173,8 @@ export function ProfilePage() {
                   <input
                     id="firstName"
                     type="text"
-                    defaultValue={user.displayName?.split(' ')[0] || ''}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm font-light tracking-wide text-foreground outline-none focus:border-foreground transition-colors"
                     placeholder="Adınız"
                   />
@@ -155,7 +188,8 @@ export function ProfilePage() {
                   <input
                     id="lastName"
                     type="text"
-                    defaultValue={user.displayName?.split(' ').slice(1).join(' ') || ''}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm font-light tracking-wide text-foreground outline-none focus:border-foreground transition-colors"
                     placeholder="Soyadınız"
                   />
@@ -196,11 +230,18 @@ export function ProfilePage() {
 
           <div className="flex justify-end">
             <button
-              type="button"
-              className="group relative flex items-center gap-2 border border-foreground bg-foreground px-8 py-3 text-sm font-medium tracking-wide text-void transition-all hover:bg-void hover:text-foreground"
+              type="submit"
+              disabled={isSaving}
+              className="group relative flex items-center gap-2 border border-foreground bg-foreground px-8 py-3 text-sm font-medium tracking-wide text-void transition-all hover:bg-void hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="size-4" />
-              <span>Ayarları Kaydet</span>
+              {isSaving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : isSaved ? (
+                <Check className="size-4" />
+              ) : (
+                <Save className="size-4" />
+              )}
+              <span>{isSaving ? 'Kaydediliyor...' : isSaved ? 'Kaydedildi' : 'Ayarları Kaydet'}</span>
             </button>
           </div>
         </form>

@@ -4,12 +4,14 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { MatchResult } from '../../utils/dnaEngine';
 import { formatPrice } from '../../utils/formatPrice';
+import { useI18n } from '../../i18n/useI18n';
 
 interface VehicleRevealProps {
   match: MatchResult;
 }
 
 export function VehicleReveal({ match }: VehicleRevealProps) {
+  const { t } = useI18n();
   const { vehicle, affinity } = match;
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -35,7 +37,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         className="text-center"
       >
         <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-muted">
-          Sizin Ruh İkiziniz
+          {t.soulTwin.yourSoulmate}
         </p>
         <h2 className="mt-3 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
           {vehicle.brand} {vehicle.model}
@@ -79,7 +81,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
       >
         <div className="flex flex-col items-center gap-1">
           <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
-            Uyumluluk
+            {t.soulTwin.affinity}
           </span>
           <span className="font-display text-3xl font-light text-foreground">
             %{affinityPercent}
@@ -90,7 +92,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
 
         <div className="flex flex-col items-center gap-1">
           <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
-            Güç
+            {t.soulTwin.power}
           </span>
           <span className="font-display text-3xl font-light text-foreground">
             {vehicle.engine.powerHp} HP
@@ -104,23 +106,24 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
             Fiyat
           </span>
           <span className="font-display text-3xl font-light text-foreground">
-            {formatPrice(vehicle.pricing.msrp)}
+            {formatPrice(vehicle.pricing.msrp)} {vehicle.pricing.currency}
           </span>
         </div>
       </motion.div>
 
-      {/* ── CTA Button ── */}
+      {/* ── CTA ── */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4, duration: 0.6 }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.6, ease: 'easeOut' }}
+        className="mt-4"
       >
         <Link
           to={`/arac/${vehicle.id}`}
-          className="group flex items-center gap-3 border border-foreground/10 bg-foreground/5 px-8 py-3.5 font-sans text-xs uppercase tracking-[0.2em] text-foreground/60 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
+          className="group flex items-center gap-3 border border-border-subtle bg-foreground/5 px-8 py-4 font-sans text-xs font-medium uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10"
         >
-          <span>Aracı İncele</span>
-          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
+          <span>{t.soulTwin.inspectVehicle}</span>
+          <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </motion.div>
     </motion.div>

@@ -128,6 +128,42 @@ export const DNA_QUESTIONS: DNAQuestion[] = [
     effectA: { elegance: 25, technology: 10 },
     effectB: { performance: 20, adventure: 15 },
   },
+  {
+    id: 6,
+    prompt: 'Bir uzun yola çıkıyorsunuz. Bagajınız ne durumda?',
+    optionA: {
+      id: 'a',
+      label: 'Sadece Temel Eşyalar',
+      description: 'Hafif seyahat, özgürlük ve sadelik',
+      imageQuery: 'minimal-luggage',
+    },
+    optionB: {
+      id: 'b',
+      label: 'Tam Donanımlı',
+      description: 'İhtiyaç duyabileceğim her şey yanımda',
+      imageQuery: 'full-luggage',
+    },
+    effectA: { performance: 20, elegance: 15 },
+    effectB: { comfort: 25, adventure: 20 },
+  },
+  {
+    id: 7,
+    prompt: 'Sürüş sırasında en çok neye odaklanırsınız?',
+    optionA: {
+      id: 'a',
+      label: 'Etrafımdaki Manzaraya',
+      description: 'Yolun sunduğu güzellikler ve iç huzur',
+      imageQuery: 'scenic-view',
+    },
+    optionB: {
+      id: 'b',
+      label: 'Virajların Akışına',
+      description: 'Motorun sesi ve yolun dinamiği',
+      imageQuery: 'cornering',
+    },
+    effectA: { elegance: 20, comfort: 20 },
+    effectB: { performance: 25, adventure: 15 },
+  },
 ];
 
 /* ── DNA Boyut Etiketleri ────────────────────────────────────────── */
@@ -208,25 +244,26 @@ function extractVehicleDNA(vehicle: Vehicle): DriverDNA {
   };
 }
 
-/* ── DNA Benzerlik Hesaplama (Kosinüs Uzaklığı Varyantı) ─────── */
+/* ── DNA Benzerlik Hesaplama (Öklid Uzaklığı Ters Orantısı) ─────── */
 
 function calculateAffinity(userDNA: DriverDNA, vehicleDNA: DriverDNA): number {
   const dimensions: DNADimension[] = ['performance', 'elegance', 'adventure', 'comfort', 'technology'];
 
-  let dotProduct = 0;
-  let magUser = 0;
-  let magVehicle = 0;
-
+  let sumSq = 0;
   for (const dim of dimensions) {
-    dotProduct += userDNA[dim] * vehicleDNA[dim];
-    magUser += userDNA[dim] ** 2;
-    magVehicle += vehicleDNA[dim] ** 2;
+    sumSq += (userDNA[dim] - vehicleDNA[dim]) ** 2;
   }
 
-  const magnitude = Math.sqrt(magUser) * Math.sqrt(magVehicle);
-  if (magnitude === 0) return 0;
+  // Maksimum olası uzaklık = sqrt(5 * 100^2) ≈ 223.6
+  const maxDistance = 223.6;
+  const distance = Math.sqrt(sumSq);
 
-  return dotProduct / magnitude;
+  // Uzaklığı 0-1 arası bir uyumluluk skoruna çevir
+  // Skoru biraz daha yukarı çekmek (curve) için Math.pow kullanılabilir, 
+  // ancak basitçe 1 - (uzaklık / maxUzaklık) yeterlidir.
+  // Daha dramatik sonuçlar için 1.5 üssü alıyoruz:
+  const normalizedDistance = distance / maxDistance;
+  return Math.max(0, 1 - Math.pow(normalizedDistance, 1.2));
 }
 
 /* ── Ana Eşleştirme Fonksiyonu ───────────────────────────────────── */

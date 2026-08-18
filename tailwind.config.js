@@ -14,14 +14,17 @@ export default {
       },
       fontFamily: {
         display: [
+          'Corporate A',
+          'Corporate A BQ',
           'Playfair Display',
           'Georgia',
           'Times New Roman',
           'serif',
         ],
         sans: [
-          'Inter',
-          'SF Pro Display',
+          'MBCorpo S Text',
+          'MBCorpo Title',
+          'Montserrat',
           'system-ui',
           '-apple-system',
           'Segoe UI',

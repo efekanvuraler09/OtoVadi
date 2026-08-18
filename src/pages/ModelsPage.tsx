@@ -54,7 +54,7 @@ export function ModelsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Marka, model veya anahtar kelime ara..."
-              className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted"
+              className="w-full bg-transparent font-display text-base font-light tracking-wide text-foreground outline-none placeholder:text-muted"
               aria-label="Araç ara"
             />
           </div>
@@ -66,7 +66,7 @@ export function ModelsPage() {
             <button
               key={opt.id}
               onClick={() => setFilter(opt.id as any)}
-              className={`font-sans text-xs uppercase tracking-widest transition-colors duration-300 pb-2 border-b ${
+              className={`font-display text-sm font-light uppercase tracking-widest transition-colors duration-300 pb-2 border-b ${
                 filter === opt.id 
                   ? 'text-foreground border-foreground' 
                   : 'text-muted border-transparent hover:text-foreground'
