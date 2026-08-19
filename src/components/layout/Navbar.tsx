@@ -52,7 +52,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-[100] w-full border-b border-border-subtle bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md transition-colors duration-300">
+      <header className="sticky top-0 z-[100] w-full border-b border-border-subtle bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-sm shadow-none transition-colors duration-300">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8 lg:px-12">
           
           {/* Left: Brand Icon & Name */}
@@ -74,7 +74,7 @@ export function Navbar() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex shrink-0 items-center gap-3 lg:gap-5">
+          <div className="flex shrink-0 items-center gap-2 md:gap-4 lg:gap-6 scale-90 sm:scale-100 origin-right">
             {isAdmin && (
               <Link
                 to="/admin/dashboard"
@@ -86,7 +86,7 @@ export function Navbar() {
 
             <Link 
               to="/garajim"
-              className="relative text-black dark:text-white hover:opacity-70 transition-opacity select-none outline-none focus:outline-none"
+              className="relative text-black dark:text-white hover:opacity-70 transition-opacity select-none outline-none focus:outline-none mr-2 md:mr-0"
               aria-label={t.nav.myGarage}
             >
               <Bookmark className="size-5 stroke-[1.5]" />
@@ -133,8 +133,10 @@ export function Navbar() {
               </button>
             )}
 
-            <LanguageSwitcher />
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
             
             {/* Hamburger Menu Toggle — visible on ALL screen sizes */}
             <button
