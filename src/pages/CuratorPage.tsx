@@ -2,8 +2,9 @@ import { AutoCurator } from '../components/curator/AutoCurator';
 
 export function CuratorPage() {
   return (
-    <main className="w-full">
+    // AppShell zaten <main> sağlıyor; iç içe <main> erişilebilirlik ağacını bozar
+    <div className="w-full">
       <AutoCurator />
-    </main>
+    </div>
   );
 }

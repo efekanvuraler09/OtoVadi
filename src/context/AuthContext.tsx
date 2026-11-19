@@ -3,10 +3,13 @@ import type { ReactNode } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { checkIsAdmin } from '../services/adminService';
 
 interface AuthContextType {
   user: User | null;
+  /** Yalnızca arayüz içindir; asıl yetki firestore.rules → isAdmin() (admins/{uid} kaydı) */
   isAdmin: boolean;
+  /** Oturum ve yönetici kontrolü sürerken true */
   isLoading: boolean;
   isAuthModalOpen: boolean;
   authToastMessage: string | null;
@@ -26,12 +29,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authToastMessage, setAuthToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    let disposed = false;
+    let checkId = 0;
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      const id = ++checkId;
       setUser(currentUser);
-      setIsAdmin(currentUser?.email === 'admin@otovadi.com');
-      setIsLoading(false);
+      // Önceki oturumdan kalan yetki asla taşınmaz
+      setIsAdmin(false);
+
+      if (!currentUser) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Yönetici yetkisi admins/{uid} kaydından okunur (firestore.rules ile aynı kaynak).
+      // Kontrol bitene kadar isLoading true kalır; böylece korumalı sayfalar erken karar vermez.
+      setIsLoading(true);
+      void checkIsAdmin(currentUser.uid).then((admin) => {
+        if (disposed || id !== checkId) return;
+        setIsAdmin(admin);
+        setIsLoading(false);
+      });
     });
-    return () => unsubscribe();
+
+    return () => {
+      disposed = true;
+      unsubscribe();
+    };
   }, []);
 
   const openAuthModal = (message?: string) => {

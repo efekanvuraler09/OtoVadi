@@ -31,6 +31,17 @@ export function resolveCurrency(pricing: Pick<VehiclePricing, 'currency' | 'msrp
   return msrp >= LEGACY_TRY_MIN_AMOUNT ? 'TRY' : 'EUR';
 }
 
+/**
+ * YAKLAŞIK kurlar (Kasım 2026, EUR/TRY ≈ 55, USD/TRY ≈ 50). Yalnızca farklı para birimli fiyatları
+ * KARŞILAŞTIRMAK içindir (Akıllı Keşif sıralaması). Ekranda fiyat göstermek için asla kullanmayın.
+ */
+const APPROX_TRY_PER_UNIT: Record<Currency, number> = { TRY: 1, EUR: 55, USD: 50 };
+
+/** Tutarın yaklaşık TL karşılığı (yalnızca kıyaslama için). */
+export function approximateTry(amount: number, currency: Currency): number {
+  return amount * APPROX_TRY_PER_UNIT[currency];
+}
+
 /** Tutarı verilen para birimiyle biçimlendirir (ör. "₺2.500.000", "€58.900"). */
 export function formatPrice(amount: number, currency: Currency, locale = 'tr-TR'): string {
   return new Intl.NumberFormat(locale, {

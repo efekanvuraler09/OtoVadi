@@ -5,17 +5,18 @@ editoryal içerik (Günün Aracı, Koleksiyonlar) ve Firestore tabanlı admin CM
 
 ## Yığın
 React 19 · TypeScript ~6 · Vite 8 · Tailwind 3.4 (`darkMode: 'class'`) · framer-motion 12 · Zustand 5 ·
-React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/generative-ai` (istemcide, bkz. Hassas noktalar).
+React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function).
 
 ## Doğrulama (her değişiklikten sonra)
 ```bash
 npx tsc -p tsconfig.app.json --noEmit    # src'yi gerçekten tarar
-npx tsc -p tsconfig.node.json --noEmit   # vite.config.ts
+npx tsc -p tsconfig.node.json --noEmit   # vite.config.ts + api/
 npm run build                            # tsc -b && vite build (500 kB chunk uyarısı bilinen durum)
-npx eslint .                             # 62 hata önceden var (çoğu AdminDashboard `any`); sayı ARTMAMALI
+npx eslint .                             # 60 hata önceden var (çoğu AdminDashboard `any`); sayı ARTMAMALI
 ```
 Kökte düz `npx tsc --noEmit` hiçbir dosyayı taramaz (`tsconfig.json` → `files: []`), güvence vermez.
-Geliştirme: `npm run dev` (5173). Build önizleme: `npx vite preview`.
+Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` isteklerini `api/<ad>.ts`'e yönlendirir ve
+`.env`'deki `GEMINI_API_KEY` / `GEMINI_MODEL`'i yalnızca sunucu sürecine aktarır. `npx vite preview`'da `/api` yoktur (Hızlı Eşleştirme devreye girer).
 
 ## Veri akışı
 - `App.tsx` → `FirestoreSync`, `vehicles` koleksiyonuna abone olur → `useVehicleStore` (`vehicles`, `isLoading`, `loadError`, `retryLoad`).
@@ -45,6 +46,19 @@ Geliştirme: `npm run dev` (5173). Build önizleme: `npx vite preview`.
 8. **Diğer:** Garaj işlemleri `useGarageToggle(vehicle)`; giriş gerektiren aksiyonlar `openAuthModal(mesaj)`;
    bulunamayan kayıtta sessiz `Navigate to="/"` yerine `NotFoundPage`.
 
+## Akıllı Keşif ve güvenlik (Faz 2)
+- Akış: `AutoCurator` → `services/discoveryService.ts` → `POST /api/discover` → Gemini (`responseSchema`, slug enum + sunucuda
+  ayrıca doğrulama, toplam 12 sn, 429/503'te tek retry, 300 karakter). Sözleşme `src/types/discovery.ts` (yalnızca tip).
+- Model: varsayılan `gemini-3.5-flash-lite` (sabit sürüm); `GEMINI_MODEL` ile değişir. `-latest` takma adı kullanma. 2.5 serisi 1 Aralık 2026'da kapanıyor.
+- İstemci durumları `idle | loading | success | degraded | error`. API başarısızsa `utils/localVehicleMatcher.ts` ile
+  "Hızlı Eşleştirme" gösterilir; asla sessizce `vehicles[0]` veya "Mükemmel Eşleşme" etiketi gösterme.
+- `api/` dosyalarında göreli çalışma zamanı import'u yok (Vercel ESM'de kırılır); yalnızca paketler ve `import type`.
+- Sır gerektiren her şey `api/` altında, `process.env.X` (VITE_ öneki YOK). `VITE_` önekli değişken bundle'a girer.
+- Yetki: `firestore.rules` tek doğru kaynaktır. Yönetici = Console'dan elle eklenen `admins/{uid}` dokümanı;
+  `useAuth().isAdmin` yalnızca arayüz içindir. Kural değişikliği Firebase Console'da yayınlanmadıkça etkisizdir.
+- Kurallar filtre değildir: kişisel veri sorguları sunucuda daraltılır (ör. `where('userId','==',uid)`), tüm koleksiyonu indirip
+  istemcide süzme. Bileşik index'ler `firestore.indexes.json`'da. `testDrives.createdAt` = `serverTimestamp()` (kural `request.time` ister).
+
 ## Bilinen veri istisnaları (canlı Firestore `otovadi-99993`, 2026-11-19 itibarıyla)
 - `vehicles`: 33 doküman, hepsi `pricing.currency: "TRY"`; ancak 28'inin `msrp` değeri < 1.000.000 ve gerçekte EUR.
   Sebep: admin formu eskiden para birimini zorla TRY yazıyordu (düzeltildi, artık formda seçim var).
@@ -57,10 +71,9 @@ Geliştirme: `npm run dev` (5173). Build önizleme: `npx vite preview`.
 
 ## Dokunma / hassas noktalar
 - `public/models/tucson.glb` (25 MB, kullanılmıyor) ve `public/hero-challenger.mp4` (28,5 MB): onaysız silme veya değiştirme.
-- `.env` (`VITE_GEMINI_API_KEY`): commit etme, değerini asla yazdırma. Anahtar bundle'a gömülüyor; serverless'a taşıma planlı (K1/K2).
-- `src/components/curator/AutoCurator.tsx` içindeki Gemini çağrı yapısı: K1/K2 fazına kadar dokunma.
-- Firestore kuralları ve `src/config/firebase.ts`: K3/K4 fazında ele alınacak. Kurallar repoda yok; `isAdmin` istemci tarafı e-posta kontrolüdür, güvenlik sınırı değildir.
-- `scripts/recover2.js`: kimlik doğrulamasız prod'a yazar, çalıştırma.
+- `.env` (`GEMINI_API_KEY`): commit etme, değerini asla yazdırma. Eski `VITE_GEMINI_API_KEY` bundle'a sızmıştı; rotate edilmeli.
+- `firestore.rules`: değiştirirsen Console'da yayınlanması gerektiğini kullanıcıya söyle; `admins` koleksiyonuna istemciden yazma ekleme.
+- `scripts/recover2.js`: kimlik doğrulamasız prod'a yazar, çalıştırma (yeni kurallar zaten reddeder).
 - `src/pages/admin/AdminDashboard.tsx`: büyük ve `any` yoğun; yalnızca hedefli, küçük değişiklik.
 - Commit/push yapma; kullanıcı her fazdan sonra kendisi test edip commit alır.
 
@@ -74,4 +87,5 @@ Geliştirme: `npm run dev` (5173). Build önizleme: `npx vite preview`.
 
 ## Yol haritası
 Analiz maddeleri: K1–K14 (hata/güvenlik), U1–U13 (UI/UX), P1–P8 (performans/SEO), Y1–Y7 (yeni özellik).
-Faz 1 tamamlandı: K5–K10. Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.
+Faz 1 tamamlandı: K5–K10. Faz 2 tamamlandı: K1–K4, P8 (CI ve Speed Insights hariç).
+Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.

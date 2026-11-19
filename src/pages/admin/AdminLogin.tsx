@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
 
 export function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,12 @@ export function AdminLogin() {
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { user, isAdmin, isLoading } = useAuth();
+
+  // Zaten yönetici olarak oturum açıksa (veya giriş sonrası yetki kontrolü tamamlandıysa) panele geç
+  if (!isLoading && user && isAdmin) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

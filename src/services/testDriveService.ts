@@ -1,4 +1,19 @@
-import { collection, addDoc, updateDoc, doc, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  where,
+  type FirestoreError,
+  type Query,
+  type QuerySnapshot,
+  type Timestamp,
+  type Unsubscribe,
+} from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export type TestDriveStatus = 'pending' | 'approved' | 'rejected';
@@ -14,15 +29,32 @@ export interface TestDriveRequest {
   date: string;
   time: string;
   status: TestDriveStatus;
-  createdAt: any;
+  /** Sunucu zaman damgası; yazma henüz sunucuya ulaşmadıysa yerel anlık görüntüde null olabilir */
+  createdAt: Timestamp | null;
 }
 
+const testDrivesRef = collection(db, 'testDrives');
+
+function toRequests(snapshot: QuerySnapshot): TestDriveRequest[] {
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as TestDriveRequest);
+}
+
+/** Yeniden eskiye; henüz sunucuya yazılmamış (createdAt null) kayıtlar en üstte */
+function sortNewestFirst(requests: TestDriveRequest[]): TestDriveRequest[] {
+  const time = (r: TestDriveRequest) => r.createdAt?.toMillis?.() ?? Number.MAX_SAFE_INTEGER;
+  return [...requests].sort((a, b) => time(b) - time(a));
+}
+
+/**
+ * Yeni randevu talebi. firestore.rules: userId oturumdaki kullanıcı olmalı, status 'pending',
+ * createdAt sunucu zamanı (request.time) ve yalnızca izinli alanlar yazılabilir.
+ */
 export const createTestDriveRequest = async (data: Omit<TestDriveRequest, 'id' | 'status' | 'createdAt'>): Promise<string> => {
   try {
-    const docRef = await addDoc(collection(db, 'testDrives'), {
+    const docRef = await addDoc(testDrivesRef, {
       ...data,
       status: 'pending',
-      createdAt: Timestamp.now(),
+      createdAt: serverTimestamp(),
     });
     return docRef.id;
   } catch (error) {
@@ -31,6 +63,7 @@ export const createTestDriveRequest = async (data: Omit<TestDriveRequest, 'id' |
   }
 };
 
+/** Yalnızca yönetici (firestore.rules → isAdmin) */
 export const updateTestDriveStatus = async (id: string, status: TestDriveStatus): Promise<void> => {
   try {
     const docRef = doc(db, 'testDrives', id);
@@ -41,24 +74,60 @@ export const updateTestDriveStatus = async (id: string, status: TestDriveStatus)
   }
 };
 
-export const subscribeToTestDrives = (callback: (requests: TestDriveRequest[]) => void) => {
-  const q = query(collection(db, 'testDrives'));
-  
-  return onSnapshot(q, (snapshot) => {
-    let requests = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as TestDriveRequest[];
-    
-    // Sort manually to avoid index requirement
-    requests = requests.sort((a, b) => {
-      const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-      const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-      return timeB - timeA;
-    });
-    
-    callback(requests);
-  }, (error) => {
-    console.error('Error subscribing to test drives:', error);
-  });
-};
+/** Tüm randevular: yalnızca yönetici paneli içindir (kurallar admin olmayanı reddeder). */
+export const subscribeToTestDrives = (
+  callback: (requests: TestDriveRequest[]) => void,
+  onError?: (error: FirestoreError) => void,
+): Unsubscribe =>
+  onSnapshot(
+    query(testDrivesRef),
+    // Bileşik index gerektirmemek için sıralama istemcide
+    (snapshot) => callback(sortNewestFirst(toRequests(snapshot))),
+    (error) => {
+      console.error('Error subscribing to test drives:', error);
+      onError?.(error);
+    },
+  );
+
+/**
+ * Oturumdaki kullanıcının randevuları. Filtre SUNUCUDA uygulanır: başka kullanıcıların kişisel verisi
+ * tarayıcıya hiç inmez ve firestore.rules bu sorguya yalnızca kendi kayıtları için izin verir.
+ * Gereken bileşik index: testDrives → userId (Artan) + createdAt (Azalan), bkz. firestore.indexes.json.
+ */
+export function subscribeToUserTestDrives(
+  userId: string,
+  callback: (requests: TestDriveRequest[]) => void,
+  onError?: (error: FirestoreError) => void,
+): Unsubscribe {
+  const ownRequests = query(testDrivesRef, where('userId', '==', userId));
+  const ordered = query(ownRequests, orderBy('createdAt', 'desc'));
+  let unsubscribe: Unsubscribe = () => {};
+  let disposed = false;
+
+  const listen = (q: Query, sortLocally: boolean) => {
+    unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const requests = toRequests(snapshot);
+        callback(sortLocally ? sortNewestFirst(requests) : requests);
+      },
+      (error) => {
+        if (!sortLocally && error.code === 'failed-precondition' && !disposed) {
+          // Index henüz oluşturulmadı ya da hazırlanıyor: yine sunucuda userId ile filtrelenen sorguya geç,
+          // sıralamayı istemcide yap. (Hata mesajındaki bağlantı index'i tek tıkla oluşturur.)
+          console.warn('testDrives için bileşik index (userId + createdAt desc) hazır değil; geçici olarak istemci tarafı sıralama kullanılıyor.', error.message);
+          listen(ownRequests, true);
+          return;
+        }
+        console.error('Randevular alınamadı:', error);
+        onError?.(error);
+      },
+    );
+  };
+
+  listen(ordered, false);
+  return () => {
+    disposed = true;
+    unsubscribe();
+  };
+}

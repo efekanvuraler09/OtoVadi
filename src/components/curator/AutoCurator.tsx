@@ -1,106 +1,219 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { ArrowRight, RotateCcw, Sparkles, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { useI18n } from '../../i18n/useI18n';
+import { useI18n, type Locale, type Translations } from '../../i18n/useI18n';
+import { DISCOVER_MAX_QUERY_LENGTH, requestDiscovery } from '../../services/discoveryService';
+import { matchVehiclesLocally, type LocalMatch, type MatchCriterion } from '../../utils/localVehicleMatcher';
+import { formatPrice, formatVehiclePrice } from '../../utils/formatPrice';
+import { StatusScreen } from '../ui/DataState';
+import { VehicleMediaCover } from '../ui/VehicleMediaCover';
+import { primaryButtonClass, secondaryButtonClass } from '../ui/buttonStyles';
 
-type CuratorState = 'prompt' | 'analyzing' | 'result';
+/**
+ * idle     → sorgu formu
+ * loading  → /api/discover bekleniyor
+ * success  → yapay zeka önerisi ("Mükemmel Eşleşme")
+ * degraded → API yanıt vermedi; yerel anahtar kelime puanlaması ("Hızlı Eşleştirme"), Tekrar Dene ile AI yeniden denenir
+ * error    → öneri üretilemedi (ör. katalog boş/yüklenemedi)
+ */
+type CuratorStatus = 'idle' | 'loading' | 'success' | 'degraded' | 'error';
+type CuratorCopy = Translations['smartDiscovery'];
 
-const TypewriterText = ({ text, speed = 30 }: { text: string; speed?: number }) => {
+interface CuratorResult {
+  vehicle: Vehicle;
+  alternatives: Vehicle[];
+  reasoning: string;
+  criteria: string[];
+}
+
+const LOADING_STEP_MS = 2200;
+/** Karakter sayacı bu uzunluktan sonra görünür (sınır: DISCOVER_MAX_QUERY_LENGTH) */
+const COUNTER_THRESHOLD = 240;
+
+const vehicleName = (vehicle: Vehicle) => `${vehicle.brand} ${vehicle.model}`.replace(/\s+/g, ' ').trim();
+
+function formatList(items: string[], locale: Locale): string {
+  return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(items);
+}
+
+function criterionLabel(criterion: MatchCriterion, copy: CuratorCopy): string {
+  switch (criterion.kind) {
+    case 'budget': {
+      const template = criterion.direction === 'min' ? copy.criteria.budgetMin : copy.criteria.budgetMax;
+      return template.replace('{amount}', formatPrice(criterion.amount, criterion.currency));
+    }
+    case 'brand':
+    case 'model':
+      return criterion.label;
+    case 'body':
+      return copy.criteria.body[criterion.value];
+    case 'fuel':
+      return copy.criteria.fuel[criterion.value];
+    default:
+      return copy.criteria[criterion.kind];
+  }
+}
+
+/** Yerel eşleştirme sonucunu dürüst bir açıklamayla sonuca çevirir (AI'ın yazdığı izlenimi verilmez). */
+function buildLocalResult(match: LocalMatch, copy: CuratorCopy, locale: Locale): CuratorResult {
+  const name = vehicleName(match.vehicle);
+  const criteria = match.criteria.map((c) => criterionLabel(c, copy));
+  let reasoning = (criteria.length > 0 ? copy.quickMatchReason : copy.quickMatchNoCriteria).replace('{vehicle}', name);
+  if (match.unmet.length > 0) {
+    const unmet = formatList(match.unmet.map((c) => criterionLabel(c, copy)), locale);
+    reasoning += ` ${copy.quickMatchUnmet.replace('{criteria}', unmet)}`;
+  }
+  return { vehicle: match.vehicle, alternatives: match.alternatives, reasoning, criteria };
+}
+
+function TypewriterText({ text, speed = 30 }: { text: string; speed?: number }) {
+  const reduceMotion = useReducedMotion();
   const [charIndex, setCharIndex] = useState(0);
 
-  // Yeni metin geldiğinde sayacı mutlaka sıfırla
+  // Metin değişince bileşen `key` ile yeniden oluşturulur; burada yalnızca harf harf ilerletilir
   useEffect(() => {
-    setCharIndex(0);
-  }, [text]);
-
-  // Metni indeks sayısına göre harf harf ilerlet
-  useEffect(() => {
-    if (!text || charIndex >= text.length) return;
-
-    const timer = setTimeout(() => {
-      setCharIndex(prev => prev + 1);
-    }, speed); // 30ms lüks hız
-
+    if (reduceMotion || charIndex >= text.length) return;
+    const timer = setTimeout(() => setCharIndex((prev) => prev + 1), speed);
     return () => clearTimeout(timer);
-  }, [charIndex, text, speed]);
+  }, [charIndex, text, speed, reduceMotion]);
 
-  return <span>{text.substring(0, charIndex)}</span>;
-};
+  return (
+    <>
+      {/* Ekran okuyucular metnin tamamını tek seferde okur */}
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">{reduceMotion ? text : text.substring(0, charIndex)}</span>
+    </>
+  );
+}
 
 export function AutoCurator() {
   const vehicles = useVehicleStore((s) => s.vehicles);
-  const { t } = useI18n();
-  const [currentState, setCurrentState] = useState<CuratorState>('prompt');
+  const isCatalogLoading = useVehicleStore((s) => s.isLoading);
+  const loadError = useVehicleStore((s) => s.loadError);
+  const retryLoad = useVehicleStore((s) => s.retryLoad);
+  const { t, locale } = useI18n();
+  const copy = t.smartDiscovery;
+
+  const [status, setStatus] = useState<CuratorStatus>('idle');
   const [inputValue, setInputValue] = useState('');
-  const [loadingText, setLoadingText] = useState(t.smartDiscovery.loading1);
-  const [recommendedVehicle, setRecommendedVehicle] = useState<Vehicle | null>(null);
-  const [aiReasoning, setAiReasoning] = useState('');
+  const [lastQuery, setLastQuery] = useState('');
+  const [result, setResult] = useState<CuratorResult | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
+  const requestRef = useRef<AbortController | null>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
+  const isCatalogReady = vehicles.length > 0;
+  const canSubmit = isCatalogReady && inputValue.trim().length > 0;
+  const loadingMessages = [copy.loading1, copy.loading2, copy.loading3];
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error("API Key Bulunamadı: VITE_GEMINI_API_KEY eksik veya boş.");
+  // Sayfadan ayrılırken bekleyen isteği iptal et
+  useEffect(() => {
+    const pending = requestRef;
+    return () => pending.current?.abort();
+  }, []);
+
+  // Yükleme mesajlarını sırayla döndür
+  useEffect(() => {
+    if (status !== 'loading') return;
+    const timer = setInterval(() => setLoadingStep((step) => step + 1), LOADING_STEP_MS);
+    return () => clearInterval(timer);
+  }, [status]);
+
+  const runDiscovery = async (rawQuery: string) => {
+    const query = rawQuery.replace(/\s+/g, ' ').trim().slice(0, DISCOVER_MAX_QUERY_LENGTH);
+    if (!query) return;
+    if (!isCatalogReady) {
+      setStatus('error');
       return;
     }
 
-    setCurrentState('analyzing');
-    setLoadingText(t.smartDiscovery.loading2);
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    const catalog = vehicles;
+
+    setLastQuery(query);
+    setLoadingStep(0);
+    setStatus('loading');
 
     try {
-      const stockInfo = JSON.stringify(vehicles.map(v => ({
-        id: v.slug,
-        brand: v.brand,
-        model: v.model,
-        trim: v.pricing.trim,
-        price: `${v.pricing.msrp} ${v.pricing.currency}`,
-        highlights: v.highlights
-      })));
+      const response = await requestDiscovery(query, locale, catalog, controller.signal);
+      if (controller.signal.aborted) return;
 
-      const aiPrompt = `${t.smartDiscovery.aiPromptDesc}\n\nKullanıcı İsteği: "${inputValue}"\n\nAraç Listesi: ${stockInfo}`;
+      // Sunucu slug'ı zaten doğruladı; istemci kendi kataloğunda da bulamazsa yerel eşleştirmeye düşülür
+      const bySlug = new Map(catalog.map((v) => [v.slug, v] as const));
+      const vehicle = bySlug.get(response.slug);
+      if (!vehicle) throw new Error(`Önerilen araç katalogda yok: ${response.slug}`);
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-      const result = await model.generateContent(aiPrompt);
-      const responseText = result.response.text().trim();
-      
-      const lines = responseText.split('\n');
-      const slug = lines[0].trim().replace(/['"]/g, ''); // Temizle
-      const reasoning = (lines.slice(1).join('\n').trim() || responseText).trim();
-
-      const match = vehicles.find(v => v.slug === slug) || vehicles[0];
-      setRecommendedVehicle(match);
-      setAiReasoning(reasoning);
-      setCurrentState('result');
-
+      setResult({
+        vehicle,
+        alternatives: response.alternatives
+          .map((slug) => bySlug.get(slug))
+          .filter((v): v is Vehicle => v !== undefined && v.id !== vehicle.id),
+        reasoning: response.reasoning,
+        criteria: response.criteria,
+      });
+      setStatus('success');
     } catch (error) {
-      console.error("Gemini SDK Hatası:", error);
-      // Fallback
-      setRecommendedVehicle(vehicles[0]);
-      setAiReasoning(t.smartDiscovery.fallbackReason);
-      setCurrentState('result');
+      if (controller.signal.aborted) return;
+      console.warn('Akıllı Keşif: yapay zeka yanıtı alınamadı, yerel eşleştirme kullanılıyor.', error);
+      const match = matchVehiclesLocally(query, catalog);
+      if (!match) {
+        setStatus('error');
+        return;
+      }
+      setResult(buildLocalResult(match, copy, locale));
+      setStatus('degraded');
+    } finally {
+      if (requestRef.current === controller) requestRef.current = null;
     }
   };
 
-  const resetCurator = () => {
-    setInputValue('');
-    setRecommendedVehicle(null);
-    setCurrentState('prompt');
-    setLoadingText(t.smartDiscovery.loading1);
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (canSubmit) void runDiscovery(inputValue);
   };
 
+  const resetCurator = () => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setInputValue('');
+    setResult(null);
+    setStatus('idle');
+  };
+
+  const handleErrorRetry = () => {
+    if (isCatalogReady && lastQuery) {
+      void runDiscovery(lastQuery);
+      return;
+    }
+    // Katalog yoksa önce onu yeniden yükle; form, yükleme durumunu altında gösterir
+    if (loadError) retryLoad();
+    setStatus('idle');
+  };
+
+  const catalogHint = isCatalogReady ? null : isCatalogLoading ? (
+    copy.catalogLoading
+  ) : loadError ? (
+    <>
+      {copy.catalogError}{' '}
+      <button type="button" onClick={retryLoad} className="underline underline-offset-4 hover:text-foreground">
+        {copy.retry}
+      </button>
+    </>
+  ) : (
+    copy.catalogEmpty
+  );
+
   return (
-    <section className="relative w-full min-h-[calc(100vh-4rem)] bg-void flex items-center justify-center overflow-hidden">
+    <section className="relative w-full min-h-[calc(100svh-4rem)] bg-void flex items-center justify-center overflow-hidden">
       <AnimatePresence mode="wait">
-        
-        {/* 1. PROMPT STATE */}
-        {currentState === 'prompt' && (
+
+        {/* 1. SORGU */}
+        {status === 'idle' && (
           <motion.div
             key="prompt"
             initial={{ opacity: 0, y: 20 }}
@@ -111,100 +224,209 @@ export function AutoCurator() {
           >
             <Sparkles className="size-8 text-muted mb-8" strokeWidth={1} />
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground text-center mb-12 tracking-wide">
-              {t.smartDiscovery.title}
+              {copy.title}
             </h1>
             <form onSubmit={handleSearch} className="w-full relative group">
               <input
                 type="text"
                 autoFocus
                 value={inputValue}
+                maxLength={DISCOVER_MAX_QUERY_LENGTH}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder={t.smartDiscovery.placeholder}
+                placeholder={copy.placeholder}
+                aria-label={copy.title}
                 className="w-full bg-transparent border-b border-border-subtle focus:border-foreground/50 pb-4 text-center font-sans text-lg md:text-xl text-foreground placeholder:text-muted/50 focus:outline-none transition-colors"
               />
-              <button 
+              <button
                 type="submit"
-                disabled={!inputValue.trim()}
+                disabled={!canSubmit}
+                aria-label={copy.submit}
                 className="absolute right-0 bottom-4 text-muted hover:text-foreground disabled:opacity-0 transition-all"
               >
                 <ArrowRight className="size-6" strokeWidth={1.5} />
               </button>
             </form>
+            {(catalogHint || inputValue.length >= COUNTER_THRESHOLD) && (
+              <div className="mt-4 flex w-full flex-col items-center gap-1 font-sans text-xs text-muted" aria-live="polite">
+                {catalogHint && <p>{catalogHint}</p>}
+                {inputValue.length >= COUNTER_THRESHOLD && (
+                  <p className="tabular-nums">
+                    {inputValue.length}/{DISCOVER_MAX_QUERY_LENGTH}
+                  </p>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
 
-        {/* 2. ANALYZING (LOADING) STATE */}
-        {currentState === 'analyzing' && (
+        {/* 2. ANALİZ (YÜKLENİYOR) */}
+        {status === 'loading' && (
           <motion.div
             key="analyzing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col items-center justify-center gap-6"
+            className="flex flex-col items-center justify-center gap-6 px-6 text-center"
+            role="status"
+            aria-live="polite"
           >
             <div className="relative flex items-center justify-center size-16">
               <div className="absolute inset-0 border border-foreground/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
               <div className="size-2 bg-foreground rounded-full" />
             </div>
             <motion.p
-              key={loadingText}
+              key={loadingStep % loadingMessages.length}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
               className="font-display text-xl text-muted tracking-widest uppercase"
             >
-              {loadingText}
+              {loadingMessages[loadingStep % loadingMessages.length]}
             </motion.p>
           </motion.div>
         )}
 
-        {/* 3. RESULT STATE */}
-        {currentState === 'result' && recommendedVehicle && (
+        {/* 3. SONUÇ: yapay zeka önerisi veya dürüst yerel eşleştirme */}
+        {(status === 'success' || status === 'degraded') && result && (
           <motion.div
             key="result"
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-7xl px-4 md:px-8 lg:px-12 flex flex-col items-center"
+            className="w-full max-w-7xl px-4 md:px-8 lg:px-12 py-12 flex flex-col items-center"
           >
-            {/* Recommendation Reason */}
             <div className="max-w-2xl text-center mb-12">
-              <p className="font-sans text-sm uppercase tracking-widest text-emerald-500/80 mb-6">{t.smartDiscovery.perfectMatch}</p>
+              {status === 'success' ? (
+                <p className="font-sans text-sm uppercase tracking-widest text-emerald-500/80 mb-6">{copy.perfectMatch}</p>
+              ) : (
+                <p className="mb-6 inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                  <Zap className="size-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  {copy.quickMatchLabel}
+                </p>
+              )}
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight">
-                {recommendedVehicle.brand} {recommendedVehicle.model}
+                {vehicleName(result.vehicle)}
               </h2>
               <p className="font-sans text-base md:text-lg text-muted leading-relaxed min-h-[80px]">
-                "<TypewriterText text={aiReasoning} />"
+                {status === 'success' ? (
+                  <>"<TypewriterText key={result.reasoning} text={result.reasoning} />"</>
+                ) : (
+                  result.reasoning
+                )}
               </p>
+              {result.criteria.length > 0 && (
+                <ul className="mt-6 flex flex-wrap justify-center gap-2" aria-label={copy.criteriaLabel}>
+                  {result.criteria.map((label) => (
+                    <li
+                      key={label}
+                      className="border border-border-subtle px-3 py-1 font-sans text-[11px] uppercase tracking-widest text-muted"
+                    >
+                      {label}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
-            {/* Vehicle Studio Image */}
+            {/* Araç stüdyo görseli */}
             <div className="w-full h-64 md:h-96 relative flex justify-center mb-16">
-              <img 
-                src={recommendedVehicle.interactiveGallery?.studioImage || recommendedVehicle.media.heroImage} 
-                alt={`${recommendedVehicle.brand} ${recommendedVehicle.model}`}
+              <img
+                src={result.vehicle.interactiveGallery?.studioImage || result.vehicle.media.heroImage}
+                alt={vehicleName(result.vehicle)}
                 className="w-full h-full object-contain"
               />
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-8">
-              <Link 
-                to={`/arac/${recommendedVehicle.id}`}
+            {/* Aksiyonlar */}
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+              <Link
+                to={`/arac/${result.vehicle.id}`}
                 className="px-8 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
-                {t.smartDiscovery.inspectVehicle}
+                {copy.inspectVehicle}
               </Link>
-              <button 
+              {status === 'degraded' && (
+                <button
+                  type="button"
+                  onClick={() => void runDiscovery(lastQuery)}
+                  className="inline-flex items-center gap-2 border-b border-foreground/40 pb-1 text-sm font-medium uppercase tracking-widest text-foreground transition-colors hover:border-foreground"
+                >
+                  <RotateCcw className="size-4" strokeWidth={1.5} aria-hidden="true" />
+                  {copy.retry}
+                </button>
+              )}
+              <button
+                type="button"
                 onClick={resetCurator}
                 className="text-sm font-medium uppercase tracking-widest text-muted hover:text-foreground transition-colors pb-1 border-b border-transparent hover:border-foreground"
               >
-                {t.smartDiscovery.searchAgain}
+                {copy.searchAgain}
               </button>
             </div>
 
+            {/* Alternatifler */}
+            {result.alternatives.length > 0 && (
+              <div className="mt-16 w-full max-w-3xl">
+                <p className="mb-6 text-center font-sans text-xs uppercase tracking-widest text-muted">{copy.alternativesTitle}</p>
+                <ul className="grid gap-4 sm:grid-cols-2">
+                  {result.alternatives.map((alt) => (
+                    <li key={alt.id}>
+                      <Link
+                        to={`/arac/${alt.id}`}
+                        className="group flex items-center gap-4 border border-border-subtle bg-surface/10 p-4 transition-colors hover:bg-surface/30"
+                      >
+                        <div className="relative h-14 w-20 shrink-0 overflow-hidden">
+                          <VehicleMediaCover
+                            src={alt.media?.thumbnail || alt.media?.heroImage || ''}
+                            alt={vehicleName(alt)}
+                            colorHex={alt.media?.colorHex || 'transparent'}
+                          />
+                        </div>
+                        <div className="min-w-0 text-left">
+                          <p className="truncate font-display text-lg font-light text-foreground">{vehicleName(alt)}</p>
+                          <p className="font-sans text-xs text-muted">{formatVehiclePrice(alt.pricing)}</p>
+                        </div>
+                        <ArrowRight
+                          className="ml-auto size-4 shrink-0 text-muted transition-transform group-hover:translate-x-1"
+                          strokeWidth={1.5}
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* 4. HATA: öneri üretilemedi */}
+        {status === 'error' && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="w-full"
+          >
+            <StatusScreen
+              compact
+              eyebrow={copy.errorEyebrow}
+              title={copy.errorTitle}
+              description={copy.errorDescription}
+              actions={
+                <>
+                  <button type="button" onClick={handleErrorRetry} className={primaryButtonClass}>
+                    <RotateCcw className="size-4" strokeWidth={1.5} aria-hidden="true" />
+                    {copy.retry}
+                  </button>
+                  <button type="button" onClick={resetCurator} className={secondaryButtonClass}>
+                    {copy.searchAgain}
+                  </button>
+                </>
+              }
+            />
           </motion.div>
         )}
 

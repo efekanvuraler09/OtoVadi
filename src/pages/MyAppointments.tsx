@@ -1,31 +1,60 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Car, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, Car } from 'lucide-react';
+import type { FirestoreError } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { subscribeToTestDrives, type TestDriveRequest } from '../services/testDriveService';
+import { subscribeToUserTestDrives, type TestDriveRequest } from '../services/testDriveService';
+import { LoadErrorState, LoadingState, StatusScreen } from '../components/ui/DataState';
+import { primaryButtonClass } from '../components/ui/buttonStyles';
+
+interface AppointmentsSnapshot {
+  /** Hangi kullanıcı + deneme için alındığı; eski anlık görüntü yeni oturumda gösterilmez */
+  key: string;
+  items: TestDriveRequest[];
+  error: FirestoreError | null;
+}
 
 export function MyAppointments() {
-  const { user } = useAuth();
-  const [appointments, setAppointments] = useState<TestDriveRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
+  const [snapshot, setSnapshot] = useState<AppointmentsSnapshot | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
+
+  const uid = user?.uid ?? null;
+  const subscriptionKey = uid ? `${uid}:${retryToken}` : null;
 
   useEffect(() => {
-    if (!user) return;
+    if (!uid) return;
+    const key = `${uid}:${retryToken}`;
+    // Sorgu sunucuda userId ile filtrelenir; başka kullanıcıların randevuları tarayıcıya inmez
+    return subscribeToUserTestDrives(
+      uid,
+      (items) => setSnapshot({ key, items, error: null }),
+      (error) => setSnapshot({ key, items: [], error }),
+    );
+  }, [uid, retryToken]);
 
-    const unsubscribe = subscribeToTestDrives((requests) => {
-      // Filter for current user only
-      const userRequests = requests.filter(req => req.userId === user.uid);
-      setAppointments(userRequests);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
+  // Sayfa yenilendiğinde Firebase oturumu birkaç yüz ms sonra gelir; o ana kadar karar verme
+  if (isAuthLoading) {
+    return <LoadingState label="Oturum kontrol ediliyor..." />;
+  }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <StatusScreen
+        eyebrow="Sürüş Randevularım"
+        title="Randevularınızı görmek için giriş yapın"
+        description="Test sürüşü taleplerinizi ve güncel durumlarını hesabınızla takip edebilirsiniz."
+        actions={
+          <button type="button" onClick={() => openAuthModal()} className={primaryButtonClass}>
+            Giriş Yap
+          </button>
+        }
+      />
+    );
   }
+
+  const current = snapshot?.key === subscriptionKey ? snapshot : null;
+  const appointments = current?.items ?? [];
 
   return (
     <motion.div
@@ -44,10 +73,15 @@ export function MyAppointments() {
           <p className="mt-2 text-sm text-muted">Test sürüşü taleplerinizin güncel durumunu buradan takip edebilirsiniz.</p>
         </header>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="size-8 animate-spin text-muted" />
-          </div>
+        {!current ? (
+          <LoadingState compact label="Randevular yükleniyor..." />
+        ) : current.error ? (
+          <LoadErrorState
+            compact
+            title="Randevular yüklenemedi"
+            description="Randevularınıza şu an ulaşamadık. Bağlantınızı kontrol edip tekrar deneyin; sorun sürerse birkaç dakika sonra yeniden deneyebilirsiniz."
+            onRetry={() => setRetryToken((n) => n + 1)}
+          />
         ) : appointments.length === 0 ? (
           <div className="text-center py-16 border border-border-subtle bg-surface/10">
             <Car className="size-12 text-muted mx-auto mb-4 stroke-[1]" />
@@ -57,7 +91,7 @@ export function MyAppointments() {
         ) : (
           <div className="grid gap-6">
             {appointments.map((appointment) => (
-              <motion.div 
+              <motion.div
                 key={appointment.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

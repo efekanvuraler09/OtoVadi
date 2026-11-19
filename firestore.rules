@@ -1,0 +1,96 @@
+rules_version = '2';
+
+// OtoVadi — Firestore güvenlik kuralları
+// Yayınlama: Firebase Console → Firestore Database → Kurallar (Rules) → bu dosyanın tamamını yapıştır → Yayınla
+// veya CLI: firebase deploy --only firestore:rules
+//
+// Burada izin verilmeyen her okuma/yazma varsayılan olarak REDDEDİLİR.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Yardımcılar ─────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Yönetici = Firebase Console'dan elle oluşturulan admins/{uid} dokümanı.
+    // İstemciler admins koleksiyonuna yazamaz (aşağıda), bu yüzden kimse kendini yönetici yapamaz.
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isBoundedString(value, minLength, maxLength) {
+      return value is string && value.size() >= minLength && value.size() <= maxLength;
+    }
+
+    // ── Yönetici listesi ────────────────────────────────────────────
+    match /admins/{userId} {
+      // Kullanıcı yalnızca KENDİ kaydının var olup olmadığını okuyabilir (arayüzdeki isAdmin kontrolü)
+      allow get: if isOwner(userId);
+      // Listeleme ve her türlü yazma kapalı: yalnızca Firebase Console'dan yönetilir
+      allow list, write: if false;
+    }
+
+    // ── Herkese açık katalog içerikleri ─────────────────────────────
+    match /vehicles/{vehicleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /collections/{collectionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // settings/carOfTheDay vb.
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Test sürüşü randevuları (kişisel veri / KVKK) ───────────────
+    match /testDrives/{requestId} {
+      // Sahibi kendi kayıtlarını (where userId == uid sorgusuyla), yönetici hepsini okur
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Yalnızca oturum açmış kullanıcı, kendi uid'siyle, 'pending' durumunda ve izinli alanlarla oluşturabilir
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly(['userId', 'vehicleId', 'vehicleName', 'customerName', 'customerPhone', 'location', 'date', 'time', 'status', 'createdAt'])
+        && request.resource.data.keys().hasAll(['userId', 'vehicleId', 'vehicleName', 'customerName', 'customerPhone', 'location', 'date', 'time', 'status', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && isBoundedString(request.resource.data.vehicleId, 1, 150)
+        && isBoundedString(request.resource.data.vehicleName, 1, 200)
+        && isBoundedString(request.resource.data.customerName, 1, 120)
+        && isBoundedString(request.resource.data.customerPhone, 1, 40)
+        && isBoundedString(request.resource.data.location, 1, 80)
+        && request.resource.data.date is string
+        && request.resource.data.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.time is string
+        && request.resource.data.time.matches('[0-9]{2}:[0-9]{2}(:[0-9]{2})?');
+
+      // Durumu yalnızca yönetici değiştirebilir; başka alan değiştirilemez
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['pending', 'approved', 'rejected'];
+
+      allow delete: if isAdmin();
+    }
+
+    // ── Kullanıcı profilleri ve garaj ───────────────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      // Kullanıcı kendi profilini oluşturabilir/güncelleyebilir ama 'role' alanını ekleyemez/değiştiremez
+      allow create: if isOwner(userId) && !('role' in request.resource.data);
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+      allow delete: if false;
+    }
+  }
+}

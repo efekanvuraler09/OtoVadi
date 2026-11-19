@@ -23,7 +23,13 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   }
 };
 
-export const updateUserProfile = async (uid: string, data: Partial<UserProfile>): Promise<void> => {
+/**
+ * İstemcinin yazabileceği profil alanları. `role` ve `uid` bilinçli olarak dışarıda:
+ * firestore.rules kullanıcının kendi `role` alanını değiştirmesini zaten reddeder.
+ */
+export type EditableUserProfile = Partial<Pick<UserProfile, 'photoURL' | 'displayName' | 'email'>>;
+
+export const updateUserProfile = async (uid: string, data: EditableUserProfile): Promise<void> => {
   try {
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);

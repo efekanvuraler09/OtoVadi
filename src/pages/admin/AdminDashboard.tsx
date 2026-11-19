@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Newspaper, Library } from 'lucide-react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
+import { LoadingState, StatusScreen } from '../../components/ui/DataState';
+import { primaryButtonClass, secondaryButtonClass } from '../../components/ui/buttonStyles';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import {
   addVehicleToFirestore,
@@ -110,7 +113,43 @@ const FloatingTextarea = ({ id, label, value, onChange, rows = 3 }: any) => (
   </div>
 );
 
+/**
+ * Yönetim paneli kapısı: içerik yalnızca admins/{uid} kaydı olan hesaplara gösterilir ve panel aboneliklerini
+ * ancak o zaman başlatır. Asıl koruma firestore.rules'tadır; bu kapı yetkisiz kullanıcıya paneli hiç açmaz.
+ */
 export function AdminDashboard() {
+  const { user, isAdmin, isLoading, logout } = useAuth();
+
+  if (isLoading) return <LoadingState label="Yetki kontrol ediliyor..." />;
+  if (!user) return <Navigate to="/admin/login" replace />;
+
+  if (!isAdmin) {
+    return (
+      <main className="w-full min-h-svh bg-void">
+        <StatusScreen
+          eyebrow="Yetkisiz Erişim"
+          title="Bu alana erişim yetkiniz yok"
+          description="Yönetim paneli yalnızca yetkilendirilmiş yönetici hesaplarına açıktır. Farklı bir hesapla giriş yapabilir veya siteye dönebilirsiniz."
+          actions={
+            <>
+              {/* Çıkış sonrası kapı otomatik olarak giriş sayfasına yönlendirir */}
+              <button type="button" onClick={() => void logout()} className={primaryButtonClass}>
+                Farklı Hesapla Giriş Yap
+              </button>
+              <Link to="/" className={secondaryButtonClass}>
+                Siteye Dön
+              </Link>
+            </>
+          }
+        />
+      </main>
+    );
+  }
+
+  return <AdminDashboardContent />;
+}
+
+function AdminDashboardContent() {
   const navigate = useNavigate();
   const vehicles = useVehicleStore((s) => s.vehicles);
   
@@ -165,13 +204,8 @@ export function AdminDashboard() {
   const [colEntries, setColEntries] = useState<{ vehicleId: string; editorialNote: string }[]>([]);
   const [editingColId, setEditingColId] = useState<string | null>(null);
 
+  // Oturum/yetki kontrolü üstteki AdminDashboard kapısında; bu bileşen yalnızca yöneticide mount edilir
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate('/admin/login');
-      }
-    });
-    
     const unsubscribeTestDrives = subscribeToTestDrives((data) => {
       setTestDrives(data);
     });
@@ -187,12 +221,11 @@ export function AdminDashboard() {
     });
 
     return () => {
-      unsubscribeAuth();
       unsubscribeTestDrives();
       unsubscribeCotd();
       unsubscribeCollections();
     };
-  }, [navigate]);
+  }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
