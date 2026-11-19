@@ -19,6 +19,11 @@ type Stage = 'intro' | 'quiz' | 'result';
 export function SoulTwinPage() {
   const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
+  const isLoading = useVehicleStore((s) => s.isLoading);
+  const loadError = useVehicleStore((s) => s.loadError);
+  const retryLoad = useVehicleStore((s) => s.retryLoad);
+  // Eşleştirme için en az bir araç gerekir (findSoulTwin boş listede hata fırlatır)
+  const isReady = vehicles.length > 0;
   const [stage, setStage] = useState<Stage>('intro');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<('a' | 'b')[]>([]);
@@ -39,6 +44,11 @@ export function SoulTwinPage() {
       setAnswers(newAnswers);
 
       if (newAnswers.length >= DNA_QUESTIONS.length) {
+        // Savunma: test sırasında araç listesi boşalmışsa çökmeden girişe dön
+        if (vehicles.length === 0) {
+          setStage('intro');
+          return;
+        }
         // Calculate DNA and find match
         const userDNA = calculateDNA(newAnswers);
         const result = findSoulTwin(userDNA, vehicles);
@@ -116,15 +126,25 @@ export function SoulTwinPage() {
               <motion.button
                 type="button"
                 onClick={handleStart}
+                disabled={!isReady}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0, duration: 0.5 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="mt-8 border border-border-subtle/50 dark:border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 dark:text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
+                whileHover={isReady ? { scale: 1.02 } : undefined}
+                whileTap={isReady ? { scale: 0.97 } : undefined}
+                className="mt-8 border border-border-subtle/50 dark:border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 dark:text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {t.soulTwin.startTest}
+                {isReady ? t.soulTwin.startTest : isLoading ? 'Araçlar yükleniyor...' : 'Araç bulunamadı'}
               </motion.button>
+
+              {!isReady && loadError && (
+                <p className="text-xs text-muted">
+                  Araç verileri yüklenemedi.{' '}
+                  <button type="button" onClick={retryLoad} className="underline underline-offset-4 hover:text-foreground">
+                    Tekrar dene
+                  </button>
+                </p>
+              )}
             </motion.div>
           </motion.div>
         )}

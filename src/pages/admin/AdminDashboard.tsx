@@ -20,6 +20,12 @@ import {
 } from '../../services/collectionService';
 import type { Vehicle } from '../../types/vehicle';
 import type { VehicleCollection, CollectionEntry } from '../../types/collection';
+import { resolveCurrency, SUPPORTED_CURRENCIES, type Currency } from '../../utils/formatPrice';
+
+const CURRENCY_OPTIONS = SUPPORTED_CURRENCIES.map((c) => ({
+  value: c,
+  label: c === 'TRY' ? 'TL (₺)' : c === 'EUR' ? 'Euro (€)' : 'Dolar ($)',
+}));
 
 type AdminView = 'list' | 'add' | 'edit' | 'test-drives' | 'car-of-day' | 'collections';
 
@@ -120,6 +126,7 @@ export function AdminDashboard() {
     tagline: '',
     year: '',
     price: '',
+    currency: 'TRY' as Currency,
     heroImage: '',
     studioImage: '',
     engine: '',
@@ -212,7 +219,8 @@ export function AdminDashboard() {
       bodyStyle: formData.bodyType.toUpperCase(),
       tagline: formData.tagline || 'Yeni Eklenen Araç',
       shortDescription: formData.shortDescription || 'Gelişmiş mühendislik ve premium donanımla sunulan ikonik model.',
-      pricing: { currency: 'TRY', msrp: parseInt(formData.price) || 0, trim: formData.trim || '' },
+      // Para birimi artık formdan gelir (eskiden her kayıtta zorla 'TRY' yazılıyordu)
+      pricing: { currency: formData.currency, msrp: parseInt(formData.price) || 0, trim: formData.trim || '' },
       media: { heroImage: formData.heroImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop', gallery: [], thumbnail: formData.heroImage || formData.studioImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=600&auto=format&fit=crop', colorHex: '#000' },
       audio: { idle: { id: '1', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' }, exhaust: { id: '2', label: '', src: '', durationSeconds: 0, format: 'mp3', description: '' } },
       engine: { 
@@ -273,7 +281,7 @@ export function AdminDashboard() {
     // Reset form
     setCurrentView('list');
     setEditingVehicleId(null);
-    setFormData({ brand: '', model: '', tagline: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
+    setFormData({ brand: '', model: '', tagline: '', year: '', price: '', currency: 'TRY', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
 
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
@@ -286,6 +294,8 @@ export function AdminDashboard() {
       tagline: v.tagline || '',
       year: v.year.toString(),
       price: v.pricing.msrp.toString(),
+      // Hatalı işaretlenmiş eski kayıtlar için gerçek para birimi önerilir; kaydedince veri düzelir
+      currency: resolveCurrency(v.pricing),
       heroImage: v.media.heroImage,
       studioImage: v.interactiveGallery?.studioImage || v.media.heroImage,
       engine: v.engine.code,
@@ -466,7 +476,7 @@ export function AdminDashboard() {
             onClick={() => {
               setCurrentView('add');
               setEditingVehicleId(null);
-              setFormData({ brand: '', model: '', tagline: '', year: '', price: '', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
+              setFormData({ brand: '', model: '', tagline: '', year: '', price: '', currency: 'TRY', heroImage: '', studioImage: '', engine: '', displacementCc: '', hp: '', torqueNm: '', fuelType: 'petrol', zeroTo100: '', topSpeedKmh: '', transmission: 'automatic', drivetrain: 'fwd', bodyType: 'sedan', segment: 'c', trim: '', shortDescription: '' });
             }}
             className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-wide transition-colors select-none outline-none focus:outline-none ${currentView === 'add' || currentView === 'edit' ? 'bg-surface/50 text-foreground' : 'text-muted hover:text-foreground'}`}
           >
@@ -883,10 +893,19 @@ export function AdminDashboard() {
                   <FloatingTextarea id="shortDescription" label="Donanım Özeti / Araç Açıklaması" value={formData.shortDescription} onChange={(e: any) => setFormData({...formData, shortDescription: e.target.value})} />
                 </div>
                 
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
                   <FloatingInput id="year" label="Üretim Yılı" type="number" value={formData.year} onChange={(e: any) => setFormData({...formData, year: e.target.value})} />
                   <FloatingInput id="trim" label="Paket (Örn: M Sport)" value={formData.trim} onChange={(e: any) => setFormData({...formData, trim: e.target.value})} />
-                  <FloatingInput id="price" label="Fiyat (TL)" type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} />
+                  <FloatingInput id="price" label="Fiyat" type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} />
+                  <FloatingSelect
+                    id="currency"
+                    label="Para Birimi"
+                    value={formData.currency}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      setFormData({ ...formData, currency: e.target.value as Currency })
+                    }
+                    options={CURRENCY_OPTIONS}
+                  />
                 </div>
 
                 <div className="mt-8 mb-4 border-b border-border-subtle pb-2">

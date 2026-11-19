@@ -17,7 +17,8 @@ export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
   const { t } = useI18n();
 
   return (
-    <section className="relative w-full min-h-[100dvh] py-20 flex flex-col justify-center overflow-hidden">
+    // Yükseklik: ekran - sticky header (4rem). Mobilde alt bar içeriği örtmesin diye alt boşluk daha geniş.
+    <section className="relative w-full min-h-[calc(100svh-4rem)] pt-20 pb-28 md:py-20 flex flex-col justify-center overflow-hidden">
       {/* Cinematic Video Background (Nuclear Anti-Dimming) */}
       <video
         autoPlay
@@ -46,14 +47,16 @@ export function HeroSection({ showCatalogCta = true }: HeroSectionProps) {
 
           {showCatalogCta && (
             <div className="mt-8 md:mt-12 flex flex-col items-start gap-4 md:gap-6">
-              <motion.a
-                href="#segment-picker"
+              {/* Sayfa içi kaydırma: URL'e #hash yazmaz, böylece ScrollManager'ın geri/ileri konum hafızası bozulmaz */}
+              <motion.button
+                type="button"
+                onClick={() => document.getElementById('segment-picker')?.scrollIntoView({ behavior: 'smooth' })}
                 whileTap={{ scale: 0.98 }}
                 className="inline-flex items-center gap-3 border border-white/30 px-6 py-3 md:px-8 md:py-4 font-display text-xs md:text-sm font-light uppercase tracking-widest text-white transition-all duration-300 hover:bg-white hover:text-black"
               >
                 {t.hero.cta}
                 <ChevronRight className="size-4" />
-              </motion.a>
+              </motion.button>
 
               <p className="font-display text-xs md:text-sm font-light uppercase tracking-widest text-white/60">
                 {vehicleCount} {t.hero.statsVehicles} · {activeSegmentCount} {t.hero.statsSegments}

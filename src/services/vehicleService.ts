@@ -7,6 +7,7 @@ import {
   onSnapshot,
   query,
   getDocs,
+  type FirestoreError,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { Vehicle } from '../types/vehicle';
@@ -17,16 +18,27 @@ const vehiclesRef = collection(db, COLLECTION);
 /**
  * Gerçek zamanlı dinleme — Firestore'daki vehicles koleksiyonu
  * değiştiğinde callback otomatik tetiklenir.
+ * Hata olursa (yetki, kota, ağ) abonelik sonlanır ve onError çağrılır.
  */
-export function subscribeVehicles(callback: (vehicles: Vehicle[]) => void) {
+export function subscribeVehicles(
+  callback: (vehicles: Vehicle[]) => void,
+  onError?: (error: FirestoreError) => void,
+) {
   const q = query(vehiclesRef);
-  return onSnapshot(q, (snapshot) => {
-    const vehicles: Vehicle[] = [];
-    snapshot.forEach((docSnap) => {
-      vehicles.push(docSnap.data() as Vehicle);
-    });
-    callback(vehicles);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const vehicles: Vehicle[] = [];
+      snapshot.forEach((docSnap) => {
+        vehicles.push(docSnap.data() as Vehicle);
+      });
+      callback(vehicles);
+    },
+    (error) => {
+      console.error('Araç verileri alınamadı:', error);
+      onError?.(error);
+    },
+  );
 }
 
 /**

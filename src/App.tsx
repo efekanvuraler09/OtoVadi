@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
-import { PageTransition } from './components/layout/PageTransition';
+import { RouteBoundary } from './components/layout/RouteBoundary';
+import { ScrollManager } from './components/layout/ScrollManager';
 import { HomePage } from './pages/HomePage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
 import { ComparisonPage } from './pages/ComparisonPage';
 import { CuratorPage } from './pages/CuratorPage';
@@ -26,13 +28,16 @@ import { useVehicleStore } from './store/useVehicleStore';
 /** Firestore → Zustand gerçek zamanlı senkronizasyon */
 function FirestoreSync() {
   const setVehicles = useVehicleStore((s) => s.setVehicles);
+  const setLoadError = useVehicleStore((s) => s.setLoadError);
+  // "Tekrar Dene" butonu bu değeri artırır → abonelik yeniden kurulur
+  const retryToken = useVehicleStore((s) => s.retryToken);
 
   useEffect(() => {
-    const unsubscribe = subscribeVehicles((vehicles) => {
-      setVehicles(vehicles);
+    const unsubscribe = subscribeVehicles(setVehicles, (error) => {
+      setLoadError(error.code);
     });
     return () => unsubscribe();
-  }, [setVehicles]);
+  }, [setVehicles, setLoadError, retryToken]);
 
   return null;
 }
@@ -43,14 +48,15 @@ export default function App() {
       <GarageProvider>
         <FirestoreSync />
         <BrowserRouter>
+          <ScrollManager />
           <Routes>
             {/* Admin Routes (No Navbar/Footer) */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            
+
             {/* Main App Routes */}
             <Route element={<AppShell />}>
-              <Route element={<PageTransition />}>
+              <Route element={<RouteBoundary />}>
                 <Route index element={<HomePage />} />
                 <Route path="arac/:id" element={<VehicleDetailPage />} />
                 <Route path="modeller" element={<ModelsPage />} />
@@ -64,6 +70,7 @@ export default function App() {
                 <Route path="ruh-ikizi" element={<SoulTwinPage />} />
                 <Route path="koleksiyonlar" element={<CollectionsPage />} />
                 <Route path="koleksiyonlar/:slug" element={<CollectionDetailPage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Route>
           </Routes>

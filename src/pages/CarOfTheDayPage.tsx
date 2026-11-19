@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Gauge, Zap, Weight, Timer, Wind, Loader2 } from 'lucide-react';
 import { subscribeCarOfTheDay, type CarOfTheDayData } from '../services/carOfTheDayService';
+import { LoadErrorState } from '../components/ui/DataState';
 
 const SPEC_ICONS = [
   { label: 'Motor Hacmi', key: 'engine' as const, icon: Gauge },
@@ -15,14 +16,23 @@ const SPEC_ICONS = [
 export function CarOfTheDayPage() {
   const [data, setData] = useState<CarOfTheDayData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = subscribeCarOfTheDay((incoming) => {
-      setData(incoming);
-      setIsLoading(false);
-    });
+    const unsubscribe = subscribeCarOfTheDay(
+      (incoming) => {
+        setData(incoming);
+        setLoadFailed(false);
+        setIsLoading(false);
+      },
+      () => {
+        setLoadFailed(true);
+        setIsLoading(false);
+      },
+    );
     return () => unsubscribe();
-  }, []);
+  }, [attempt]);
 
   if (isLoading) {
     return (
@@ -34,6 +44,18 @@ export function CarOfTheDayPage() {
           </p>
         </div>
       </div>
+    );
+  }
+
+  if (loadFailed && !data) {
+    return (
+      <LoadErrorState
+        title="Editoryal içerik yüklenemedi"
+        onRetry={() => {
+          setIsLoading(true);
+          setAttempt((n) => n + 1);
+        }}
+      />
     );
   }
 

@@ -1,4 +1,4 @@
-import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, type FirestoreError } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface CarOfTheDayData {
@@ -32,12 +32,20 @@ export async function saveCarOfTheDay(data: CarOfTheDayData): Promise<void> {
  */
 export function subscribeCarOfTheDay(
   callback: (data: CarOfTheDayData | null) => void,
+  onError?: (error: FirestoreError) => void,
 ) {
-  return onSnapshot(DOC_REF, (snap) => {
-    if (snap.exists()) {
-      callback(snap.data() as CarOfTheDayData);
-    } else {
-      callback(null);
-    }
-  });
+  return onSnapshot(
+    DOC_REF,
+    (snap) => {
+      if (snap.exists()) {
+        callback(snap.data() as CarOfTheDayData);
+      } else {
+        callback(null);
+      }
+    },
+    (error) => {
+      console.error('Günün Aracı verisi alınamadı:', error);
+      onError?.(error);
+    },
+  );
 }

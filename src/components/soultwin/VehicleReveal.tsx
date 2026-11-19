@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { MatchResult } from '../../utils/dnaEngine';
-import { formatPrice } from '../../utils/formatPrice';
+import { formatVehiclePrice } from '../../utils/formatPrice';
 import { useI18n } from '../../i18n/useI18n';
 
 interface VehicleRevealProps {
@@ -52,9 +52,9 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.95 }}
         transition={{ delay: 0.6, duration: 1.2, ease: 'easeOut' }}
-        className="relative w-full max-w-2xl overflow-hidden"
+        className="relative isolate w-full max-w-2xl overflow-hidden"
       >
-        {/* Ambient glow behind vehicle */}
+        {/* Ambient glow behind vehicle (isolate: -z-10 bu kutunun içinde kalır, sayfa zemininin arkasına düşmez) */}
         <div
           className="pointer-events-none absolute inset-0 -z-10"
           style={{
@@ -106,7 +106,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
             Fiyat
           </span>
           <span className="font-display text-3xl font-light text-foreground">
-            {formatPrice(vehicle.pricing.msrp)} {vehicle.pricing.currency}
+            {formatVehiclePrice(vehicle.pricing)}
           </span>
         </div>
       </motion.div>

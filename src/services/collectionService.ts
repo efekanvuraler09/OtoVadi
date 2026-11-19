@@ -8,6 +8,7 @@ import {
   query,
   where,
   Timestamp,
+  type FirestoreError,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { VehicleCollection } from '../types/collection';
@@ -30,31 +31,49 @@ export function subscribeCollections(callback: (cols: VehicleCollection[]) => vo
 }
 
 /** Yalnızca yayındaki koleksiyonları dinle (vitrin için) */
-export function subscribePublishedCollections(callback: (cols: VehicleCollection[]) => void) {
+export function subscribePublishedCollections(
+  callback: (cols: VehicleCollection[]) => void,
+  onError?: (error: FirestoreError) => void,
+) {
   const q = query(collectionsRef, where('isPublished', '==', true));
-  return onSnapshot(q, (snapshot) => {
-    const cols: VehicleCollection[] = [];
-    snapshot.forEach((docSnap) => {
-      cols.push({ id: docSnap.id, ...docSnap.data() } as VehicleCollection);
-    });
-    callback(cols);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const cols: VehicleCollection[] = [];
+      snapshot.forEach((docSnap) => {
+        cols.push({ id: docSnap.id, ...docSnap.data() } as VehicleCollection);
+      });
+      callback(cols);
+    },
+    (error) => {
+      console.error('Koleksiyonlar alınamadı:', error);
+      onError?.(error);
+    },
+  );
 }
 
 /** Tekil koleksiyonu slug ile dinle */
 export function subscribeCollectionBySlug(
   slug: string,
   callback: (col: VehicleCollection | null) => void,
+  onError?: (error: FirestoreError) => void,
 ) {
   const q = query(collectionsRef, where('slug', '==', slug));
-  return onSnapshot(q, (snapshot) => {
-    if (snapshot.empty) {
-      callback(null);
-      return;
-    }
-    const docSnap = snapshot.docs[0];
-    callback({ id: docSnap.id, ...docSnap.data() } as VehicleCollection);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      if (snapshot.empty) {
+        callback(null);
+        return;
+      }
+      const docSnap = snapshot.docs[0];
+      callback({ id: docSnap.id, ...docSnap.data() } as VehicleCollection);
+    },
+    (error) => {
+      console.error('Koleksiyon alınamadı:', error);
+      onError?.(error);
+    },
+  );
 }
 
 /* ── CRUD İşlemleri ────────────────────────────────────────────── */

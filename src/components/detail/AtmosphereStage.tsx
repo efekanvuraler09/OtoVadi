@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useI18n } from '../../i18n/useI18n';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 interface AtmosphereStageProps {
   vehicle: Vehicle;
@@ -56,16 +57,14 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
     [onClose],
   );
 
-  /* ── Lock body scroll & listen for ESC ── */
+  /* ── Lock body scroll (ortak sayaçlı kilit) & listen for ESC ── */
+  useBodyScrollLock(isOpen);
+
   useEffect(() => {
     if (!isOpen) return;
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
-
     return () => {
-      document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
@@ -92,7 +91,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black"
+          className="fixed inset-0 z-stage flex items-center justify-center overflow-hidden bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

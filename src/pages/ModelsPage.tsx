@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVehicleStore } from '../store/useVehicleStore';
 import { useGarage } from '../context/GarageContext';
@@ -91,9 +92,18 @@ export function ModelsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md overflow-hidden cursor-pointer h-full min-h-[420px]"
-                onClick={() => window.location.href = `/arac/${vehicle.id}`}
+                className="group relative isolate flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md overflow-hidden cursor-pointer h-full min-h-[420px]"
               >
+                {/*
+                  Kartın tamamını kaplayan gerçek link (SPA navigasyonu, yeni sekmede açma ve klavye desteği).
+                  z-[25]: içerik katmanlarının (z-10/20) üstünde, garaj butonunun (z-30) altında.
+                */}
+                <Link
+                  to={`/arac/${vehicle.id}`}
+                  aria-label={`${vehicle.brand} ${vehicle.model} detaylarını incele`}
+                  className="absolute inset-0 z-[25]"
+                />
+
                 {/* Garage Button */}
                 <button
                   disabled={loadingSlug === vehicle.slug}

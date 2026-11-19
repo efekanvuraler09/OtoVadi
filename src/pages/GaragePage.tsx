@@ -74,14 +74,14 @@ export function GaragePage() {
                 </button>
 
                 {/* Brand & Model */}
-                <div className="z-10 mb-4 cursor-pointer" onClick={() => window.location.href = `/arac/${vehicle.id}`}>
+                <Link to={`/arac/${vehicle.id}`} className="relative z-10 mb-4 block">
                   <h3 className="font-display text-2xl md:text-3xl font-light text-foreground mb-1">
                     {vehicle.brand} {vehicle.model}
                   </h3>
                   <p className="font-sans text-xs uppercase tracking-widest text-muted mt-1">
                     {vehicle.pricing.trim}
                   </p>
-                </div>
+                </Link>
 
                 {/* Studio Image */}
                 <div className="relative flex-1 flex items-center justify-center my-6 z-10 pointer-events-none">

@@ -3,19 +3,29 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, Library } from 'lucide-react';
 import { subscribePublishedCollections } from '../services/collectionService';
+import { LoadErrorState } from '../components/ui/DataState';
 import type { VehicleCollection } from '../types/collection';
 
 export function CollectionsPage() {
   const [collections, setCollections] = useState<VehicleCollection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    const unsub = subscribePublishedCollections((cols) => {
-      setCollections(cols);
-      setIsLoading(false);
-    });
+    const unsub = subscribePublishedCollections(
+      (cols) => {
+        setCollections(cols);
+        setLoadFailed(false);
+        setIsLoading(false);
+      },
+      () => {
+        setLoadFailed(true);
+        setIsLoading(false);
+      },
+    );
     return () => unsub();
-  }, []);
+  }, [attempt]);
 
   if (isLoading) {
     return (
@@ -27,6 +37,18 @@ export function CollectionsPage() {
           </p>
         </div>
       </div>
+    );
+  }
+
+  if (loadFailed && collections.length === 0) {
+    return (
+      <LoadErrorState
+        title="Koleksiyonlar yüklenemedi"
+        onRetry={() => {
+          setIsLoading(true);
+          setAttempt((n) => n + 1);
+        }}
+      />
     );
   }
 

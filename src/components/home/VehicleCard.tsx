@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types/vehicle';
 import { VehicleMediaCover } from '../ui/VehicleMediaCover';
-import { formatPrice } from '../../utils/formatPrice';
+import { formatVehiclePrice } from '../../utils/formatPrice';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -51,7 +51,7 @@ export function VehicleCard({ vehicle, index = 0 }: VehicleCardProps) {
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-widest text-muted">Başlangıç</p>
             <p className="mt-1 text-sm md:text-base font-medium tracking-wide text-foreground">
-              {formatPrice(vehicle.pricing.msrp)}
+              {formatVehiclePrice(vehicle.pricing)}
             </p>
           </div>
         </div>

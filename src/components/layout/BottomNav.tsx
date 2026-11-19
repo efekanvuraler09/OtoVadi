@@ -19,11 +19,12 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-[100] md:hidden safe-bottom pb-[env(safe-area-inset-bottom)] bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 transition-colors duration-300"
+      className="fixed inset-x-0 bottom-0 z-bottombar md:hidden pb-safe bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 transition-colors duration-300"
       aria-label="Ana gezinme"
     >
-      <div className="px-2 py-3">
-        <ul className="flex items-center justify-around">
+      {/* Yükseklik: --bottom-bar-height (5rem) — main'deki pb-bottom-bar ile eşleşir */}
+      <div className="flex h-20 items-center px-2">
+        <ul className="flex w-full items-center justify-around">
           {navItems.map(({ id, label, icon: Icon, to }) => {
             const active = isActive(to);
             return (

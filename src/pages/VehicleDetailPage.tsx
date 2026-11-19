@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, Info, Maximize2 } from 'lucide-react';
+import { Info, Maximize2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
+import { MobileActionBar } from '../components/detail/MobileActionBar';
+import { LoadingState, VehicleLoadError } from '../components/ui/DataState';
+import { NotFoundPage } from './NotFoundPage';
+import { useAuth } from '../context/AuthContext';
+import { resolveCurrency } from '../utils/formatPrice';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
 import { MultimediaList } from '../components/detail/MultimediaList';
@@ -27,9 +32,12 @@ const DETAIL_TABS = [
 export function VehicleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const getVehicleById = useVehicleStore((s) => s.getVehicleById);
   const isLoading = useVehicleStore((s) => s.isLoading);
-  const vehicle = id ? getVehicleById(id) : undefined;
+  const loadError = useVehicleStore((s) => s.loadError);
+  // Listeye abone olunur: Firestore'dan gelen güncellemeler sayfaya da yansır
+  const vehicles = useVehicleStore((s) => s.vehicles);
+  const vehicle = id ? vehicles.find((v) => v.id === id) : undefined;
+  const { user, openAuthModal } = useAuth();
   const tabFromUrl = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState<string>(
     tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl) ? tabFromUrl : 'audio',
@@ -43,21 +51,30 @@ export function VehicleDetailPage() {
     }
   }, [tabFromUrl]);
 
+  /** Hero, mobil aksiyon barı ve finans bölümündeki tüm "Test Sürüşü" butonları buradan geçer */
+  const requestTestDrive = () => {
+    if (!user) {
+      openAuthModal('Bu ayrıcalığı yaşamak için lütfen giriş yapın.');
+      return;
+    }
+    setIsTestDriveOpen(true);
+  };
+
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-void">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="size-8 animate-spin text-muted" />
-          <p className="font-sans text-xs uppercase tracking-widest text-muted">
-            Araç Verileri Yükleniyor...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingState label="Araç Verileri Yükleniyor..." />;
   }
 
   if (!vehicle) {
-    return <Navigate to="/" replace />;
+    // Veri hiç gelemediyse "bulunamadı" demek yanıltıcı olur; önce bağlantı hatasını göster
+    if (loadError) {
+      return <VehicleLoadError />;
+    }
+    return (
+      <NotFoundPage
+        title="Bu araç katalogda bulunamadı"
+        description="Araç katalogdan kaldırılmış ya da bağlantı hatalı olabilir. Benzer modelleri keşfetmeye devam edebilirsiniz."
+      />
+    );
   }
 
   const { dimensions, technicalSections } = vehicle;
@@ -81,13 +98,14 @@ export function VehicleDetailPage() {
   }));
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <DetailHero vehicle={vehicle} onOpenTestDrive={() => setIsTestDriveOpen(true)} />
+      <DetailHero vehicle={vehicle} onOpenTestDrive={requestTestDrive} />
 
       {/* ── Atmosfer Sahne Butonu ── */}
       <div className="flex justify-center py-5">
@@ -263,20 +281,28 @@ export function VehicleDetailPage() {
         </div>
 
         {/* Finance Calculator */}
-        <FinanceCalculator price={vehicle.pricing.msrp} />
+        <FinanceCalculator
+          price={vehicle.pricing.msrp}
+          currency={resolveCurrency(vehicle.pricing)}
+          onApply={requestTestDrive}
+        />
       </div>
-
-      <TestDriveModal 
-        vehicle={vehicle} 
-        isOpen={isTestDriveOpen} 
-        onClose={() => setIsTestDriveOpen(false)} 
-      />
-
-      <AtmosphereStage
-        vehicle={vehicle}
-        isOpen={isAtmosphereOpen}
-        onClose={() => setIsAtmosphereOpen(false)}
-      />
     </motion.div>
+
+    {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
+    <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />
+
+    <TestDriveModal
+      vehicle={vehicle}
+      isOpen={isTestDriveOpen}
+      onClose={() => setIsTestDriveOpen(false)}
+    />
+
+    <AtmosphereStage
+      vehicle={vehicle}
+      isOpen={isAtmosphereOpen}
+      onClose={() => setIsAtmosphereOpen(false)}
+    />
+    </>
   );
 }

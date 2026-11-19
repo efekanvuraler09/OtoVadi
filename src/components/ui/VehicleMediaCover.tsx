@@ -29,7 +29,7 @@ export function VehicleMediaCover({
     <>
       <div
         className="absolute inset-0 flex items-center justify-center transition-colors"
-        style={{ backgroundColor: failed ? 'var(--color-surface, #1f2937)' : colorHex }}
+        style={{ backgroundColor: failed ? 'rgb(var(--color-surface))' : colorHex }}
         aria-hidden
       >
         {failed && (

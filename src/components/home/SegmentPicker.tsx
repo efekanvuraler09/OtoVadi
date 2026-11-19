@@ -35,7 +35,7 @@ export function SegmentPicker() {
   };
 
   return (
-    <section id="segment-picker" className="scroll-mt-4 px-4 pt-16 pb-16 md:px-8 lg:px-12 mx-auto max-w-7xl">
+    <section id="segment-picker" className="scroll-mt-20 px-4 pt-16 pb-16 md:px-8 lg:px-12 mx-auto max-w-7xl">
       <div className="mb-12 text-left">
         <h2 className="font-display text-2xl md:text-3xl font-light tracking-wide text-foreground">
           {t.catalog.selectClass}

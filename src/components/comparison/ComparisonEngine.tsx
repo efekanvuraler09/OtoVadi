@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Minus, ChevronDown } from 'lucide-react';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
+import { LoadingState, StatusScreen, VehicleLoadError } from '../ui/DataState';
+import { primaryButtonClass } from '../ui/buttonStyles';
 
 const COMPARE_FEATURES = [
   'Cam Tavan',
@@ -16,19 +19,44 @@ const COMPARE_FEATURES = [
 
 export function ComparisonEngine() {
   const vehicles = useVehicleStore((s) => s.vehicles);
+  const isLoading = useVehicleStore((s) => s.isLoading);
+  const loadError = useVehicleStore((s) => s.loadError);
   // Default selection
   const [leftId, setLeftId] = useState<string>('hyundai-tucson');
   const [rightId, setRightId] = useState<string>('volkswagen-tiguan');
 
-  const leftVehicle = vehicles.find((v) => v.slug === leftId) || vehicles[0];
-  const rightVehicle = vehicles.find((v) => v.slug === rightId) || vehicles[1];
+  const leftVehicle: Vehicle | undefined = vehicles.find((v) => v.slug === leftId) || vehicles[0];
+  const rightVehicle: Vehicle | undefined = vehicles.find((v) => v.slug === rightId) || vehicles[1];
+
+  // Sayfa doğrudan açıldığında/yenilendiğinde veri henüz gelmemiş olabilir: boş listeyle render etme
+  if (isLoading) {
+    return <LoadingState label="Karşılaştırma hazırlanıyor..." />;
+  }
+
+  if (!leftVehicle || !rightVehicle) {
+    if (loadError) {
+      return <VehicleLoadError />;
+    }
+    return (
+      <StatusScreen
+        eyebrow="Karşılaştırma"
+        title="Karşılaştırma için yeterli araç yok"
+        description="Karşılaştırma yapabilmek için katalogda en az iki araç bulunmalı."
+        actions={
+          <Link to="/modeller" className={primaryButtonClass}>
+            Modelleri Keşfet
+          </Link>
+        }
+      />
+    );
+  }
 
   const renderVehicleSelector = (currentId: string, setVehicle: (id: string) => void) => (
-    <div className="relative group flex justify-center mt-8 mb-4">
-      <select 
-        value={currentId} 
+    <div className="relative group flex justify-center mt-8 mb-4 px-2">
+      <select
+        value={currentId}
         onChange={(e) => setVehicle(e.target.value)}
-        className="appearance-none bg-transparent font-display text-xl md:text-2xl font-light text-foreground text-center cursor-pointer focus:outline-none pr-8 pl-4 py-2 border-b border-transparent hover:border-border-subtle transition-colors"
+        className="w-full max-w-full truncate appearance-none bg-transparent font-display text-base sm:text-xl md:text-2xl font-light text-foreground text-center cursor-pointer focus:outline-none pr-8 pl-4 py-2 border-b border-transparent hover:border-border-subtle transition-colors"
       >
         {vehicles.map((v) => (
           <option key={v.slug} value={v.slug} className="text-base bg-void text-foreground">
@@ -150,8 +178,10 @@ export function ComparisonEngine() {
   };
 
   return (
-    <section className="w-full min-h-screen bg-void pt-16 overflow-x-auto">
-      <div className="mx-auto min-w-[600px] max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
+    // overflow-x-clip: yatay taşmayı keser ama (overflow-x-auto'nun aksine) scroll container açmaz,
+    // böylece araç seçicilerin sticky davranışı çalışır. min-w-[600px] mobilde yatay kaydırma yaratıyordu.
+    <section className="w-full min-h-screen bg-void pt-16 overflow-x-clip">
+      <div className="mx-auto max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
         {/* Left Column */}
         <div className="border-r border-border-subtle min-w-0">
           {renderColumn(leftVehicle, setLeftId, rightVehicle)}

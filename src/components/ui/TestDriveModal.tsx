@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useAuth } from '../../context/AuthContext';
 import { createTestDriveRequest } from '../../services/testDriveService';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 interface TestDriveModalProps {
   vehicle: Vehicle;
@@ -62,11 +64,20 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
     onClose();
   };
 
-  if (!isOpen) return null;
+  useBodyScrollLock(isOpen);
 
-  return (
+  // Portal: modal sayfa içindeki stacking context'lere takılmadan her zaman header/alt barın üstünde kalır.
+  // AnimatePresence dışarıda olduğu için kapanış animasyonu da oynar.
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+      {isOpen && (
+      <div
+        key="test-drive-modal"
+        className="fixed inset-0 z-modal flex items-end justify-center sm:items-center sm:px-4"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${vehicle.brand} ${vehicle.model} test sürüşü`}
+      >
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -76,13 +87,16 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
           className="absolute inset-0 bg-void/80 backdrop-blur-lg"
         />
 
-        {/* Modal Window */}
+        {/* Modal Window — mobilde alttan açılan, kaydırılabilir sheet; masaüstünde ortalanmış pencere */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-lg bg-surface/80 border border-border-subtle p-8 md:p-12 shadow-2xl overflow-hidden"
+          className="relative w-full max-h-[90svh] overflow-y-auto overscroll-contain border-t border-border-subtle bg-surface/80 px-6 pt-6 pb-sheet shadow-2xl sm:max-w-lg sm:border sm:p-12"
         >
+          {/* Mobil sheet tutamağı (dekoratif) */}
+          <div className="mx-auto mb-6 h-1 w-10 rounded-full bg-foreground/20 sm:hidden" aria-hidden />
+
           {/* Close Button */}
           {modalState !== 'loading' && modalState !== 'success' && (
             <button
@@ -260,6 +274,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
 
         </motion.div>
       </div>
-    </AnimatePresence>
+      )}
+    </AnimatePresence>,
+    document.body,
   );
 }

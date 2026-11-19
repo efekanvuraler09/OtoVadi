@@ -4,6 +4,7 @@ import { ArrowLeft, Search } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { SegmentPicker } from '../components/home/SegmentPicker';
 import { VehicleCard } from '../components/home/VehicleCard';
+import { VehicleLoadError } from '../components/ui/DataState';
 import { getSegmentOption } from '../data/segments';
 import { filterVehicles, useVehicleStore } from '../store/useVehicleStore';
 import { useI18n } from '../i18n/useI18n';
@@ -11,6 +12,7 @@ import { useI18n } from '../i18n/useI18n';
 export function HomePage() {
   const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
+  const loadError = useVehicleStore((s) => s.loadError);
   const searchQuery = useVehicleStore((s) => s.searchQuery);
   const setSearchQuery = useVehicleStore((s) => s.setSearchQuery);
   const selectedSegment = useVehicleStore((s) => s.selectedSegment);
@@ -43,10 +45,14 @@ export function HomePage() {
         </div>
       </div>
 
-      {!selectedBodyType && !searchQuery ? (
+      {loadError && vehicles.length === 0 ? (
+        // Firestore'a ulaşılamadıysa boş "YAKINDA" listesi yerine bağlantı hatası + tekrar dene
+        <VehicleLoadError compact />
+      ) : !selectedBodyType && !searchQuery ? (
         <SegmentPicker />
       ) : (
-        <section id="catalog" className="scroll-mt-4 px-4 pt-6 md:px-8 lg:px-12 py-16">
+        // scroll-mt-20: sticky header (h-16) başlığın üstünü örtmesin
+        <section id="catalog" className="scroll-mt-20 px-4 pt-6 md:px-8 lg:px-12 py-16">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}

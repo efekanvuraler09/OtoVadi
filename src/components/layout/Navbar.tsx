@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import { useI18n } from '../../i18n/useI18n';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 // Minimalist custom SVG for OtoVadi - representing an O (circle) and a V (road/needle)
 const BrandIcon = () => (
@@ -40,6 +41,9 @@ export function Navbar() {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Menü açıkken arka plandaki sayfa kaymasın
+  useBodyScrollLock(isMenuOpen);
+
   const navLinks = [
     { label: t.nav.models, href: '/modeller' },
     { label: t.nav.discover, href: '/kesif' },
@@ -52,7 +56,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-[100] w-full border-b border-border-subtle bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-sm shadow-none transition-colors duration-300">
+      <header className="sticky top-0 z-header pt-safe w-full border-b border-border-subtle bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-sm shadow-none transition-colors duration-300">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8 lg:px-12">
           
           {/* Left: Brand Icon & Name */}
@@ -161,7 +165,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-drawer-backdrop bg-black/40 backdrop-blur-sm"
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -171,7 +175,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-0 right-0 z-[100] h-dvh w-full max-w-md bg-void border-l border-border-subtle shadow-2xl flex flex-col select-none"
+              className="fixed top-0 right-0 z-drawer h-dvh w-full max-w-md bg-void border-l border-border-subtle shadow-2xl flex flex-col select-none pt-safe pb-safe"
             >
               {/* Drawer Header */}
               <div className="flex h-16 items-center justify-between border-b border-border-subtle px-6">

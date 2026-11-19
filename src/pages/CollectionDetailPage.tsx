@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { subscribeCollectionBySlug } from '../services/collectionService';
 import { useVehicleStore } from '../store/useVehicleStore';
-import { formatPrice } from '../utils/formatPrice';
+import { formatVehiclePrice } from '../utils/formatPrice';
+import { LoadErrorState } from '../components/ui/DataState';
+import { useBackNavigation } from '../hooks/useBackNavigation';
+import { NotFoundPage } from './NotFoundPage';
 import type { VehicleCollection } from '../types/collection';
 import type { Vehicle } from '../types/vehicle';
 
@@ -13,20 +16,32 @@ export function CollectionDetailPage() {
   const [col, setCol] = useState<VehicleCollection | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const vehicles = useVehicleStore((s) => s.vehicles);
+  const goBack = useBackNavigation('/koleksiyonlar');
 
   useEffect(() => {
     if (!slug) return;
-    const unsub = subscribeCollectionBySlug(slug, (data) => {
-      if (!data) {
-        setNotFound(true);
-      } else {
-        setCol(data);
-      }
-      setIsLoading(false);
-    });
+    const unsub = subscribeCollectionBySlug(
+      slug,
+      (data) => {
+        if (!data) {
+          setNotFound(true);
+        } else {
+          setCol(data);
+          setNotFound(false);
+        }
+        setLoadFailed(false);
+        setIsLoading(false);
+      },
+      () => {
+        setLoadFailed(true);
+        setIsLoading(false);
+      },
+    );
     return () => unsub();
-  }, [slug]);
+  }, [slug, attempt]);
 
   if (isLoading) {
     return (
@@ -36,8 +51,27 @@ export function CollectionDetailPage() {
     );
   }
 
+  if (loadFailed && !col) {
+    return (
+      <LoadErrorState
+        title="Koleksiyon yüklenemedi"
+        onRetry={() => {
+          setIsLoading(true);
+          setAttempt((n) => n + 1);
+        }}
+      />
+    );
+  }
+
   if (notFound || !col) {
-    return <Navigate to="/koleksiyonlar" replace />;
+    return (
+      <NotFoundPage
+        title="Koleksiyon bulunamadı"
+        description="Bu koleksiyon yayından kaldırılmış ya da bağlantı hatalı olabilir."
+        backTo="/koleksiyonlar"
+        backLabel="Koleksiyonlara Dön"
+      />
+    );
   }
 
   // Match entries to actual vehicle data from Zustand store
@@ -67,13 +101,14 @@ export function CollectionDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
         {/* Back Button */}
-        <Link
-          to="/koleksiyonlar"
+        <button
+          type="button"
+          onClick={goBack}
           className="absolute left-4 top-4 z-10 flex size-11 items-center justify-center border border-white/10 bg-black/40 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-black/60 md:left-8 md:top-8"
-          aria-label="Koleksiyonlara dön"
+          aria-label="Geri dön"
         >
           <ArrowLeft className="size-5 text-white/70" />
-        </Link>
+        </button>
 
         {/* Title Block */}
         <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-10 md:px-12 lg:px-24">
@@ -159,7 +194,7 @@ export function CollectionDetailPage() {
                   <span className="font-display text-foreground/90 font-light text-xl mr-2">{v.performance.zeroTo100Kmh}s</span> 0-100
                 </span>
                 <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
-                  <span className="font-display text-foreground/90 font-light text-xl">{formatPrice(v.pricing.msrp)}</span>
+                  <span className="font-display text-foreground/90 font-light text-xl">{formatVehiclePrice(v.pricing)}</span>
                 </span>
               </div>
 

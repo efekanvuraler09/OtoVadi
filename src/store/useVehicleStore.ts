@@ -42,6 +42,10 @@ export function countBySegment(vehicles: Vehicle[], segment: VehicleSegment, bod
 
 interface VehicleStore {
   isLoading: boolean;
+  /** Firestore aboneliği hata verdiyse dolu olur (kullanıcıya gösterilmez, sadece durum bilgisi) */
+  loadError: string | null;
+  /** Artırıldığında FirestoreSync aboneliği yeniden kurar */
+  retryToken: number;
   vehicles: Vehicle[];
   featuredVehicles: Vehicle[];
   favorites: string[];
@@ -50,6 +54,8 @@ interface VehicleStore {
   selectedBodyType: BodyType | null;
   searchQuery: string;
   setVehicles: (vehicles: Vehicle[]) => void;
+  setLoadError: (code: string) => void;
+  retryLoad: () => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (bodyType: BodyType | null, segment: VehicleSegment | null) => void;
   selectVehicle: (id: string | null) => void;
@@ -62,6 +68,8 @@ interface VehicleStore {
 export const useVehicleStore = create<VehicleStore>()(
   (set, get) => ({
     isLoading: true,
+    loadError: null,
+    retryToken: 0,
     vehicles: [],
     featuredVehicles: [],
     favorites: [],
@@ -73,9 +81,16 @@ export const useVehicleStore = create<VehicleStore>()(
     /** Firestore onSnapshot tarafından çağrılır */
     setVehicles: (vehicles) => set({
       isLoading: false,
+      loadError: null,
       vehicles,
       featuredVehicles: vehicles.filter((v) => v.featured),
     }),
+
+    /** onSnapshot hata callback'i: yüklemeyi bitirir, mevcut araçları korur */
+    setLoadError: (code) => set({ isLoading: false, loadError: code }),
+
+    retryLoad: () =>
+      set((state) => ({ isLoading: true, loadError: null, retryToken: state.retryToken + 1 })),
 
     setSearchQuery: (query) => set({ searchQuery: query }),
 

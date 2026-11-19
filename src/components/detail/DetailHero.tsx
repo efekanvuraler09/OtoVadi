@@ -1,25 +1,23 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft, Bookmark } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types/vehicle';
-import { useGarage } from '../../context/GarageContext';
-import { useAuth } from '../../context/AuthContext';
 import { VehicleMediaCover } from '../ui/VehicleMediaCover';
-import { formatPrice } from '../../utils/formatPrice';
+import { formatVehiclePrice } from '../../utils/formatPrice';
+import { useBackNavigation } from '../../hooks/useBackNavigation';
+import { useGarageToggle } from '../../hooks/useGarageToggle';
 
 interface DetailHeroProps {
   vehicle: Vehicle;
+  /** Giriş kontrolü dahil test sürüşü akışını başlatır (VehicleDetailPage sağlar) */
   onOpenTestDrive?: () => void;
 }
 
-
 export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
-  const { garagedSlugs, addVehicle, removeVehicle, loadingSlug } = useGarage();
-  const { user, openAuthModal } = useAuth();
-  const isGaraged = garagedSlugs.includes(vehicle.id) || garagedSlugs.includes(vehicle.slug); // Support both for safety during transition
+  const goBack = useBackNavigation('/');
+  const { isGaraged, isBusy, toggle } = useGarageToggle(vehicle);
 
   return (
-    <header className="safe-top relative">
+    <header className="relative">
       <div
         className="relative h-80 w-full overflow-hidden bg-void md:h-[28rem]"
       >
@@ -33,47 +31,33 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
         />
 
         <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8">
-          <Link
-            to="/"
+          <button
+            type="button"
+            onClick={goBack}
             className="flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none"
             aria-label="Geri dön"
           >
             <ArrowLeft className="size-5 text-foreground" />
-          </Link>
+          </button>
 
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => {
-                if (!user) {
-                  openAuthModal('Bu ayrıcalığı yaşamak için lütfen giriş yapın.');
-                  return;
-                }
-                onOpenTestDrive?.();
-              }}
+              onClick={onOpenTestDrive}
               className="flex items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm px-6 font-sans text-xs uppercase tracking-widest text-foreground transition-colors hover:bg-foreground hover:text-void"
             >
               Test Sürüşü
             </button>
             <motion.button
               type="button"
-              disabled={loadingSlug === vehicle.slug}
-              whileTap={loadingSlug === vehicle.slug ? {} : { scale: 0.9 }}
-              onClick={() => {
-                if (!user) {
-                  openAuthModal('Bu ayrıcalığı yaşamak için lütfen giriş yapın.');
-                  return;
-                }
-                if (isGaraged) {
-                  removeVehicle(vehicle.slug, `${vehicle.brand} ${vehicle.model}`);
-                } else {
-                  addVehicle(vehicle.slug, `${vehicle.brand} ${vehicle.model}`);
-                }
-              }}
-              className={`flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none ${loadingSlug === vehicle.slug ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isBusy}
+              whileTap={isBusy ? {} : { scale: 0.9 }}
+              onClick={toggle}
+              className={`flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none ${isBusy ? 'opacity-50 cursor-not-allowed' : ''}`}
               aria-label={isGaraged ? 'Garajdan çıkar' : 'Garaja ekle'}
+              aria-pressed={isGaraged}
             >
-              {loadingSlug === vehicle.slug ? (
+              {isBusy ? (
                 <div className="size-5 rounded-full border-[1.5px] border-muted border-t-foreground animate-spin" />
               ) : (
                 <Bookmark
@@ -94,7 +78,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
           <p className="mt-1 font-display text-base text-white/70 font-light tracking-wide">{vehicle.tagline}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <span className="text-lg font-sans font-light text-white">
-              {formatPrice(vehicle.pricing.msrp)}
+              {formatVehiclePrice(vehicle.pricing)}
             </span>
             <span className="text-xs text-white/70">{vehicle.pricing.trim}</span>
           </div>

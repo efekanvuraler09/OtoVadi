@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Eye, EyeOff } from 'lucide-react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 type Tab = 'login' | 'register';
 
@@ -17,6 +19,8 @@ export function AuthModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useBodyScrollLock(isAuthModalOpen);
 
   const resetState = () => {
     setEmail('');
@@ -54,11 +58,18 @@ export function AuthModal() {
     }
   };
 
-  return (
+  // Portal: modal ve toast her zaman body seviyesinde, merkezi z skalasına göre katmanlanır.
+  return createPortal(
     <>
       <AnimatePresence>
         {isAuthModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            key="auth-modal"
+            className="fixed inset-0 z-modal flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Giriş yap veya kayıt ol"
+          >
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -66,12 +77,12 @@ export function AuthModal() {
               onClick={isLoading || success ? undefined : handleClose}
               className="absolute inset-0 bg-void/80 backdrop-blur-lg"
             />
-            
+
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-surface/90 border border-border-subtle p-10 shadow-2xl overflow-hidden z-10"
+              className="relative z-10 w-full max-w-md max-h-[90svh] overflow-y-auto overscroll-contain border border-border-subtle bg-surface/90 p-8 shadow-2xl sm:p-10"
             >
               {/* Close Button */}
               {!isLoading && !success && (
@@ -189,19 +200,25 @@ export function AuthModal() {
         )}
       </AnimatePresence>
 
-      {/* Global Auth Warning Toast */}
-      <AnimatePresence>
-        {authToastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[110] bg-void/90 backdrop-blur-md border border-border-subtle px-8 py-4 shadow-2xl"
-          >
-            <span className="text-foreground font-sans text-sm tracking-wide">{authToastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      {/* Global Auth Warning Toast
+          Konumlandırma dış kapta yapılır: framer-motion'ın inline transform'u Tailwind'in
+          -translate-x-1/2 değerini ezip toast'u ortadan kaydırıyordu. */}
+      <div className="pointer-events-none fixed inset-x-4 bottom-above-bar z-toast flex justify-center md:bottom-8">
+        <AnimatePresence>
+          {authToastMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="pointer-events-auto max-w-md border border-border-subtle bg-void/90 px-8 py-4 text-center shadow-2xl backdrop-blur-md"
+              role="status"
+            >
+              <span className="text-foreground font-sans text-sm tracking-wide">{authToastMessage}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>,
+    document.body,
   );
 }

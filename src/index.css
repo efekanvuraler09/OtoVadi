@@ -3,22 +3,30 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * Renk tokenları "R G B" kanalları olarak tutulur (ör. 255 255 255).
+   * Tailwind tarafında rgb(var(--token) / <alpha-value>) ile kullanılır.
+   * Doğrudan CSS'te kullanırken: rgb(var(--color-foreground)) veya rgb(var(--color-foreground) / 0.5)
+   */
   :root {
-    --color-void: #ffffff;
-    --color-surface: #fafafa;
-    --color-surface-elevated: #f5f5f5;
-    --color-muted: #737373;
-    --color-foreground: #000000;
-    --color-border-subtle: #e5e5e5;
+    --color-void: 255 255 255;            /* #ffffff */
+    --color-surface: 250 250 250;         /* #fafafa */
+    --color-surface-elevated: 245 245 245; /* #f5f5f5 */
+    --color-muted: 115 115 115;           /* #737373 */
+    --color-foreground: 0 0 0;            /* #000000 */
+    --color-border-subtle: 229 229 229;   /* #e5e5e5 */
+
+    /* Mobil alt bar (BottomNav ve detay aksiyon barı) yüksekliği */
+    --bottom-bar-height: 5rem;
   }
 
   .dark {
-    --color-void: #000000;
-    --color-surface: #0a0a0a;
-    --color-surface-elevated: #141414;
-    --color-muted: #737373;
-    --color-foreground: #ffffff;
-    --color-border-subtle: #262626;
+    --color-void: 0 0 0;                  /* #000000 */
+    --color-surface: 10 10 10;            /* #0a0a0a */
+    --color-surface-elevated: 20 20 20;   /* #141414 */
+    --color-muted: 115 115 115;           /* #737373 */
+    --color-foreground: 255 255 255;      /* #ffffff */
+    --color-border-subtle: 38 38 38;      /* #262626 */
   }
 
   html {
@@ -53,12 +61,28 @@
 }
 
 @layer utilities {
-  .safe-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  /* ── Safe-area: tek kaynak ── */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
-  .safe-top {
-    padding-top: max(0.75rem, env(safe-area-inset-top));
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Mobil alt bar (BottomNav / detay aksiyon barı) altında içerik kalmasın */
+  .pb-bottom-bar {
+    padding-bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Toast vb. sabit öğeleri mobil alt barın hemen üstüne yerleştirir */
+  .bottom-above-bar {
+    bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  }
+
+  /* Mobil bottom-sheet modallar için alt boşluk (home indicator payı dahil) */
+  .pb-sheet {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .scrollbar-none {

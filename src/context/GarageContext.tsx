@@ -117,7 +117,8 @@ export function GarageProvider({ children }: { children: ReactNode }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 right-8 z-[120] bg-foreground text-void px-6 py-4 border border-border-subtle shadow-2xl flex items-center gap-3"
+            // Mobilde alt barın üstünde, tam genişlik; masaüstünde sağ altta
+            className="fixed inset-x-4 bottom-above-bar z-toast flex items-center gap-3 border border-border-subtle bg-foreground px-6 py-4 text-void shadow-2xl md:inset-x-auto md:right-8 md:bottom-8 md:max-w-md"
           >
             <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-sans text-sm tracking-wide">{toastMessage}</span>
