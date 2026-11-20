@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { m } from 'framer-motion';
 import { Info, Maximize2 } from 'lucide-react';
@@ -7,13 +7,16 @@ import { MobileActionBar } from '../components/detail/MobileActionBar';
 import { LoadingState, VehicleLoadError } from '../components/ui/DataState';
 import { NotFoundPage } from './NotFoundPage';
 import { useAuth } from '../context/AuthContext';
-import { resolveCurrency } from '../utils/formatPrice';
 import { InteractiveGallery } from '../components/detail/InteractiveGallery';
 import { InteriorMaterials } from '../components/detail/InteriorMaterials';
 import { MultimediaList } from '../components/detail/MultimediaList';
 import { SpecGrid } from '../components/detail/SpecGrid';
 import { AudioPlayer } from '../components/audio/AudioPlayer';
-import { FinanceCalculator } from '../components/detail/FinanceCalculator';
+import { OwnershipCostPanel } from '../components/detail/OwnershipCostPanel';
+import { GalleryLightbox } from '../components/detail/GalleryLightbox';
+import { PerformanceBenchmark } from '../components/detail/PerformanceBenchmark';
+import { DetailStickyBar } from '../components/detail/DetailStickyBar';
+import { vehicleImages } from '../lib/vehicleMetrics';
 import { Accordion } from '../components/ui/Accordion';
 import { Tabs } from '../components/ui/Tabs';
 import { TestDriveModal } from '../components/ui/TestDriveModal';
@@ -53,8 +56,32 @@ export function VehicleDetailPage() {
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
   const [isAtmosphereOpen, setIsAtmosphereOpen] = useState(false);
 
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const [heroPassed, setHeroPassed] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  // Masaüstü yapışkan şerit: hero header'ın altına kaydığında görünür (rootMargin = sticky header yüksekliği)
+  const vehicleId = vehicle?.id;
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroPassed(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      { rootMargin: '-64px 0px 0px 0px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [vehicleId]);
+
   const { playable: audioTracks } = usePlayableTracks([vehicle?.audio?.idle, vehicle?.audio?.exhaust, vehicle?.audio?.rev]);
-  const tabs = audioTracks.length > 0 ? [BASE_TABS[0], AUDIO_TAB, ...BASE_TABS.slice(1)] : BASE_TABS;
+  // U4: içeriği boş sekmeler (admin'den eklenen araçlarda multimedya / iç mekan / sürücü notu) hiç gösterilmez
+  const baseTabs = BASE_TABS.filter((tab) => {
+    if (tab.id === 'media') return (vehicle?.multimedia?.length ?? 0) > 0;
+    if (tab.id === 'interior') return (vehicle?.interiorMaterials?.length ?? 0) > 0;
+    if (tab.id === 'notes') return (vehicle?.driverNotes?.length ?? 0) > 0;
+    return true;
+  });
+  const tabs = audioTracks.length > 0 ? [baseTabs[0], AUDIO_TAB, ...baseTabs.slice(1)] : baseTabs;
   // URL'deki sekme (ör. ?tab=audio) mevcut değilse varsayılana düşülür
   const currentTab = tabs.some((t) => t.id === activeTab) ? activeTab : DEFAULT_TAB;
 
@@ -107,6 +134,9 @@ export function VehicleDetailPage() {
   }
 
   const { dimensions, technicalSections } = vehicle;
+  const images = vehicleImages(vehicle);
+  const studioImage = vehicle.interactiveGallery?.studioImage?.trim();
+  const studioIndex = studioImage ? Math.max(0, images.indexOf(studioImage)) : 0;
 
   const technicalAccordionItems = technicalSections.map((section) => ({
     id: section.id,
@@ -126,7 +156,14 @@ export function VehicleDetailPage() {
   return (
     <>
       <m.div {...fade} transition={TRANSITION.base}>
-        <DetailHero vehicle={vehicle} onOpenTestDrive={requestTestDrive} />
+        <div ref={heroRef}>
+          <DetailHero
+            vehicle={vehicle}
+            onOpenTestDrive={requestTestDrive}
+            onOpenGallery={images.length > 0 ? () => setGalleryIndex(0) : undefined}
+            imageCount={images.length}
+          />
+        </div>
 
         {/* ── Atmosfer Sahne Butonu ── */}
         <div className="flex justify-center py-6">
@@ -136,7 +173,7 @@ export function VehicleDetailPage() {
           </button>
         </div>
 
-        <InteractiveGallery vehicle={vehicle} />
+        <InteractiveGallery vehicle={vehicle} onExpand={() => setGalleryIndex(studioIndex)} />
 
         <PageContainer spacing="none" className="pb-16 pt-12 md:pb-24 md:pt-16">
           <section className="mb-12 md:mb-16">
@@ -167,6 +204,7 @@ export function VehicleDetailPage() {
             {currentTab === 'tech' && (
               <m.div key="tech" {...panelMotion} className="flex flex-col gap-10">
                 <SpecGrid vehicle={vehicle} />
+                <PerformanceBenchmark vehicle={vehicle} vehicles={vehicles} />
                 {technicalAccordionItems.length > 0 ? (
                   <div>
                     <h3 className="mb-4 font-sans text-sm font-semibold text-foreground">Ek Teknik Bilgiler</h3>
@@ -215,10 +253,8 @@ export function VehicleDetailPage() {
 
             {currentTab === 'notes' && (
               <m.div key="notes" {...panelMotion} className="flex flex-col gap-4">
-                {(vehicle.driverNotes && vehicle.driverNotes.length > 0
-                  ? vehicle.driverNotes
-                  : [{ title: 'Bilgi Bulunamadı', description: 'Bu araç için henüz kaydedilmiş bir sürücü notu bulunmamaktadır.' }]
-                ).map((note, idx) => (
+                {/* Sekme yalnızca not varsa gösterilir (boş sekme gizleme) */}
+                {(vehicle.driverNotes ?? []).map((note, idx) => (
                   <div key={idx} className="flex items-start gap-5 border-l-2 border-foreground/20 bg-surface p-6 md:p-8">
                     <Info className="mt-0.5 size-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
                     <div className="flex flex-col gap-2">
@@ -231,12 +267,23 @@ export function VehicleDetailPage() {
             )}
           </div>
 
-          <FinanceCalculator price={vehicle.pricing.msrp} currency={resolveCurrency(vehicle.pricing)} onApply={requestTestDrive} />
+          <OwnershipCostPanel vehicle={vehicle} onApply={requestTestDrive} />
         </PageContainer>
       </m.div>
 
       {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
       <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />
+
+      <DetailStickyBar vehicle={vehicle} visible={heroPassed} onTestDrive={requestTestDrive} />
+
+      <GalleryLightbox
+        images={images}
+        index={galleryIndex}
+        onIndexChange={setGalleryIndex}
+        onClose={() => setGalleryIndex(null)}
+        title={vehicleName(vehicle)}
+        colorHex={vehicle.media?.colorHex}
+      />
 
       <TestDriveModal vehicle={vehicle} isOpen={isTestDriveOpen} onClose={() => setIsTestDriveOpen(false)} />
 

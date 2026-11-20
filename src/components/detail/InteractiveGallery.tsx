@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
+import { Maximize2 } from 'lucide-react';
 import type { Vehicle, Hotspot } from '../../types/vehicle';
 import { SmartImage } from '../ui/SmartImage';
 import { vehicleName } from '../../utils/vehicleText';
@@ -7,9 +8,11 @@ import { TRANSITION, fadeUp } from '../../lib/motion';
 
 interface InteractiveGalleryProps {
   vehicle: Vehicle;
+  /** Stüdyo görselini tam ekran galeride açar (U4) */
+  onExpand?: () => void;
 }
 
-export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
+export function InteractiveGallery({ vehicle, onExpand }: InteractiveGalleryProps) {
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   // Görsel yüklenemezse siluet gösterilir; noktaların konumu anlamsızlaşacağı için gizlenir
   const [imageFailed, setImageFailed] = useState(false);
@@ -66,6 +69,17 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
               </div>
             );
           })}
+
+        {onExpand && (
+          <button
+            type="button"
+            onClick={onExpand}
+            aria-label="Stüdyo görselini tam ekran aç"
+            className="absolute right-4 top-4 z-20 flex size-11 items-center justify-center border border-border-subtle bg-void/70 text-foreground backdrop-blur-sm transition-colors hover:bg-foreground hover:text-void md:right-8 md:top-8"
+          >
+            <Maximize2 className="size-4" strokeWidth={1.5} aria-hidden />
+          </button>
+        )}
 
         <AnimatePresence>
           {active && (

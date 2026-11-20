@@ -1,8 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import { Dna, RotateCcw } from 'lucide-react';
 import { QuestionCard } from '../components/soultwin/QuestionCard';
-import { DNARadar } from '../components/soultwin/DNARadar';
+import { SoulRadar } from '../components/soultwin/SoulRadar';
+import { StoryCardActions } from '../components/soultwin/StoryCardActions';
+import { buildRadarContext, userRadar, vehicleRadar } from '../lib/radarProfile';
 import { VehicleReveal } from '../components/soultwin/VehicleReveal';
 import {
   DNA_QUESTIONS,
@@ -39,6 +41,12 @@ export function SoulTwinPage() {
   const [answers, setAnswers] = useState<('a' | 'b')[]>([]);
   const [dna, setDna] = useState<DriverDNA | null>(null);
   const [match, setMatch] = useState<MatchResult | null>(null);
+
+  // U11: radar eksenleri (araç = teknik veri / katalog, kullanıcı = cevaplar); deterministik
+  const radar = useMemo(() => {
+    if (!dna || !match) return null;
+    return { vehicle: vehicleRadar(match.vehicle, buildRadarContext(vehicles)), user: userRadar(dna) };
+  }, [dna, match, vehicles]);
 
   const handleStart = useCallback(() => {
     setStage('quiz');
@@ -165,7 +173,7 @@ export function SoulTwinPage() {
         )}
 
         {/* ════════════════ RESULT SCREEN ════════════════ */}
-        {stage === 'result' && dna && match && (
+        {stage === 'result' && dna && match && radar && (
           <m.div
             key="result"
             initial={{ opacity: 0 }}
@@ -180,8 +188,8 @@ export function SoulTwinPage() {
               style={{ background: ambientGlow(40) }}
             />
 
-            {/* DNA Profile */}
-            <DNARadar dna={dna} />
+            {/* Soul Twin Reveal */}
+            <VehicleReveal match={match} />
 
             {/* Divider */}
             <m.div
@@ -191,8 +199,16 @@ export function SoulTwinPage() {
               className="h-px bg-border-subtle"
             />
 
-            {/* Soul Twin Reveal */}
-            <VehicleReveal match={match} />
+            {/* U11: 5 eksenli uyum radarı */}
+            <SoulRadar vehicle={radar.vehicle} user={radar.user} />
+
+            {/* Y3: 9:16 Story kartı */}
+            <StoryCardActions
+              vehicle={match.vehicle}
+              affinityPercent={Math.round(match.affinity * 100)}
+              vehicleProfile={radar.vehicle}
+              userProfile={radar.user}
+            />
 
             {/* Actions */}
             <m.div

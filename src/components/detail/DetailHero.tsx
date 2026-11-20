@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { ArrowLeft, Bookmark } from 'lucide-react';
+import { ArrowLeft, Bookmark, Images } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { SmartImage } from '../ui/SmartImage';
 import { formatVehiclePrice } from '../../utils/formatPrice';
@@ -11,12 +11,16 @@ interface DetailHeroProps {
   vehicle: Vehicle;
   /** Giriş kontrolü dahil test sürüşü akışını başlatır (VehicleDetailPage sağlar) */
   onOpenTestDrive?: () => void;
+  /** Tam ekran galeriyi açar (U4); verilmezse görsel tıklanamaz */
+  onOpenGallery?: () => void;
+  /** Galerideki görsel sayısı (butonda gösterilir) */
+  imageCount?: number;
 }
 
 const overlayButtonClass =
   'flex size-11 items-center justify-center border border-border-subtle bg-void/70 text-foreground backdrop-blur-sm transition-colors hover:bg-void';
 
-export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
+export function DetailHero({ vehicle, onOpenTestDrive, onOpenGallery, imageCount = 0 }: DetailHeroProps) {
   const goBack = useBackNavigation('/');
   const { isGaraged, isBusy, toggle } = useGarageToggle(vehicle);
   const trim = cleanText(vehicle.pricing.trim);
@@ -35,12 +39,34 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
         <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-black/50 via-black/10 to-transparent md:block" />
 
-        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8">
+        {/* Görselin tamamı galeriyi açar (metin katmanı pointer-events-none; üst bar butonları z-10) */}
+        {onOpenGallery && (
+          <button
+            type="button"
+            onClick={onOpenGallery}
+            className="absolute inset-0 cursor-zoom-in"
+            aria-label={`${vehicleName(vehicle)} galerisini tam ekran aç`}
+            tabIndex={-1}
+          />
+        )}
+
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8 [&_button]:pointer-events-auto">
           <button type="button" onClick={goBack} className={overlayButtonClass} aria-label="Geri dön">
             <ArrowLeft className="size-5" strokeWidth={1.5} aria-hidden />
           </button>
 
           <div className="flex gap-2">
+            {onOpenGallery && (
+              <button
+                type="button"
+                onClick={onOpenGallery}
+                className="flex h-11 items-center justify-center gap-2 border border-border-subtle bg-void/70 px-3 text-foreground backdrop-blur-sm transition-colors hover:bg-void md:px-4"
+                aria-label={`Galeriyi aç (${imageCount} görsel)`}
+              >
+                <Images className="size-5" strokeWidth={1.5} aria-hidden />
+                <span className="text-xs font-medium tabular-nums">{imageCount}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onOpenTestDrive}
@@ -66,7 +92,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-7xl px-4 pb-8 md:px-8 lg:px-12">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 mx-auto max-w-7xl px-4 pb-8 md:px-8 lg:px-12">
           <p className="eyebrow text-white/70">
             <span lang="en">{vehicleBrand(vehicle)}</span> · <span className="tabular-nums">{vehicle.year}</span>
           </p>

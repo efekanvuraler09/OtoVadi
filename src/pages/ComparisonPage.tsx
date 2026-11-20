@@ -1,14 +1,11 @@
 import { ComparisonEngine } from '../components/comparison/ComparisonEngine';
-
 import { usePageMeta } from '../hooks/usePageMeta';
+
 export function ComparisonPage() {
   usePageMeta({
-    title: 'Araç Karşılaştırma',
-    description: 'İki aracı performans, boyut, donanım ve fiyat açısından yan yana karşılaştırın.',
+    title: 'Düello: Araç Karşılaştırma',
+    description: 'İki veya üç aracı kafa kafaya karşılaştırın: güç, tork, hızlanma, tüketim ve fiyatta kim önde, farklar ne kadar?',
   });
-  return (
-    <main className="w-full">
-      <ComparisonEngine />
-    </main>
-  );
+  // AppShell zaten <main> sağlar; burada ikinci bir <main> açılmaz
+  return <ComparisonEngine />;
 }

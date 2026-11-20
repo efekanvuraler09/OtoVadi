@@ -1,11 +1,12 @@
 import { m } from 'framer-motion';
-import { ArrowRight, Bookmark, Scale } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types/vehicle';
 import { SmartImage } from '../ui/SmartImage';
 import { formatVehiclePrice } from '../../utils/formatPrice';
 import { cleanText, vehicleBrand, vehicleModel, vehicleName } from '../../utils/vehicleText';
 import { useGarageToggle } from '../../hooks/useGarageToggle';
+import { useCompareToggle } from '../../hooks/useCompareToggle';
 import { useI18n } from '../../i18n/useI18n';
 import { TRANSITION, fadeUp, staggerDelay } from '../../lib/motion';
 
@@ -25,6 +26,10 @@ interface VehicleCardProps {
 const actionButtonClass =
   'relative z-10 flex size-10 items-center justify-center rounded-full border border-border-subtle/70 bg-void/80 text-foreground backdrop-blur-sm transition-colors hover:bg-void disabled:cursor-not-allowed disabled:opacity-50';
 
+/** Karşılaştırma tepsisindeki aracın düğmesi dolu görünür */
+const actionButtonActiveClass =
+  'relative z-10 flex size-10 items-center justify-center rounded-full border border-foreground bg-foreground text-void transition-colors hover:bg-foreground/90';
+
 /**
  * Tek tip araç kartı (U6). Kartın tamamı tıklanabilir ama tek bir gerçek <Link> vardır (başlık; ::after ile kartı kaplar):
  * klavye, orta tık ve "yeni sekmede aç" doğal olarak çalışır. Garaj/karşılaştır aksiyonları linkin üstünde (z-10) durur.
@@ -34,6 +39,7 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
   const { t, locale } = useI18n();
   const copy = t.vehicleCard;
   const { isGaraged, isBusy, toggle } = useGarageToggle(vehicle);
+  const compare = useCompareToggle(vehicle);
 
   const featured = variant === 'featured';
   const name = vehicleName(vehicle);
@@ -68,14 +74,21 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
         />
 
         <div className="absolute right-3 top-3 z-10 flex gap-2">
-          <Link
-            to={`/karsilastir?a=${encodeURIComponent(vehicle.slug)}`}
-            className={actionButtonClass}
-            aria-label={`${copy.compare}: ${name}`}
-            title={copy.compare}
+          {/* U7: sayfadan çıkarmaz; aracı global karşılaştırma tepsisine ekler/çıkarır */}
+          <button
+            type="button"
+            onClick={compare.toggle}
+            className={compare.isSelected ? actionButtonActiveClass : actionButtonClass}
+            aria-pressed={compare.isSelected}
+            aria-label={`${compare.isSelected ? copy.removeFromCompare : copy.addToCompare}: ${name}`}
+            title={compare.isSelected ? copy.removeFromCompare : copy.addToCompare}
           >
-            <Scale className="size-4" strokeWidth={1.5} />
-          </Link>
+            {compare.isSelected ? (
+              <Check className="size-4" strokeWidth={1.75} />
+            ) : (
+              <Scale className="size-4" strokeWidth={1.5} />
+            )}
+          </button>
           <button
             type="button"
             onClick={toggle}

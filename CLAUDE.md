@@ -66,7 +66,7 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
   → kırık/boş görselde stüdyo gradyanı + tipografik "OTOVADİ" monogramı; koyu sahnede `tone="dark"`; ilk ekranda `priority`). Çıplak `<img>` ekleme.
   Araç çizimi/siluet SVG'si kullanma (BodyTypeIcons kaldırıldı); gövde tipi kartları yalnızca tipografiktir.
 - **Araç kartı:** `vehicle/VehicleCard` (`variant`: grid|featured) + `VehicleCardSkeleton`. Tek gerçek `<Link>` (başlık, `::after` ile kartı kaplar),
-  garaj + karşılaştır (`/karsilastir?a=<slug>`) aksiyonları z-10. Araç metinleri `utils/vehicleText` (`vehicleName`, `cleanText`) ile trim'lenir.
+  garaj + karşılaştır aksiyonları z-10 (karşılaştır = `useCompareToggle`, sayfadan çıkarmaz; seçiliyken dolu/`aria-pressed`). Araç metinleri `utils/vehicleText` (`vehicleName`, `cleanText`) ile trim'lenir.
 - **Ses:** Detayda Ses sekmesi yalnızca `usePlayableTracks` gerçekten çalınabilir kayıt doğrularsa görünür; kullanıcıya dosya yolu gösterme.
 - **Animasyon:** framer-motion `LazyMotion features={domAnimation} strict` ile sarılı (App.tsx): bileşenlerde `motion.div` DEĞİL
   `m.div` (`import { m } from 'framer-motion'`) kullan; `motion.*` strict modda çalışma zamanında hata verir. `layout`/`layoutId`/`drag`
@@ -99,6 +99,34 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
   Yanıtta meta refresh/yönlendirme veya X-Robots-Tag YOK (aynı URL'de sunulur).
 - **İkonlar / PWA:** `public/favicon.svg` (çember içinde V, `prefers-color-scheme` ile siyah/beyaz), `apple-touch-icon.png` (180),
   `icon-192.png`, `icon-512.png` (any + maskable), `manifest.webmanifest`, `robots.txt`, `sitemap.xml` (yalnızca statik rotalar; araç URL'leri yok).
+
+## İmza showroom özellikleri (Faz 5)
+- **Ortak hesaplar (`src/lib`, saf TS):** `vehicleMetrics.ts` (`vehicleImages` benzersiz görsel listesi, `estimateConsumption` TAHMİNİ
+  L|kWh/100 km — Firestore'da tüketim alanı YOK, arayüzde her zaman "tahmini" yaz; `energyKind`, `brandTier`, `powerToWeight`),
+  `catalogStats.ts` (`catalogBenchmarks`: min/ort/maks/sıra), `tco.ts`, `duel.ts`, `radarProfile.ts`, `storyCard.ts`.
+- **Detay (U4):** `detail/GalleryLightbox` (portal, z-modal, `useBodyScrollLock`, ←/→/ESC, swipe, sayaç, önizleme şeridi, odak tuzağı) hero'daki
+  galeri butonundan / görsele tıklayınca ve `InteractiveGallery` tam ekran butonundan açılır. `detail/PerformanceBenchmark` Teknik sekmesinde
+  (çubuk her zaman "daha iyi = daha uzun", ince çizgi = katalog ortalaması). Boş sekmeler gizlenir (multimedya / iç mekan / sürücü notu yoksa);
+  `?tab=` gizli sekmeye işaret ederse Teknik'e düşer. `detail/DetailStickyBar` yalnızca md+, hero header altına kayınca `fixed top-16 z-30`
+  (IntersectionObserver, rootMargin -64px); mobilde `MobileActionBar` değişmedi.
+- **Maliyet paneli (Y2):** `detail/OwnershipCostPanel` = sekmeler "Finansman" (`FinanceCalculator`, artık dış `<section>`/başlık içermez)
+  + "5 Yıllık Maliyet (TCO)" (`TcoCalculator`). `lib/tco.ts`: varsayılanlar Kasım 2026 (benzin 71,20 / motorin 95,20 TL/L, AC şarj 8,50 TL/kWh),
+  MTV 2026 temsili cc dilimi × yaş katsayısı (EV: kW eşdeğerinin %25'i, pick-up sabit), kasko değerin ~%2,6'sı (güç/gövde ekleri, yıllık %8 değer kaybı),
+  bakım 15.000 km/yıllık servis × marka sınıfı. Bugünkü fiyatlarla, enflasyonsuz. Döviz fiyatlı araçta kasko `approximateTry` ile
+  hesaplanır ve dipnotta açıkça yazılır (fiyat GÖSTERİMİ için yine kullanılmaz). Her yıl `TCO_REFERENCE_YEAR` ve tarifeleri güncelle.
+- **Karşılaştırma tepsisi (U7):** `store/useCompareStore.ts` (zustand persist → localStorage `compare-tray`, en fazla `MAX_COMPARE`=3 araç **id**'si,
+  dolunca `notice`), `hooks/useCompareToggle`, `compare/CompareTray` AppShell'de: mobilde `bottom-above-bar`, md+ `bottom-6`, `z-bottombar`;
+  konum dış kapta, animasyon iç kapta (framer transform'u Tailwind translate'ini ezmesin). `/karsilastir`'da gizli; açıkken `main` sonuna boşluk eklenir.
+  Bağlantı `duelHref()` → `/karsilastir?a=&b=&c=` (slug).
+- **Düello (Y1):** `ComparisonEngine` seçimi `resolveDuelSelection`: URL (`a,b,c`; slug veya id) → tepsi → varsayılan çift; 2–3 sütun, değişiklik
+  URL'ye `replace` ile yazılır. `buildDuelRows`: sayısal satırlarda kazanan + ikinci en iyiye göre fark rozeti, `duelScore` (berabere skora sayılmaz);
+  farklı para birimli fiyatlar yalnızca yaklaşık kurla SIRALANIR, fark tutarı gösterilmez. "Sadece farkları göster" `allEqual` satırları gizler.
+- **Ruh İkizi (U11/Y3):** `soultwin/SoulRadar` (5 eksen: Performans, Konfor, Ekonomi, Teknoloji, Prestij; dolu = araç, kesikli = kullanıcı;
+  viewBox 440×330, etiketler SVG içinde → 320 px'te taşmaz). Araç puanı `vehicleRadar` (katalog içi normalizasyon), kullanıcı `userRadar(dna)`.
+  Eşleştirme algoritması (`dnaEngine`) değişmedi. `soultwin/StoryCardActions` → `lib/storyCard.ts` yalnızca tıklanınca dinamik import edilir;
+  1080×1920 PNG, saf Canvas. Fotoğraf `crossOrigin="anonymous"` + 1×1 test tuvali; izin yoksa fotoğrafsız tipografik kart (hotlink kaynakların
+  çoğu CORS vermediği için pratikte çoğunlukla bu çıkar). Kartta rakamlar Inter (Playfair eski stil rakamları canvas'ta kapatılamıyor).
+  Paylaş butonu yalnızca `navigator.canShare({files})` destekleniyorsa; dokunuş eskirse "tekrar dokunun" (kart önbellekte).
 
 ## Akıllı Keşif ve güvenlik (Faz 2)
 - Akış: `AutoCurator` → `services/discoveryService.ts` → `POST /api/discover` → Gemini (`responseSchema`, slug enum + sunucuda
@@ -146,4 +174,6 @@ Faz 1 tamamlandı: K5–K10. Faz 2 tamamlandı: K1–K4, P8 (CI ve Speed Insight
 Faz 3 tamamlandı: K11, K13, U1, U2, U3, U6, U8, U9, U10 (görsellerin kendi depolamaya taşınması hariç).
 Faz 4 tamamlandı: P1, P2, P4, P6, P7, K12 + varsayılan koyu tema, AutoCurator autoFocus ve alert() temizliği
 (dinamik @vercel/og görseli, araç URL'li sitemap ve P3/P5 hariç).
+Faz 5 tamamlandı: U4 (lightbox, katalog kıyası, boş sekme gizleme, masaüstü şerit), U7 + Y1 (tepsi + düello),
+U11 + Y3 (SVG radar + Story kartı), Y2 (TCO). Kalan: U5 ses stüdyosu, Y4–Y7.
 Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.

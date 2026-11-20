@@ -46,15 +46,12 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
   }, [loanAmount, term, monthlyRate]);
 
   return (
-    <section className="mt-16 w-full border-t border-border-subtle pb-8 pt-16">
-      <div className="flex flex-col lg:flex-row gap-16 items-start">
+    // Dış kap ve başlık OwnershipCostPanel'de (Finansman / 5 Yıllık Maliyet sekmeleri)
+    <div className="flex flex-col items-start gap-16 lg:flex-row">
         
         {/* Controls Column */}
         <div className="flex-1 w-full space-y-12">
           <div>
-            <p className="eyebrow mb-3">Finansman</p>
-            <h3 className="mb-8 text-display-sm font-normal text-foreground">Akıllı Finansman</h3>
-            
             {/* Downpayment Slider */}
             <div className="space-y-4">
               <div className="flex justify-between items-end">
@@ -84,6 +81,8 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               {TERMS.map((t) => (
                 <button
                   key={t}
+                  type="button"
+                  aria-pressed={term === t}
                   onClick={() => setTerm(t)}
                   className={`flex-1 border-b py-3 text-sm font-medium tabular-nums transition-colors ${
                     term === t 
@@ -102,7 +101,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               <span>Araç Fiyatı: {formatCurrency(price)}</span>
               <span>Aylık Faiz: %{formattedRate} (temsili)</span>
             </div>
-            <p className="text-[11px] leading-relaxed text-muted">
+            <p className="text-2xs leading-relaxed text-muted">
               Bu tablo temsili bir hesaplamadır. Faiz oranı, vade ve peşinat koşulları finans kuruluşuna ve
               kampanyalara göre değişir; kesin teklif için danışmanınızla görüşün.
             </p>
@@ -136,14 +135,13 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               >
                 Test Sürüşü Planla
               </button>
-              <p className="max-w-xs text-center text-[11px] leading-relaxed text-muted lg:text-right">
+              <p className="max-w-xs text-center text-2xs leading-relaxed text-muted lg:text-right">
                 Finansman seçeneklerini test sürüşünde danışmanınızla netleştirebilirsiniz.
               </p>
             </div>
           )}
         </div>
 
-      </div>
-    </section>
+    </div>
   );
 }
