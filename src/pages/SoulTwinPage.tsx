@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Dna, RotateCcw } from 'lucide-react';
 import { QuestionCard } from '../components/soultwin/QuestionCard';
 import { DNARadar } from '../components/soultwin/DNARadar';
@@ -15,6 +15,7 @@ import { useVehicleStore } from '../store/useVehicleStore';
 import { useI18n } from '../i18n/useI18n';
 import { TRANSITION, fadeUp } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 /** Temaya uyumlu çok hafif ortam ışığı (eskiden sabit beyaz rgba: açık temada görünmüyordu) */
 const ambientGlow = (y: number) =>
   `radial-gradient(ellipse 55% 45% at 50% ${y}%, rgb(var(--color-foreground) / 0.035), transparent 70%)`;
@@ -22,6 +23,10 @@ const ambientGlow = (y: number) =>
 type Stage = 'intro' | 'quiz' | 'result';
 
 export function SoulTwinPage() {
+  usePageMeta({
+    title: 'Ruh İkizi',
+    description: 'Birkaç kısa soruyla sürüş karakterinizi çıkarın, size en çok benzeyen aracı bulun.',
+  });
   const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
   const isLoading = useVehicleStore((s) => s.isLoading);
@@ -76,7 +81,7 @@ export function SoulTwinPage() {
       <AnimatePresence mode="wait">
         {/* ════════════════ INTRO SCREEN ════════════════ */}
         {stage === 'intro' && (
-          <motion.div
+          <m.div
             key="intro"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -90,20 +95,20 @@ export function SoulTwinPage() {
               style={{ background: ambientGlow(50) }}
             />
 
-            <motion.div
+            <m.div
               {...fadeUp}
               transition={{ ...TRANSITION.slow, delay: 0.05 }}
               className="relative flex flex-col items-center gap-6 text-center"
             >
               {/* Icon */}
-              <motion.div
+              <m.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ ...TRANSITION.base, delay: 0.1 }}
                 className="flex size-16 items-center justify-center border border-border-subtle bg-surface"
               >
                 <Dna className="size-7 text-muted" strokeWidth={1} />
-              </motion.div>
+              </m.div>
 
               <h1 className="text-display-lg font-normal text-foreground">
                 {t.soulTwin.findSoulTwin}
@@ -115,16 +120,16 @@ export function SoulTwinPage() {
                 {t.soulTwin.introDesc2}
               </p>
 
-              <motion.p
+              <m.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ ...TRANSITION.base, delay: 0.2 }}
                 className="eyebrow mt-4"
               >
                 {t.soulTwin.introDesc3}
-              </motion.p>
+              </m.p>
 
-              <motion.button
+              <m.button
                 type="button"
                 onClick={handleStart}
                 disabled={!isReady}
@@ -134,7 +139,7 @@ export function SoulTwinPage() {
                 className="mt-8 inline-flex min-h-12 items-center justify-center bg-foreground px-10 text-xs font-semibold uppercase tracking-eyebrow text-void transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isReady ? t.soulTwin.startTest : isLoading ? 'Araçlar yükleniyor...' : 'Araç bulunamadı'}
-              </motion.button>
+              </m.button>
 
               {!isReady && loadError && (
                 <p className="text-xs text-muted">
@@ -144,8 +149,8 @@ export function SoulTwinPage() {
                   </button>
                 </p>
               )}
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
 
         {/* ════════════════ QUIZ SCREEN ════════════════ */}
@@ -161,7 +166,7 @@ export function SoulTwinPage() {
 
         {/* ════════════════ RESULT SCREEN ════════════════ */}
         {stage === 'result' && dna && match && (
-          <motion.div
+          <m.div
             key="result"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -179,7 +184,7 @@ export function SoulTwinPage() {
             <DNARadar dna={dna} />
 
             {/* Divider */}
-            <motion.div
+            <m.div
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 100, opacity: 1 }}
               transition={{ ...TRANSITION.slow, delay: 0.3 }}
@@ -190,7 +195,7 @@ export function SoulTwinPage() {
             <VehicleReveal match={match} />
 
             {/* Actions */}
-            <motion.div
+            <m.div
               {...fadeUp}
               transition={{ ...TRANSITION.base, delay: 0.6 }}
               className="flex items-center gap-6"
@@ -203,8 +208,8 @@ export function SoulTwinPage() {
                 <RotateCcw className="size-4 transition-transform group-hover:-rotate-90" />
                 <span>{t.soulTwin.retakeTest}</span>
               </button>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

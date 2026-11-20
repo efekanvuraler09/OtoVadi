@@ -48,8 +48,6 @@ interface VehicleStore {
   retryToken: number;
   vehicles: Vehicle[];
   featuredVehicles: Vehicle[];
-  favorites: string[];
-  selectedVehicleId: string | null;
   selectedSegment: VehicleSegment | null;
   selectedBodyType: BodyType | null;
   searchQuery: string;
@@ -58,22 +56,15 @@ interface VehicleStore {
   retryLoad: () => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (bodyType: BodyType | null, segment: VehicleSegment | null) => void;
-  selectVehicle: (id: string | null) => void;
-  toggleFavorite: (id: string) => void;
-  isFavorite: (id: string) => boolean;
-  getVehicleBySlug: (slug: string) => Vehicle | undefined;
-  getVehicleById: (id: string) => Vehicle | undefined;
 }
 
 export const useVehicleStore = create<VehicleStore>()(
-  (set, get) => ({
+  (set) => ({
     isLoading: true,
     loadError: null,
     retryToken: 0,
     vehicles: [],
     featuredVehicles: [],
-    favorites: [],
-    selectedVehicleId: null,
     selectedSegment: null,
     selectedBodyType: null,
     searchQuery: '',
@@ -96,20 +87,5 @@ export const useVehicleStore = create<VehicleStore>()(
 
     setSelectedCategory: (bodyType, segment) =>
       set({ selectedBodyType: bodyType, selectedSegment: segment, searchQuery: '' }),
-
-    selectVehicle: (id) => set({ selectedVehicleId: id }),
-
-    toggleFavorite: (id) =>
-      set((state) => ({
-        favorites: state.favorites.includes(id)
-          ? state.favorites.filter((f) => f !== id)
-          : [...state.favorites, id],
-      })),
-
-    isFavorite: (id) => get().favorites.includes(id),
-
-    getVehicleBySlug: (slug) => get().vehicles.find((v) => v.slug === slug),
-    
-    getVehicleById: (id) => get().vehicles.find((v) => v.id === id),
   })
 );

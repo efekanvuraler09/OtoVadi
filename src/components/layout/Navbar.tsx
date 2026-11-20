@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Bookmark, User, Menu, X, LogOut } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useGarage } from '../../context/GarageContext';
@@ -200,7 +200,7 @@ export function Navbar() {
                   </button>
                   <AnimatePresence>
                     {isAccountOpen && (
-                      <motion.div
+                      <m.div
                         role="menu"
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -232,7 +232,7 @@ export function Navbar() {
                           <LogOut className="size-4" strokeWidth={1.5} aria-hidden />
                           {t.nav.logout}
                         </button>
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 </>
@@ -273,7 +273,7 @@ export function Navbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -283,7 +283,7 @@ export function Navbar() {
               aria-hidden
             />
 
-            <motion.nav
+            <m.nav
               ref={drawerRef}
               tabIndex={-1}
               id="site-menu"
@@ -309,7 +309,7 @@ export function Navbar() {
               <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6">
                 <ul className="flex flex-col">
                   {navLinks.map((link, i) => (
-                    <motion.li
+                    <m.li
                       key={link.href}
                       initial={{ opacity: 0, x: 16 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -326,7 +326,7 @@ export function Navbar() {
                       >
                         {link.label}
                       </NavLink>
-                    </motion.li>
+                    </m.li>
                   ))}
                 </ul>
 
@@ -385,7 +385,7 @@ export function Navbar() {
                   <ThemeToggle variant="segmented" />
                 </div>
               </div>
-            </motion.nav>
+            </m.nav>
           </>
         )}
       </AnimatePresence>

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight, ChevronRight, LayoutGrid } from 'lucide-react';
 import type { BodyType, VehicleSegment } from '../../types/vehicle';
 import { getSegmentsByBodyType } from '../../data/segments';
@@ -58,7 +58,7 @@ export function SegmentPicker() {
         {available.map(({ id, count }, index) => {
           const active = id === bodyType;
           return (
-            <motion.button
+            <m.button
               key={id}
               type="button"
               {...fadeUp}
@@ -87,7 +87,7 @@ export function SegmentPicker() {
                 aria-hidden
                 className={`absolute bottom-0 left-0 h-px bg-foreground transition-all duration-550 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}
               />
-            </motion.button>
+            </m.button>
           );
         })}
       </div>
@@ -109,7 +109,7 @@ export function SegmentPicker() {
           const segKey = `${seg.segment}-${seg.bodyType}` as keyof typeof t.catalog.segments;
           const descKey = `${seg.segment}-${seg.bodyType}-desc` as keyof typeof t.catalog.segments;
           return (
-            <motion.li key={segKey} {...fadeUp} transition={{ ...TRANSITION.base, delay: staggerDelay(index + 1) }}>
+            <m.li key={segKey} {...fadeUp} transition={{ ...TRANSITION.base, delay: staggerDelay(index + 1) }}>
               <SegmentRow
                 letter={seg.classLetter}
                 label={t.catalog.segments[segKey] || seg.label}
@@ -117,7 +117,7 @@ export function SegmentPicker() {
                 meta={vehiclesLabel(count)}
                 onClick={() => select(seg.bodyType, seg.segment)}
               />
-            </motion.li>
+            </m.li>
           );
         })}
       </ul>

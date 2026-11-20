@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useI18n } from '../../i18n/useI18n';
@@ -25,7 +25,7 @@ interface FloatingSpecProps {
 
 function FloatingSpec({ label, value, index }: FloatingSpecProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
@@ -35,7 +35,7 @@ function FloatingSpec({ label, value, index }: FloatingSpecProps) {
     >
       <span className="stat-label text-white/55">{label}</span>
       <span className="font-sans text-3xl font-light tabular-nums text-white md:text-4xl lg:text-5xl">{value}</span>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -76,7 +76,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-stage flex items-center justify-center overflow-hidden bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -125,7 +125,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
           />
 
           {/* ── Close Button ── */}
-          <motion.button
+          <m.button
             type="button"
             onClick={onClose}
             initial={{ opacity: 0 }}
@@ -136,10 +136,10 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
           >
             <span className="hidden sm:inline">{t.catalog.exitStage}</span>
             <X className="size-4" strokeWidth={1.5} />
-          </motion.button>
+          </m.button>
 
           {/* ── Vehicle Identity ── */}
-          <motion.div
+          <m.div
             className="absolute left-4 top-[calc(5rem+env(safe-area-inset-top,0px))] z-10 max-w-[80%] md:left-12 md:top-12 md:max-w-[60%]"
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
@@ -150,7 +150,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             </p>
             <h2 className="mt-2 text-display-md font-normal text-white">{vehicleModel(vehicle)}</h2>
             <p className="mt-2 text-sm text-white/60 md:text-base">{vehicle.tagline}</p>
-          </motion.div>
+          </m.div>
 
           {/* ── Floating Specs ── */}
           <div className="absolute bottom-10 left-6 right-6 z-10 flex flex-wrap items-end justify-between gap-6 md:bottom-16 md:left-12 md:right-12 md:gap-10 lg:left-20 lg:right-20">
@@ -166,7 +166,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
 
           {/* ── Bottom Gradient Bar ── */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body

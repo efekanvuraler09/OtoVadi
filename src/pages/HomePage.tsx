@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { FeaturedShowcase } from '../components/home/FeaturedShowcase';
@@ -14,7 +14,10 @@ import { filterVehicles, useVehicleStore } from '../store/useVehicleStore';
 import { useI18n } from '../i18n/useI18n';
 import { fadeUp } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function HomePage() {
+  // Varsayılan site başlığı ve açıklaması (index.html ile aynı)
+  usePageMeta({});
   const { t } = useI18n();
   const vehicles = useVehicleStore((s) => s.vehicles);
   const loadError = useVehicleStore((s) => s.loadError);
@@ -71,7 +74,7 @@ export function HomePage() {
           ) : (
             // scroll-mt-20: sticky header (h-16) başlığın üstünü örtmesin
             <div id="catalog" className="scroll-mt-20">
-              <motion.div {...fadeUp} className="mb-8">
+              <m.div {...fadeUp} className="mb-8">
                 <button
                   type="button"
                   onClick={resetFilters}
@@ -86,7 +89,7 @@ export function HomePage() {
                   <span className="tabular-nums">{filteredVehicles.length}</span> araç
                   {searchQuery ? ` · "${searchQuery}"` : ''}
                 </p>
-              </motion.div>
+              </m.div>
 
               {filteredVehicles.length === 0 ? (
                 <div className="border border-border-subtle px-6 py-12 text-center">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import type { Vehicle, Hotspot } from '../../types/vehicle';
 import { SmartImage } from '../ui/SmartImage';
 import { vehicleName } from '../../utils/vehicleText';
@@ -69,7 +69,7 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
 
         <AnimatePresence>
           {active && (
-            <motion.div
+            <m.div
               key={active.id}
               {...fadeUp}
               transition={TRANSITION.fast}
@@ -79,7 +79,7 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
                 <h3 className="mb-2 font-display text-lg font-normal text-foreground">{active.title}</h3>
                 <p className="text-sm leading-relaxed text-secondary">{active.description}</p>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

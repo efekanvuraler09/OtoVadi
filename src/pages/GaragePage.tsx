@@ -9,7 +9,9 @@ import { VehicleCard } from '../components/vehicle/VehicleCard';
 import { LoadingState, StatusScreen, VehicleLoadError } from '../components/ui/DataState';
 import { primaryButtonClass } from '../components/ui/buttonStyles';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function GaragePage() {
+  usePageMeta({ title: 'Garajım', noindex: true });
   const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const { garagedSlugs } = useGarage();
   const vehicles = useVehicleStore((s) => s.vehicles);

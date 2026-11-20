@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { User, Mail, Shield, Save, Camera, Loader2, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LoadingState, StatusScreen } from '../components/ui/DataState';
@@ -9,13 +9,18 @@ import { TRANSITION, fade } from '../lib/motion';
 import { getUserProfile, updateUserProfile } from '../services/userService';
 import { updateProfile } from 'firebase/auth';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function ProfilePage() {
+  usePageMeta({ title: 'Profil Ayarları', noindex: true });
   const { user, isAdmin, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Tarayıcı alert'i yerine satır içi bildirimler
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -35,14 +40,15 @@ export function ProfilePage() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    setPhotoError(null);
     
     // Validate type and size (e.g. max 2MB)
     if (!file.type.startsWith('image/')) {
-      alert('Lütfen geçerli bir resim dosyası seçin.');
+      setPhotoError('Lütfen geçerli bir resim dosyası seçin.');
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      alert('Resim boyutu en fazla 2MB olmalıdır.');
+      setPhotoError('Resim boyutu en fazla 2 MB olmalıdır.');
       return;
     }
 
@@ -90,7 +96,7 @@ export function ProfilePage() {
       reader.readAsDataURL(file);
     } catch (err) {
       console.error('Fotoğraf yükleme hatası:', err);
-      alert('Fotoğraf yüklenirken bir hata oluştu.');
+      setPhotoError('Fotoğraf yüklenirken bir hata oluştu.');
       setIsUploading(false);
     }
   };
@@ -101,6 +107,7 @@ export function ProfilePage() {
 
     try {
       setIsSaving(true);
+      setSaveError(null);
       const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
       // Update in Firebase Auth
@@ -113,7 +120,7 @@ export function ProfilePage() {
       setTimeout(() => setIsSaved(false), 3000);
     } catch (err) {
       console.error('Profil güncellenirken hata oluştu:', err);
-      alert('Profil güncellenirken bir hata oluştu.');
+      setSaveError('Profil güncellenirken bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setIsSaving(false);
     }
@@ -141,7 +148,7 @@ export function ProfilePage() {
   }
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       <PageContainer width="narrow">
       <div className="mx-auto max-w-2xl">
         <header className="mb-10 text-center">
@@ -170,6 +177,11 @@ export function ProfilePage() {
               className="hidden"
             />
           </div>
+          {photoError && (
+            <p role="alert" className="-mt-2 mb-6 text-sm text-danger">
+              {photoError}
+            </p>
+          )}
           <h1 className="text-display-md font-normal text-foreground">Profil Ayarları</h1>
           <p className="mt-3 text-base text-secondary">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
         </header>
@@ -243,7 +255,12 @@ export function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex flex-col items-end gap-3">
+            {saveError && (
+              <p role="alert" className="text-sm text-danger">
+                {saveError}
+              </p>
+            )}
             <button
               type="submit"
               disabled={isSaving}
@@ -262,6 +279,6 @@ export function ProfilePage() {
         </form>
       </div>
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

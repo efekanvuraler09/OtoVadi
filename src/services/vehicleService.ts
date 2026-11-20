@@ -6,7 +6,6 @@ import {
   deleteDoc,
   onSnapshot,
   query,
-  getDocs,
   type FirestoreError,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -60,23 +59,4 @@ export async function updateVehicleInFirestore(id: string, updates: Partial<Vehi
  */
 export async function deleteVehicleFromFirestore(id: string) {
   await deleteDoc(doc(db, COLLECTION, id));
-}
-
-/**
- * Başlangıç verilerini Firestore'a tek seferlik aktar (Seed).
- * Zaten kayıtlı dökümanları çakışmadan yazar (setDoc = upsert).
- */
-export async function seedVehiclesToFirestore(vehicles: Vehicle[]) {
-  const existing = await getDocs(vehiclesRef);
-  if (!existing.empty) {
-    console.warn(`Firestore 'vehicles' koleksiyonunda zaten ${existing.size} döküman var.`);
-  }
-  
-  let count = 0;
-  for (const vehicle of vehicles) {
-    await setDoc(doc(db, COLLECTION, vehicle.id), vehicle);
-    count++;
-  }
-  console.log(`✅ ${count} araç Firestore'a başarıyla aktarıldı.`);
-  return count;
 }

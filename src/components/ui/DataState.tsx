@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import { primaryButtonClass, secondaryButtonClass } from './buttonStyles';
@@ -20,7 +20,7 @@ export function StatusScreen({ eyebrow, title, description, actions, compact = f
   const Heading = compact ? 'h2' : 'h1';
 
   return (
-    <motion.section
+    <m.section
       {...fadeUp}
       transition={TRANSITION.base}
       className={`mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4 text-center md:px-8 ${
@@ -37,7 +37,7 @@ export function StatusScreen({ eyebrow, title, description, actions, compact = f
         <p className="mt-4 max-w-md text-sm leading-relaxed text-secondary md:text-base">{description}</p>
       )}
       {actions && <div className="mt-10 flex flex-wrap items-center justify-center gap-4">{actions}</div>}
-    </motion.section>
+    </m.section>
   );
 }
 
@@ -58,6 +58,27 @@ export function LoadingState({ label = 'Yükleniyor...', compact = false }: Load
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="size-8 animate-spin text-muted" />
         <p className="eyebrow">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Sayfa parçası yükleniyor (lazy rota) ─────────────────────────── */
+
+/**
+ * Lazy sayfa inerken gösterilir. Hızlı bağlantıda yanıp sönmemesi için ~250 ms gecikmeyle belirir
+ * (.page-fallback, index.css). İnce bir çizgi ve eyebrow: showroom diline uygun, spinner yok.
+ */
+export function PageFallback({ fullScreen = false }: { fullScreen?: boolean }) {
+  return (
+    <div
+      className={`page-fallback flex w-full items-center justify-center bg-void ${fullScreen ? 'min-h-dvh' : 'min-h-[calc(100svh-4rem)]'}`}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex flex-col items-center gap-5">
+        <span className="shimmer block h-px w-32 bg-border-subtle" aria-hidden />
+        <p className="eyebrow">Yükleniyor</p>
       </div>
     </div>
   );

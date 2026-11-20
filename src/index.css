@@ -103,6 +103,28 @@
     @apply font-sans font-light tabular-nums text-foreground;
   }
 
+  /* İnce kaydırıcı (input[type=range]) yuvarlak tutamağı — FinanceCalculator. Renkler tokenlardan. */
+  .range-thumb::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: rgb(var(--color-foreground));
+    cursor: pointer;
+    border: 2px solid rgb(var(--color-void));
+    box-shadow: 0 0 0 1px rgb(var(--color-border-subtle));
+  }
+
+  .range-thumb::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: rgb(var(--color-foreground));
+    cursor: pointer;
+    border: 2px solid rgb(var(--color-void));
+    box-shadow: 0 0 0 1px rgb(var(--color-border-subtle));
+  }
+
   .stat-label {
     @apply font-sans text-2xs font-medium uppercase tracking-eyebrow text-muted;
   }
@@ -127,6 +149,11 @@
     .shimmer::after {
       animation: none;
     }
+  }
+
+  /* Lazy sayfa yüklenirken: hızlı bağlantıda görünmesin diye gecikmeli belirir */
+  .page-fallback {
+    animation: page-fallback-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
   }
 }
 
@@ -162,6 +189,15 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@keyframes page-fallback-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

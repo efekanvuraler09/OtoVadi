@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { X, Check, Eye, EyeOff } from 'lucide-react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
@@ -70,7 +70,7 @@ export function AuthModal() {
             aria-modal="true"
             aria-label="Giriş yap veya kayıt ol"
           >
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -78,7 +78,7 @@ export function AuthModal() {
               className="absolute inset-0 bg-void/80 backdrop-blur-lg"
             />
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -96,7 +96,7 @@ export function AuthModal() {
 
               <AnimatePresence mode="wait">
                 {success ? (
-                  <motion.div
+                  <m.div
                     key="success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -106,9 +106,9 @@ export function AuthModal() {
                       <Check className="size-8 stroke-[1.5] text-success" />
                     </div>
                     <h3 className="font-display text-2xl font-normal text-foreground">Hoş Geldiniz</h3>
-                  </motion.div>
+                  </m.div>
                 ) : (
-                  <motion.div
+                  <m.div
                     key="form"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -192,10 +192,10 @@ export function AuthModal() {
                         </p>
                       )}
                     </form>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>
@@ -206,7 +206,7 @@ export function AuthModal() {
       <div className="pointer-events-none fixed inset-x-4 bottom-above-bar z-toast flex justify-center md:bottom-8">
         <AnimatePresence>
           {authToastMessage && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -214,7 +214,7 @@ export function AuthModal() {
               role="status"
             >
               <span className="text-foreground font-sans text-sm tracking-wide">{authToastMessage}</span>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

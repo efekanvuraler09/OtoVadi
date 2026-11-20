@@ -6,14 +6,14 @@ editoryal içerik (Günün Aracı, Koleksiyonlar) ve Firestore tabanlı admin CM
 ## Yığın
 React 19 · TypeScript ~6 · Vite 8 · Tailwind 3.4 (`darkMode: 'class'`) · framer-motion 12 · Zustand 5 ·
 React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function) ·
-fontlar self-host `@fontsource/playfair-display` (400/500/600) + `@fontsource-variable/inter` (main.tsx'te import; Google Fonts yok).
+fontlar self-host `@fontsource/playfair-display` (yalnızca 400/500 import edilir) + `@fontsource-variable/inter` (main.tsx'te import; Google Fonts yok).
 
 ## Doğrulama (her değişiklikten sonra)
 ```bash
 npx tsc -p tsconfig.app.json --noEmit    # src'yi gerçekten tarar
 npx tsc -p tsconfig.node.json --noEmit   # vite.config.ts + api/
-npm run build                            # tsc -b && vite build (500 kB chunk uyarısı bilinen durum)
-npx eslint .                             # 56 hata önceden var (48'i AdminDashboard `any`); sayı ARTMAMALI
+npm run build                            # tsc -b && vite build — 500 kB uyarısı ÇIKMAMALI (en büyük parça firestore ~451 kB)
+npx eslint .                             # 55 hata önceden var (48'i AdminDashboard `any`); sayı ARTMAMALI
 ```
 Kökte düz `npx tsc --noEmit` hiçbir dosyayı taramaz (`tsconfig.json` → `files: []`), güvence vermez.
 Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` isteklerini `api/<ad>.ts`'e yönlendirir ve
@@ -24,7 +24,7 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 - Store `vehicles: []` ile başlar. Araç kullanan her sayfa sırasıyla `isLoading` → `loadError` + boş liste → boş liste durumlarını ele alır;
   `vehicles[0]`'a korumasız erişme. Hazır bileşenler `components/ui/DataState.tsx` içinde: `LoadingState`, `VehicleLoadError`, `LoadErrorState`, `StatusScreen`, `CrashScreen`.
 - Yeni `onSnapshot` aboneliklerine mutlaka hata callback'i ver (servislerdeki `onError` parametresi deseni).
-- Tek doğru kaynak Firestore'dur. `src/data/*.json` hiçbir yerde import edilmez (eski seed verisi).
+- Tek doğru kaynak Firestore'dur. Eski seed JSON'ları (`src/data/*.json`) ve `seedVehiclesToFirestore` Faz 4'te silindi; `src/data/` yalnızca `segments.ts` + `SCHEMA.md`.
 
 ## Mimari kurallar (Faz 1)
 1. **Renk tokenları:** `index.css`'te "R G B" kanalları (`--color-foreground: 0 0 0`), Tailwind'de `rgb(var(--x) / <alpha-value>)`.
@@ -50,10 +50,10 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
    bulunamayan kayıtta sessiz `Navigate to="/"` yerine `NotFoundPage`.
 
 ## Tasarım sistemi (Faz 3)
-- **Tema flaşı:** `index.html`'deki inline script React'ten önce `dark` sınıfını ve `meta[name=theme-color]`'ı ayarlar
-  (`theme-storage` → `prefers-color-scheme` → koyu). `--color-void` değişirse script'teki hex'leri ve `useThemeStore`'u da güncelle.
+- **Tema flaşı / varsayılan:** `index.html`'deki inline script React'ten önce `dark` sınıfını ve `meta[name=theme-color]`'ı ayarlar.
+  Kayıtlı `theme-storage` tercihi yoksa HER ZAMAN koyu (işletim sistemi teması bilinçli olarak dikkate alınmaz); kullanıcı seçimi persist edilir. `--color-void` değişirse script'teki hex'leri ve `useThemeStore`'u da güncelle.
 - **Görsel kimlik = Mercedes-Benz resmi showroom estetiği (Serif Display + temiz Sans).** Porsche/Polestar tarzı grotesk display'e
-  geri DÖNME (Inter Tight denendi ve kullanıcı tarafından reddedildi). `font-display` = Playfair Display (yalnızca 400–500, gerekirse 600;
+  geri DÖNME (Inter Tight denendi ve kullanıcı tarafından reddedildi). `font-display` = Playfair Display (yalnızca 400–500 yüklü; serifte `font-semibold`/`font-bold` kullanma,
   `font-light` kullanma, Playfair'de 300 yok), `font-sans` = Inter (latin-ext: ğ ş İ ₺). Tüm serifler yalnızca `font-display` token'ından gelir;
   Georgia/sistem serifi veya `font-serif` yok. Serif: hero, sayfa/bölüm başlıkları, araç/koleksiyon adları, kategori kartları.
   Sans (Inter): arayüz, etiketler ve TÜM rakamlar (fiyat, teknik değer, istatistik → `tabular-nums`). Başlıklar `text-display-sm|md|lg|xl` (clamp).
@@ -68,11 +68,37 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 - **Araç kartı:** `vehicle/VehicleCard` (`variant`: grid|featured) + `VehicleCardSkeleton`. Tek gerçek `<Link>` (başlık, `::after` ile kartı kaplar),
   garaj + karşılaştır (`/karsilastir?a=<slug>`) aksiyonları z-10. Araç metinleri `utils/vehicleText` (`vehicleName`, `cleanText`) ile trim'lenir.
 - **Ses:** Detayda Ses sekmesi yalnızca `usePlayableTracks` gerçekten çalınabilir kayıt doğrularsa görünür; kullanıcıya dosya yolu gösterme.
-- **Animasyon:** `lib/motion.ts` → `DURATION` (0.2/0.35/0.55), tek eğri `EASE_OUT`, `TRANSITION`, `fadeUp`/`fade`, `staggerDelay(i)` (ilk 6 öğe).
+- **Animasyon:** framer-motion `LazyMotion features={domAnimation} strict` ile sarılı (App.tsx): bileşenlerde `motion.div` DEĞİL
+  `m.div` (`import { m } from 'framer-motion'`) kullan; `motion.*` strict modda çalışma zamanında hata verir. `layout`/`layoutId`/`drag`
+  domAnimation'da yok (gerekirse `domMax`'a geçilmeli). `lib/motion.ts` → `DURATION` (0.2/0.35/0.55), tek eğri `EASE_OUT`, `TRANSITION`, `fadeUp`/`fade`, `staggerDelay(i)` (ilk 6 öğe).
   App `<MotionConfig reducedMotion="user">`; otomatik oynayan medya için ayrıca `useReducedMotion`. `filter: blur` geçişi ve `animate-ping` yok;
   CSS'te `transition` varsayılanı 200ms + aynı eğri, sürekli animasyonlar `motion-safe:`.
 - **Header:** xl+ tüm linkler + dil/tema; lg 5 link + menü; mobil üst bar yalnızca marka/garaj/menü (dil + tema menüde, hesap BottomNav'da).
   Ana sayfada hero üzerinde şeffaf, kaydırınca dolgun; bunun için `HeroSection` header yüksekliği kadar negatif margin alır.
+
+## Performans ve SEO (Faz 4)
+- **Kod bölme:** `App.tsx` → `HomePage` ve `NotFoundPage` hariç tüm sayfalar `lazyPage(() => import(...), 'Ad')` (React.lazy, isimli export).
+  Yükleme durumu `RouteBoundary` içindeki `<Suspense fallback={<PageFallback />}>` (admin rotaları için App'te ayrıca `fullScreen`).
+  Yeni sayfa eklerken aynı deseni kullan. Detay + Modeller parçası boşta önceden indirilir (`PrefetchCommonRoutes`).
+  `main.tsx`'teki `vite:preloadError` dinleyicisi dağıtım sonrası eski parça 404'ünde sekmeyi bir kez yeniler.
+- **Vendor parçaları:** `vite.config.ts` → `build.rolldownOptions.output.codeSplitting.groups` (Vite 8/Rolldown'da `manualChunks` deprecated):
+  `firestore` (+@firebase/app çekirdeği), `firebase-auth`, `motion`, `icons` (lucide), `react` (react/dom/router/zustand).
+  `preloadCriticalFonts` eklentisi build'de hash'li Playfair 400 (latin + latin-ext) ve Inter latin woff2'yi `<link rel=preload>` ile ekler.
+- **Hero videosu (P1):** `public/hero-challenger.mp4` = orijinalin 14,0–26,0 sn aralığı (Dodge uyarı yazısı kırpıldı), 12 sn, 1080p H.264 High,
+  sessiz, 2-pass ~2,6 Mbps, `+faststart`, ~3,97 MB. Poster `public/hero-poster.webp` (ilk kare, ~75 kB) ana sayfada inline script ile preload edilir.
+  `HeroSection`: `prefers-reduced-motion` veya `navigator.connection.saveData` açıksa `<video>` hiç mount edilmez (yalnızca poster);
+  Oynat'a basılınca yüklenir. `IntersectionObserver` ekrandan çıkınca duraklatır. Videoyu yeniden kodlamak için ffmpeg gerekir (sistemde yok;
+  `npx`/geçici klasöre `ffmpeg-static` kurularak yapıldı).
+- **Sayfa meta (P7):** Her sayfa bileşeni en üstte `usePageMeta({ title, description, image, noindex })` çağırır (`hooks/usePageMeta.ts`):
+  `document.title` = "<title> | OtoVadi", description, robots, canonical, og:*/twitter:*. `null` → yazmaz (kayıt bulunamayınca içteki
+  `NotFoundPage` yazar; çocuk effect'i önce çalıştığı için ebeveyn ezmemeli). Kişisel/admin sayfaları `noindex: true`.
+  Site sabitleri `lib/seo.ts`; aynı değerler `index.html` ve `api/og-meta.ts`'te kopya — birini değiştirirsen hepsini güncelle.
+- **Sosyal önizleme (P7):** `vercel.json`'da `/arac/:id` için `has: user-agent` (WhatsApp, facebookexternalhit, Twitterbot, LinkedInBot,
+  Slackbot, TelegramBot, Discordbot…) rewrite'ı → `api/og-meta.ts` (Firestore REST, anahtarsız public read, 3 sn timeout) araca özel kart döner;
+  hata/bulunamadı → varsayılan kart (`/og-image.jpg`, 1200×630). Normal ziyaretçi ve Googlebot SPA'yı alır. Bu rewrite SPA kuralından ÖNCE kalmalı.
+  Yanıtta meta refresh/yönlendirme veya X-Robots-Tag YOK (aynı URL'de sunulur).
+- **İkonlar / PWA:** `public/favicon.svg` (çember içinde V, `prefers-color-scheme` ile siyah/beyaz), `apple-touch-icon.png` (180),
+  `icon-192.png`, `icon-512.png` (any + maskable), `manifest.webmanifest`, `robots.txt`, `sitemap.xml` (yalnızca statik rotalar; araç URL'leri yok).
 
 ## Akıllı Keşif ve güvenlik (Faz 2)
 - Akış: `AutoCurator` → `services/discoveryService.ts` → `POST /api/discover` → Gemini (`responseSchema`, slug enum + sunucuda
@@ -99,7 +125,8 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 - Canlı veritabanına script ile yazma veya migration çalıştırma yalnızca kullanıcının açık onayıyla yapılır.
 
 ## Dokunma / hassas noktalar
-- `public/models/tucson.glb` (25 MB, kullanılmıyor) ve `public/hero-challenger.mp4` (28,5 MB): onaysız silme veya değiştirme.
+- `public/hero-challenger.mp4` (Faz 4'te optimize edildi, ~3,97 MB) ve `public/hero-poster.webp`: yeniden kodlama/değiştirme kullanıcı onayıyla;
+  değişirse posteri de aynı ilk kareden yeniden üret. (`public/models/tucson.glb` Faz 4'te silindi; 3D model kullanılmıyor.)
 - `.env` (`GEMINI_API_KEY`): commit etme, değerini asla yazdırma. Eski `VITE_GEMINI_API_KEY` bundle'a sızmıştı; rotate edilmeli.
 - `firestore.rules`: değiştirirsen Console'da yayınlanması gerektiğini kullanıcıya söyle; `admins` koleksiyonuna istemciden yazma ekleme.
 - `scripts/recover2.js`: kimlik doğrulamasız prod'a yazar, çalıştırma (yeni kurallar zaten reddeder).
@@ -117,4 +144,6 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 Analiz maddeleri: K1–K14 (hata/güvenlik), U1–U13 (UI/UX), P1–P8 (performans/SEO), Y1–Y7 (yeni özellik).
 Faz 1 tamamlandı: K5–K10. Faz 2 tamamlandı: K1–K4, P8 (CI ve Speed Insights hariç).
 Faz 3 tamamlandı: K11, K13, U1, U2, U3, U6, U8, U9, U10 (görsellerin kendi depolamaya taşınması hariç).
+Faz 4 tamamlandı: P1, P2, P4, P6, P7, K12 + varsayılan koyu tema, AutoCurator autoFocus ve alert() temizliği
+(dinamik @vercel/og görseli, araç URL'li sitemap ve P3/P5 hariç).
 Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.

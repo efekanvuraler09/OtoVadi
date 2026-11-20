@@ -1,11 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Pause, Play, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import { useI18n } from '../../i18n/useI18n';
 import { vehicleBrand } from '../../utils/vehicleText';
 import { TRANSITION, fadeUp } from '../../lib/motion';
+
+/** Tarayıcının "veri tasarrufu" tercihi (Chromium: navigator.connection.saveData) */
+function prefersSaveData(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  return connection?.saveData === true;
+}
+
+const HERO_VIDEO_SRC = '/hero-challenger.mp4';
+const HERO_POSTER_SRC = '/hero-poster.webp';
 
 /**
  * Sinematik hero (U2). Header ana sayfada bu bölümün üzerinde şeffaf durur; bu yüzden bölüm header yüksekliği kadar
@@ -17,23 +27,40 @@ export function HeroSection() {
   const { t } = useI18n();
   const prefersReducedMotion = useReducedMotion();
 
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [saveData] = useState(prefersSaveData);
   const [videoVisible, setVideoVisible] = useState(false);
-  // null: kullanıcı henüz dokunmadı → sistem tercihine uy (hareket azaltma açıksa video durur)
+  const [inView, setInView] = useState(true);
+  // null: kullanıcı henüz dokunmadı → tercihlere uy
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
-  const paused = userPaused ?? Boolean(prefersReducedMotion);
 
-  // Video oynatma durumu DOM'a senkronlanır (autoPlay yerine: hareket azaltma tercihinde hiç başlamaz)
+  // P1: hareket azaltma veya veri tasarrufu açıksa video hiç indirilmez, yalnızca poster görünür.
+  // Kullanıcı Oynat'a basarsa video o anda yüklenir.
+  const autoPlayAllowed = !prefersReducedMotion && !saveData;
+  const paused = userPaused ?? !autoPlayAllowed;
+  const shouldMountVideo = autoPlayAllowed || userPaused === false;
+
+  // Hero ekrandan çıkınca video durur, geri gelince devam eder (pil/CPU tasarrufu)
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.15 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  // Oynatma durumu DOM'a senkronlanır (autoPlay özniteliği yerine: tercih/görünürlük değişince tek yerden yönetilir)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (paused) {
+    if (paused || !inView) {
       video.pause();
     } else {
-      // Otomatik oynatma engellenirse (düşük güç modu vb.) poster zemini kalır; buton ile başlatılabilir
+      // Otomatik oynatma engellenirse (düşük güç modu vb.) poster kalır; buton ile başlatılabilir
       video.play().catch(() => undefined);
     }
-  }, [paused]);
+  }, [paused, inView, shouldMountVideo]);
 
   const stats = useMemo(
     () => [
@@ -46,10 +73,11 @@ export function HeroSection() {
 
   return (
     <section
+      ref={sectionRef}
       className="relative isolate -mt-[calc(4rem+env(safe-area-inset-top,0px))] flex min-h-[100svh] flex-col justify-end overflow-hidden bg-black text-white"
       aria-labelledby="hero-title"
     >
-      {/* Video gelene kadar görünen stüdyo zemini (siyah kare yerine) */}
+      {/* Poster yüklenene kadar görünen stüdyo zemini (siyah kare yerine) */}
       <div
         aria-hidden
         className="absolute inset-0 -z-20"
@@ -58,21 +86,33 @@ export function HeroSection() {
             'radial-gradient(ellipse 80% 60% at 70% 45%, rgb(255 255 255 / 0.08), transparent 70%), linear-gradient(180deg, #111 0%, #000 100%)',
         }}
       />
-      <video
-        ref={videoRef}
-        loop
-        muted
-        playsInline
-        preload={prefersReducedMotion ? 'metadata' : 'auto'}
+      {/* Videonun ilk karesi: anında görünür (LCP adayı). Dekoratif medya olduğu için SmartImage yerine yalın img. */}
+      <img
+        src={HERO_POSTER_SRC}
+        alt=""
         aria-hidden
-        tabIndex={-1}
-        onLoadedData={() => setVideoVisible(true)}
-        onPlaying={() => setVideoVisible(true)}
-        className={`absolute inset-0 -z-10 h-full w-full object-cover transition-opacity duration-1000 ease-out-expo ${
-          videoVisible ? 'opacity-100' : 'opacity-0'
-        }`}
-        src="/hero-challenger.mp4"
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 -z-10 h-full w-full object-cover"
       />
+      {shouldMountVideo && (
+        <video
+          ref={videoRef}
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          poster={HERO_POSTER_SRC}
+          aria-hidden
+          tabIndex={-1}
+          onLoadedData={() => setVideoVisible(true)}
+          onPlaying={() => setVideoVisible(true)}
+          className={`absolute inset-0 -z-10 h-full w-full object-cover transition-opacity duration-1000 ease-out-expo ${
+            videoVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          src={HERO_VIDEO_SRC}
+        />
+      )}
 
       {/* Okunabilirlik: üstte header için yumuşak geçiş, altta metin için scrim, kenarlarda hafif vinyet */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-black/60 to-transparent" />
@@ -84,7 +124,7 @@ export function HeroSection() {
       />
 
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-[calc(var(--bottom-bar-height)+env(safe-area-inset-bottom,0px)+2rem)] pt-[calc(4rem+env(safe-area-inset-top,0px)+3rem)] md:px-8 md:pb-16 lg:px-12">
-        <motion.div {...fadeUp} transition={TRANSITION.slow} className="max-w-4xl">
+        <m.div {...fadeUp} transition={TRANSITION.slow} className="max-w-4xl">
           <p className="eyebrow text-white/70">{t.hero.eyebrow}</p>
           <h1 id="hero-title" className="mt-4 text-balance text-display-xl font-normal text-white">
             {t.hero.title}
@@ -107,10 +147,10 @@ export function HeroSection() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.75} aria-hidden />
             </Link>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* İstatistik şeridi + video kontrolü */}
-        <motion.div
+        <m.div
           {...fadeUp}
           transition={{ ...TRANSITION.slow, delay: 0.1 }}
           className="mt-12 flex items-end justify-between gap-6 border-t border-white/20 pt-6 md:mt-16"
@@ -139,7 +179,7 @@ export function HeroSection() {
               <Pause className="size-4" fill="currentColor" aria-hidden />
             )}
           </button>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

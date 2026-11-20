@@ -1,11 +1,16 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Sparkles, Compass, GitCompare } from 'lucide-react';
 import { useI18n } from '../i18n/useI18n';
 import { PageContainer } from '../components/layout/PageContainer';
 import { PageHeader } from '../components/layout/PageHeader';
 import { TRANSITION, fade, fadeUp, staggerDelay } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function AboutPage() {
+  usePageMeta({
+    title: 'Hakkımızda',
+    description: 'OtoVadi: araç seçimini bir showroom deneyimine dönüştüren dijital otomotiv vitrini.',
+  });
   const { t } = useI18n();
 
   const features = [
@@ -15,7 +20,7 @@ export function AboutPage() {
   ];
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       <PageContainer width="medium">
         <PageHeader
           align="center"
@@ -47,7 +52,7 @@ export function AboutPage() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
             {features.map(({ icon: Icon, title, desc }, index) => (
-              <motion.div
+              <m.div
                 key={title}
                 {...fadeUp}
                 transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
@@ -56,11 +61,11 @@ export function AboutPage() {
                 <Icon className="mb-6 size-7 text-foreground" strokeWidth={1.25} aria-hidden />
                 <h3 className="mb-3 font-display text-lg font-normal text-foreground">{title}</h3>
                 <p className="text-sm leading-relaxed text-secondary">{desc}</p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </section>
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

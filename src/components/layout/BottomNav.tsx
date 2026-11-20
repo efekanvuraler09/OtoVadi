@@ -1,5 +1,5 @@
 import { Home, Sparkles, Scale, User, type LucideIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useI18n } from '../../i18n/useI18n';
@@ -36,7 +36,7 @@ export function BottomNav() {
     return (
       <>
         {active && (
-          <motion.span
+          <m.span
             layoutId="nav-pill"
             className="absolute inset-x-2 inset-y-1 rounded-sm bg-foreground/5"
             transition={TRANSITION.base}

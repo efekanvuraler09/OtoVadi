@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { DNAQuestion } from '../../utils/dnaEngine';
 import { useI18n } from '../../i18n/useI18n';
 import { TRANSITION } from '../../lib/motion';
@@ -15,7 +15,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
   const qData = t.soulTwin.questions[currentStep];
 
   return (
-    <motion.div
+    <m.div
       key={question.id}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -45,20 +45,20 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           {currentStep + 1} / {totalSteps}
         </p>
 
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...TRANSITION.base, delay: 0.05 }}
           className="max-w-2xl text-balance text-center text-display-sm font-normal text-foreground"
         >
           {qData.prompt}
-        </motion.h2>
+        </m.h2>
       </div>
 
       {/* ── Split Screen Options ── */}
       <div className="relative z-10 flex flex-1 flex-col gap-3 px-4 pb-8 pt-4 md:flex-row md:gap-4 md:px-8 md:pb-12 md:pt-8">
         {/* Option A */}
-        <motion.button
+        <m.button
           type="button"
           onClick={() => onAnswer('a')}
           initial={{ opacity: 0, x: -16 }}
@@ -82,7 +82,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
 
           {/* Bottom accent line */}
           <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-350 group-hover:w-2/3" />
-        </motion.button>
+        </m.button>
 
         {/* Divider */}
         <div className="flex items-center justify-center md:flex-col">
@@ -94,7 +94,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
         </div>
 
         {/* Option B */}
-        <motion.button
+        <m.button
           type="button"
           onClick={() => onAnswer('b')}
           initial={{ opacity: 0, x: 16 }}
@@ -116,8 +116,8 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           </span>
 
           <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-350 group-hover:w-2/3" />
-        </motion.button>
+        </m.button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { MatchResult } from '../../utils/dnaEngine';
@@ -18,14 +18,14 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
   const affinityPercent = Math.round(affinity * 100);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={TRANSITION.slow}
       className="flex w-full flex-col items-center gap-8 md:gap-10"
     >
       {/* ── Title ── */}
-      <motion.div
+      <m.div
         {...fadeUp}
         transition={{ ...TRANSITION.slow, delay: 0.1 }}
         className="text-center"
@@ -37,10 +37,10 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         <p className="mt-2 text-sm text-secondary">
           {vehicle.tagline}
         </p>
-      </motion.div>
+      </m.div>
 
       {/* ── Vehicle Image: kırık görselde sonsuz boş alan yerine siluet ── */}
-      <motion.div {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.2 }} className="w-full max-w-2xl">
+      <m.div {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.2 }} className="w-full max-w-2xl">
         <SmartImage
           src={vehicle.media.heroImage}
           alt={vehicleName(vehicle)}
@@ -50,10 +50,10 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
           priority
           draggable={false}
         />
-      </motion.div>
+      </m.div>
 
       {/* ── Match Info ── */}
-      <motion.div
+      <m.div
         {...fadeUp}
         transition={{ ...TRANSITION.base, delay: 0.3 }}
         className="flex flex-wrap items-center justify-center gap-6 text-center md:gap-10"
@@ -88,10 +88,10 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
             {formatVehiclePrice(vehicle.pricing)}
           </span>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* ── CTA ── */}
-      <motion.div
+      <m.div
         {...fadeUp}
         transition={{ ...TRANSITION.base, delay: 0.4 }}
         className="mt-4"
@@ -103,7 +103,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
           <span>{t.soulTwin.inspectVehicle}</span>
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
         </Link>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

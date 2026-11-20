@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowRight, RotateCcw, Sparkles, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useVehicleStore } from '../../store/useVehicleStore';
@@ -214,7 +214,7 @@ export function AutoCurator() {
 
         {/* 1. SORGU */}
         {status === 'idle' && (
-          <motion.div
+          <m.div
             key="prompt"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -230,7 +230,6 @@ export function AutoCurator() {
             <form onSubmit={handleSearch} className="w-full relative group">
               <input
                 type="text"
-                autoFocus
                 value={inputValue}
                 maxLength={DISCOVER_MAX_QUERY_LENGTH}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -257,12 +256,12 @@ export function AutoCurator() {
                 )}
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
 
         {/* 2. ANALİZ (YÜKLENİYOR) */}
         {status === 'loading' && (
-          <motion.div
+          <m.div
             key="analyzing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -274,20 +273,20 @@ export function AutoCurator() {
           >
             {/* animate-ping yerine sakin dönen halka */}
             <div className="size-12 animate-spin rounded-full border border-border-subtle border-t-foreground motion-reduce:animate-none" aria-hidden />
-            <motion.p
+            <m.p
               key={loadingStep % loadingMessages.length}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="eyebrow text-sm"
             >
               {loadingMessages[loadingStep % loadingMessages.length]}
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         )}
 
         {/* 3. SONUÇ: yapay zeka önerisi veya dürüst yerel eşleştirme */}
         {(status === 'success' || status === 'degraded') && result && (
-          <motion.div
+          <m.div
             key="result"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -401,12 +400,12 @@ export function AutoCurator() {
                 </ul>
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
 
         {/* 4. HATA: öneri üretilemedi */}
         {status === 'error' && (
-          <motion.div
+          <m.div
             key="error"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -430,7 +429,7 @@ export function AutoCurator() {
                 </>
               }
             />
-          </motion.div>
+          </m.div>
         )}
 
       </AnimatePresence>

@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowRight, Search, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { filterVehicles, useVehicleStore } from '../../store/useVehicleStore';
@@ -119,7 +119,7 @@ export function InstantSearch({ onShowAll }: InstantSearchProps) {
 
       <AnimatePresence>
         {showPanel && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
@@ -176,7 +176,7 @@ export function InstantSearch({ onShowAll }: InstantSearchProps) {
                 </li>
               </ul>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

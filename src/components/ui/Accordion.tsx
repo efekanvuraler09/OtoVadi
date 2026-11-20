@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 export interface AccordionItem {
@@ -35,7 +35,7 @@ export function Accordion({ items, defaultOpenId }: AccordionProps) {
             </button>
             <AnimatePresence initial={false}>
               {isOpen && (
-                <motion.div
+                <m.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
@@ -45,7 +45,7 @@ export function Accordion({ items, defaultOpenId }: AccordionProps) {
                   <div className="border-t border-border-subtle px-4 pb-4 pt-2">
                     {item.content}
                   </div>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>

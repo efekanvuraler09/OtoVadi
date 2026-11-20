@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { formatPrice, type Currency } from '../../utils/formatPrice';
 import { secondaryButtonClass } from '../ui/buttonStyles';
 import { TRANSITION } from '../../lib/motion';
@@ -69,7 +69,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
                 step="5"
                 value={downpaymentPercent}
                 onChange={(e) => setDownpaymentPercent(Number(e.target.value))}
-                className="w-full h-0.5 bg-border-subtle appearance-none cursor-pointer outline-none slider-thumb-minimalist"
+                className="w-full h-0.5 bg-border-subtle appearance-none cursor-pointer outline-none range-thumb"
                 style={{
                   background: `linear-gradient(to right, rgb(var(--color-foreground)) ${((downpaymentPercent - 10) / 70) * 100}%, rgb(var(--color-border-subtle)) ${((downpaymentPercent - 10) / 70) * 100}%)`
                 }}
@@ -113,7 +113,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
         <div className="flex-1 w-full flex flex-col items-center lg:items-end justify-center py-8">
           <span className="stat-label mb-4">Aylık Ödeme</span>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={monthlyPayment}
               // blur yerine opacity + translate (mobilde ucuz)
               initial={{ opacity: 0, y: -8 }}
@@ -125,7 +125,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               <span className="font-sans text-5xl font-light tabular-nums tracking-tight text-foreground md:text-6xl">
                 {formatCurrency(monthlyPayment)}
               </span>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
           {onApply && (
             <div className="mt-12 flex flex-col items-center gap-3 lg:items-end">
@@ -144,29 +144,6 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
         </div>
 
       </div>
-      
-      {/* Required CSS for custom slider thumb (if tailwind custom is not enough) */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .slider-thumb-minimalist::-webkit-slider-thumb {
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: rgb(var(--color-foreground));
-          cursor: pointer;
-          border: 2px solid rgb(var(--color-void));
-          box-shadow: 0 0 0 1px rgb(var(--color-border-subtle));
-        }
-        .slider-thumb-minimalist::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: rgb(var(--color-foreground));
-          cursor: pointer;
-          border: 2px solid rgb(var(--color-void));
-          box-shadow: 0 0 0 1px rgb(var(--color-border-subtle));
-        }
-      `}} />
     </section>
   );
 }

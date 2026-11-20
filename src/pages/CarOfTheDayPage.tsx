@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Calendar, Gauge, Zap, Weight, Timer, Wind } from 'lucide-react';
 import { subscribeCarOfTheDay, type CarOfTheDayData } from '../services/carOfTheDayService';
 import { LoadErrorState, LoadingState, StatusScreen } from '../components/ui/DataState';
@@ -7,6 +7,7 @@ import { SmartImage } from '../components/ui/SmartImage';
 import { PageContainer } from '../components/layout/PageContainer';
 import { TRANSITION, fade, fadeUp } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 const SPEC_ICONS = [
   { label: 'Motor Hacmi', key: 'engine' as const, icon: Gauge },
   { label: 'Güç', key: 'power' as const, icon: Zap },
@@ -17,6 +18,10 @@ const SPEC_ICONS = [
 ];
 
 export function CarOfTheDayPage() {
+  usePageMeta({
+    title: 'Günün Aracı',
+    description: 'Her gün editörlerimizin seçtiği bir aracı güçlü ve zayıf yönleriyle derinlemesine keşfedin.',
+  });
   const [data, setData] = useState<CarOfTheDayData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -67,7 +72,7 @@ export function CarOfTheDayPage() {
   const todayStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       <PageContainer width="medium">
       {/* Header strip */}
       <div className="mb-10">
@@ -91,27 +96,27 @@ export function CarOfTheDayPage() {
 
       {/* Title block */}
       <section className="mb-12">
-        <motion.h1
+        <m.h1
           {...fadeUp}
           transition={TRANSITION.slow}
           className="mb-6 text-balance text-display-xl font-normal text-foreground"
         >
           {data.title}
-        </motion.h1>
-        <motion.p
+        </m.h1>
+        <m.p
           {...fadeUp}
           transition={{ ...TRANSITION.slow, delay: 0.05 }}
           className="max-w-3xl text-xl font-light leading-relaxed text-secondary md:text-2xl"
         >
           {data.spotText}
-        </motion.p>
+        </m.p>
       </section>
 
       {/* Hero image */}
       {data.imageUrl && (
-        <motion.section {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.1 }} className="mb-16">
+        <m.section {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.1 }} className="mb-16">
           <SmartImage src={data.imageUrl} alt={data.title} aspectRatio="16 / 9" priority className="border border-border-subtle" />
-        </motion.section>
+        </m.section>
       )}
 
       {/* Editorial body + sidebar grid */}
@@ -119,7 +124,7 @@ export function CarOfTheDayPage() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_300px] lg:gap-16">
 
           {/* Main article body */}
-          <motion.article {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.15 }} className="order-2 lg:order-1">
+          <m.article {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.15 }} className="order-2 lg:order-1">
             {/* First paragraph with drop cap */}
             {paragraphs.length > 0 && (
               <p className="mb-8 text-base leading-[1.85] text-secondary first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-6xl first-letter:font-normal first-letter:leading-[0.8] first-letter:text-foreground md:text-lg">
@@ -140,10 +145,10 @@ export function CarOfTheDayPage() {
                 ))}
               </div>
             )}
-          </motion.article>
+          </m.article>
 
           {/* Sidebar */}
-          <motion.aside
+          <m.aside
             {...fadeUp}
             transition={{ ...TRANSITION.slow, delay: 0.2 }}
             className="order-1 space-y-6 lg:sticky lg:top-24 lg:order-2 lg:self-start"
@@ -191,7 +196,7 @@ export function CarOfTheDayPage() {
                 </p>
               </div>
             )}
-          </motion.aside>
+          </m.aside>
         </div>
       </section>
 
@@ -207,6 +212,6 @@ export function CarOfTheDayPage() {
         </div>
       </div>
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

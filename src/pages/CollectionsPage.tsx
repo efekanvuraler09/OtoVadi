@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Library } from 'lucide-react';
 import { subscribePublishedCollections } from '../services/collectionService';
 import { LoadErrorState, LoadingState } from '../components/ui/DataState';
@@ -10,7 +10,12 @@ import { SmartImage } from '../components/ui/SmartImage';
 import { TRANSITION, fade, fadeUp, staggerDelay } from '../lib/motion';
 import type { VehicleCollection } from '../types/collection';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function CollectionsPage() {
+  usePageMeta({
+    title: 'Koleksiyonlar',
+    description: 'Editörlerimizin özenle derlediği tematik araç koleksiyonları.',
+  });
   const [collections, setCollections] = useState<VehicleCollection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -48,7 +53,7 @@ export function CollectionsPage() {
   }
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       <PageContainer>
         <PageHeader
           eyebrow="Küratörlü Sergiler"
@@ -64,7 +69,7 @@ export function CollectionsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {collections.map((col, index) => (
-              <motion.div key={col.id} {...fadeUp} transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}>
+              <m.div key={col.id} {...fadeUp} transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}>
                 <Link to={`/koleksiyonlar/${col.slug}`} className="group relative block overflow-hidden border border-border-subtle">
                   {/* Kapak: sabit oran, kırık görselde stüdyo zemini; üzerindeki metin her temada koyu scrim üstünde */}
                   <SmartImage
@@ -87,11 +92,11 @@ export function CollectionsPage() {
 
                   <div className="absolute bottom-0 left-0 h-px w-0 bg-white/50 transition-all duration-550 group-hover:w-full" />
                 </Link>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         )}
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

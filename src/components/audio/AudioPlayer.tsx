@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { AlertCircle, Pause, Play } from 'lucide-react';
 import type { AudioTrack } from '../../types/vehicle';
 import { useAudioStore } from '../../store/useAudioStore';
@@ -10,9 +10,9 @@ interface AudioPlayerProps {
 }
 
 function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 /**
@@ -126,7 +126,7 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
       <audio ref={audioRef} src={track.src} preload="metadata" />
 
       <div className="flex items-start gap-4">
-        <motion.button
+        <m.button
           type="button"
           whileTap={{ scale: 0.94 }}
           onClick={togglePlay}
@@ -141,7 +141,7 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
           ) : (
             <Play className={`${compact ? 'size-5' : 'size-6'} ml-0.5`} fill="currentColor" aria-hidden />
           )}
-        </motion.button>
+        </m.button>
 
         <div className="min-w-0 flex-1">
           <h4 className={`font-display font-normal text-foreground ${compact ? 'text-lg' : 'text-xl md:text-2xl'}`}>

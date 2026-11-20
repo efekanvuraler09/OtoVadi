@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { StatusScreen } from '../components/ui/DataState';
 import { primaryButtonClass, secondaryButtonClass } from '../components/ui/buttonStyles';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 interface NotFoundPageProps {
   title?: string;
   description?: string;
@@ -16,6 +17,7 @@ export function NotFoundPage({
   backTo = '/',
   backLabel = 'Ana Sayfa',
 }: NotFoundPageProps) {
+  usePageMeta({ title: 'Sayfa Bulunamadı', description, noindex: true });
   return (
     <StatusScreen
       eyebrow="404"

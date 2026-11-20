@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Calendar, Clock, MapPin, Car } from 'lucide-react';
 import type { FirestoreError } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,7 @@ import { PageContainer } from '../components/layout/PageContainer';
 import { PageHeader } from '../components/layout/PageHeader';
 import { TRANSITION, fade, fadeUp, staggerDelay } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 /** Randevu durumları: semantik tokenlar (her iki temada AA kontrastlı) */
 const STATUS_STYLES = {
   pending: { label: 'Bekliyor', badge: 'border-warning/40 bg-warning/10 text-warning', bar: 'bg-warning' },
@@ -25,6 +26,7 @@ interface AppointmentsSnapshot {
 }
 
 export function MyAppointments() {
+  usePageMeta({ title: 'Randevularım', noindex: true });
   const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const [snapshot, setSnapshot] = useState<AppointmentsSnapshot | null>(null);
   const [retryToken, setRetryToken] = useState(0);
@@ -67,7 +69,7 @@ export function MyAppointments() {
   const appointments = current?.items ?? [];
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       <PageContainer width="narrow">
         <PageHeader
           eyebrow="Hesabım"
@@ -95,7 +97,7 @@ export function MyAppointments() {
             {appointments.map((appointment, index) => {
               const status = STATUS_STYLES[appointment.status as keyof typeof STATUS_STYLES] ?? STATUS_STYLES.rejected;
               return (
-              <motion.div
+              <m.div
                 key={appointment.id}
                 {...fadeUp}
                 transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
@@ -131,12 +133,12 @@ export function MyAppointments() {
 
                 {/* Durum şeridi */}
                 <div className={`absolute inset-y-0 left-0 w-1 ${status.bar}`} aria-hidden />
-              </motion.div>
+              </m.div>
               );
             })}
           </div>
         )}
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

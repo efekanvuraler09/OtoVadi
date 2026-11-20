@@ -8,6 +8,7 @@ import { VehicleCard, VehicleCardSkeleton } from '../components/vehicle/VehicleC
 import { VehicleLoadError } from '../components/ui/DataState';
 import { vehicleName } from '../utils/vehicleText';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 type FilterId = 'all' | 'suv' | 'sedan' | 'eco';
 
 const FILTERS: { id: FilterId; label: string; match: (v: Vehicle) => boolean }[] = [
@@ -22,6 +23,10 @@ const FILTERS: { id: FilterId; label: string; match: (v: Vehicle) => boolean }[]
 ];
 
 export function ModelsPage() {
+  usePageMeta({
+    title: 'Tüm Modeller',
+    description: 'OtoVadi kataloğundaki tüm araçları gövde tipi, segment ve fiyata göre inceleyin; detaylı teknik verilere tek dokunuşla ulaşın.',
+  });
   const vehicles = useVehicleStore((s) => s.vehicles);
   const isLoading = useVehicleStore((s) => s.isLoading);
   const loadError = useVehicleStore((s) => s.loadError);

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowLeft, Bookmark } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { SmartImage } from '../ui/SmartImage';
@@ -48,7 +48,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
             >
               Test Sürüşü
             </button>
-            <motion.button
+            <m.button
               type="button"
               disabled={isBusy}
               whileTap={isBusy ? {} : { scale: 0.94 }}
@@ -62,7 +62,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
               ) : (
                 <Bookmark className={`size-5 ${isGaraged ? 'fill-current' : ''}`} strokeWidth={1.5} aria-hidden />
               )}
-            </motion.button>
+            </m.button>
           </div>
         </div>
 

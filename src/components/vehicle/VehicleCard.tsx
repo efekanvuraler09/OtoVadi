@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight, Bookmark, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Vehicle } from '../../types/vehicle';
@@ -50,7 +50,7 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
   ];
 
   return (
-    <motion.article
+    <m.article
       {...fadeUp}
       transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
       className={`group relative flex h-full flex-col ${
@@ -135,7 +135,7 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
           </span>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   );
 }
 

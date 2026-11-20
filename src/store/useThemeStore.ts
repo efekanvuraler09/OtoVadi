@@ -19,7 +19,7 @@ function applyTheme(theme: Theme) {
 }
 
 /**
- * index.html'deki inline script, React yüklenmeden önce kayıtlı tercihi (yoksa işletim sistemi tercihini)
+ * index.html'deki inline script, React yüklenmeden önce kayıtlı tercihi (yoksa varsayılan koyu temayı)
  * <html> sınıfına uygular. Store aynı kararla başlar; böylece ilk render ile ilk boyama arasında tema değişmez.
  */
 const initialTheme: Theme =

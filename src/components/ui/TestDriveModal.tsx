@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { X, Check, Loader2 } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useAuth } from '../../context/AuthContext';
@@ -27,6 +27,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [selectedTime, setSelectedTime] = useState('10:00');
   const [formData, setFormData] = useState({ name: '', surname: '', phone: '' });
+  const [submitError, setSubmitError] = useState<string | null>(null);
   
   const { user, openAuthModal } = useAuth();
 
@@ -38,6 +39,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
       return;
     }
     
+    setSubmitError(null);
     setModalState('loading');
     
     try {
@@ -54,7 +56,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
       setModalState('success');
     } catch (err) {
       console.error(err);
-      alert('Randevu oluşturulurken bir hata oluştu.');
+      setSubmitError('Randevu oluşturulamadı. Bağlantınızı kontrol edip tekrar deneyin.');
       setModalState('form');
     }
   };
@@ -62,6 +64,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
   const resetAndClose = () => {
     setTimeout(() => {
       setModalState('form');
+      setSubmitError(null);
     }, 300);
     onClose();
   };
@@ -81,7 +84,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
         aria-label={`${vehicleName(vehicle)} test sürüşü`}
       >
         {/* Backdrop */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -90,7 +93,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
         />
 
         {/* Modal Window — mobilde alttan açılan, kaydırılabilir sheet; masaüstünde ortalanmış pencere */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -111,7 +114,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
 
           <AnimatePresence mode="wait">
             {modalState === 'form' && (
-              <motion.div
+              <m.div
                 key="form"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -221,6 +224,13 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                     </div>
                   </div>
 
+                  {/* Gönderim hatası: tarayıcı alert'i yerine satır içi bildirim */}
+                  {submitError && (
+                    <p role="alert" className="border-l-2 border-danger bg-danger/10 px-4 py-3 text-sm text-danger">
+                      {submitError}
+                    </p>
+                  )}
+
                   {/* Submit */}
                   <button 
                     type="submit"
@@ -230,11 +240,11 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                   </button>
 
                 </form>
-              </motion.div>
+              </m.div>
             )}
 
             {modalState === 'loading' && (
-              <motion.div
+              <m.div
                 key="loading"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -245,11 +255,11 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 <p className="eyebrow" role="status">
                   Talebiniz işleniyor...
                 </p>
-              </motion.div>
+              </m.div>
             )}
 
             {modalState === 'success' && (
-              <motion.div
+              <m.div
                 key="success"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -268,11 +278,11 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 >
                   Kapat
                 </button>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
-        </motion.div>
+        </m.div>
       </div>
       )}
     </AnimatePresence>,

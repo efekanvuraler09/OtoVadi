@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Plus, LogOut, Car, Trash2, Edit2, X, Check, Newspaper, Library } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
@@ -25,6 +25,7 @@ import type { Vehicle } from '../../types/vehicle';
 import type { VehicleCollection, CollectionEntry } from '../../types/collection';
 import { resolveCurrency, SUPPORTED_CURRENCIES, type Currency } from '../../utils/formatPrice';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
 const CURRENCY_OPTIONS = SUPPORTED_CURRENCIES.map((c) => ({
   value: c,
   label: c === 'TRY' ? 'TL (₺)' : c === 'EUR' ? 'Euro (€)' : 'Dolar ($)',
@@ -118,6 +119,7 @@ const FloatingTextarea = ({ id, label, value, onChange, rows = 3 }: any) => (
  * ancak o zaman başlatır. Asıl koruma firestore.rules'tadır; bu kapı yetkisiz kullanıcıya paneli hiç açmaz.
  */
 export function AdminDashboard() {
+  usePageMeta({ title: 'Yönetim Paneli', noindex: true });
   const { user, isAdmin, isLoading, logout } = useAuth();
 
   if (isLoading) return <LoadingState label="Yetki kontrol ediliyor..." />;
@@ -493,7 +495,7 @@ function AdminDashboardContent() {
       <aside className="w-64 border-r border-border-subtle flex flex-col pt-8">
         <div className="px-8 mb-12">
           <Link to="/" className="block cursor-pointer transition-opacity hover:opacity-80 select-none outline-none focus:outline-none">
-            <h1 className="font-display text-2xl font-bold tracking-wide text-foreground">OtoVadi</h1>
+            <h1 className="font-display text-2xl font-medium tracking-wide text-foreground">OtoVadi</h1>
             <p className="font-sans text-2xs uppercase tracking-widest text-muted">Admin Panel</p>
           </Link>
         </div>
@@ -560,7 +562,7 @@ function AdminDashboardContent() {
         
         {/* LIST VIEW */}
         {currentView === 'list' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
+          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
             <h2 className="font-display text-4xl font-light text-foreground mb-10">Koleksiyon Envanteri</h2>
             
             <div className="space-y-6">
@@ -602,12 +604,12 @@ function AdminDashboardContent() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
 
         {/* TEST DRIVES VIEW */}
         {currentView === 'test-drives' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
+          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
             <h2 className="font-display text-4xl font-light text-foreground mb-10">Test Sürüşü Talepleri</h2>
             
             <div className="space-y-4">
@@ -659,12 +661,12 @@ function AdminDashboardContent() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
 
         {/* CAR OF THE DAY VIEW */}
         {currentView === 'car-of-day' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto">
+          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto">
             <h2 className="font-display text-4xl font-light text-foreground mb-10">Günün Aracı — Editöryal</h2>
 
             <form onSubmit={handleCotdSubmit} className="space-y-8">
@@ -736,12 +738,12 @@ function AdminDashboardContent() {
                 </button>
               </div>
             </form>
-          </motion.div>
+          </m.div>
         )}
 
         {/* COLLECTIONS VIEW */}
         {currentView === 'collections' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto">
+          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-10">
               <h2 className="font-display text-4xl font-light text-foreground">Koleksiyonlar</h2>
             </div>
@@ -864,7 +866,7 @@ function AdminDashboardContent() {
                 </div>
               </form>
             </div>
-          </motion.div>
+          </m.div>
         )}
 
       </main>
@@ -873,12 +875,12 @@ function AdminDashboardContent() {
       <AnimatePresence>
         {(currentView === 'add' || currentView === 'edit') && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <m.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-void/80 backdrop-blur-xl"
             />
             
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -995,7 +997,7 @@ function AdminDashboardContent() {
                   {currentView === 'edit' ? 'Değişiklikleri Kaydet' : 'Koleksiyona Kaydet'}
                 </button>
               </form>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>
@@ -1003,7 +1005,7 @@ function AdminDashboardContent() {
       {/* Admin Toast */}
       <AnimatePresence>
         {showToast && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -1011,7 +1013,7 @@ function AdminDashboardContent() {
           >
             <Check className="size-5 text-emerald-500" />
             <span className="text-foreground font-sans text-sm tracking-wide">{toastMessage}</span>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

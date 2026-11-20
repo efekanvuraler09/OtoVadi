@@ -1,0 +1,11 @@
+# OtoVadi
+User-agent: *
+Allow: /
+# Kişisel ve yönetim sayfaları dizine eklenmez
+Disallow: /admin/
+Disallow: /profil
+Disallow: /garajim
+Disallow: /randevularim
+Disallow: /api/
+
+Sitemap: https://otovadi.vercel.app/sitemap.xml

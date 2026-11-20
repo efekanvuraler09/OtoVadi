@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { doc, getDoc, setDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from './AuthContext';
@@ -113,7 +113,7 @@ export function GarageProvider({ children }: { children: ReactNode }) {
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -122,7 +122,7 @@ export function GarageProvider({ children }: { children: ReactNode }) {
           >
             <div className="size-2 shrink-0 rounded-full bg-success motion-safe:animate-pulse" aria-hidden />
             <span className="font-sans text-sm tracking-wide">{toastMessage}</span>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </GarageContext.Provider>

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
 export function AdminLogin() {
+  usePageMeta({ title: 'Yönetim Girişi', noindex: true });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
@@ -32,7 +34,7 @@ export function AdminLogin() {
 
   return (
     <main className="w-full min-h-dvh bg-void flex items-center justify-center p-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md border border-border-subtle bg-surface/30 backdrop-blur-md p-10 md:p-12"
@@ -101,16 +103,16 @@ export function AdminLogin() {
           </button>
 
           {error && (
-            <motion.p 
+            <m.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center text-xs text-red-500 uppercase tracking-widest mt-4"
             >
               Hatalı bilgi girişi!
-            </motion.p>
+            </m.p>
           )}
         </form>
-      </motion.div>
+      </m.div>
     </main>
   );
 }

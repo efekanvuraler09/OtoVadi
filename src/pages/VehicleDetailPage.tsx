@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Info, Maximize2 } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { MobileActionBar } from '../components/detail/MobileActionBar';
@@ -24,6 +24,8 @@ import { useVehicleStore } from '../store/useVehicleStore';
 import { usePlayableTracks } from '../hooks/usePlayableTracks';
 import { TRANSITION, fade, fadeUp } from '../lib/motion';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+import { cleanText, vehicleName } from '../utils/vehicleText';
 /** Ses sekmesi yalnızca çalınabilir bir kayıt doğrulandığında eklenir (K11) */
 const BASE_TABS = [
   { id: 'tech', label: 'Teknik' },
@@ -72,6 +74,21 @@ export function VehicleDetailPage() {
     setIsTestDriveOpen(true);
   };
 
+  // Kayıt yoksa null: içeride render edilen NotFoundPage kendi başlığını yazar
+  usePageMeta(
+    vehicle
+      ? {
+          title: vehicleName(vehicle),
+          description: cleanText(vehicle.shortDescription) || cleanText(vehicle.tagline),
+          image: vehicle.media?.heroImage || vehicle.media?.thumbnail,
+        }
+      : isLoading
+        ? { title: 'Araç Detayı' }
+        : loadError
+          ? { title: 'Bağlantı Hatası', noindex: true }
+          : null,
+  );
+
   if (isLoading) {
     return <LoadingState label="Araç Verileri Yükleniyor..." />;
   }
@@ -108,7 +125,7 @@ export function VehicleDetailPage() {
 
   return (
     <>
-      <motion.div {...fade} transition={TRANSITION.base}>
+      <m.div {...fade} transition={TRANSITION.base}>
         <DetailHero vehicle={vehicle} onOpenTestDrive={requestTestDrive} />
 
         {/* ── Atmosfer Sahne Butonu ── */}
@@ -140,15 +157,15 @@ export function VehicleDetailPage() {
 
           <div className="mt-8">
             {currentTab === 'audio' && (
-              <motion.div key="audio" {...panelMotion} className="flex flex-col gap-6">
+              <m.div key="audio" {...panelMotion} className="flex flex-col gap-6">
                 {audioTracks.map((track) => (
                   <AudioPlayer key={track.id} track={track} />
                 ))}
-              </motion.div>
+              </m.div>
             )}
 
             {currentTab === 'tech' && (
-              <motion.div key="tech" {...panelMotion} className="flex flex-col gap-10">
+              <m.div key="tech" {...panelMotion} className="flex flex-col gap-10">
                 <SpecGrid vehicle={vehicle} />
                 {technicalAccordionItems.length > 0 ? (
                   <div>
@@ -158,23 +175,23 @@ export function VehicleDetailPage() {
                 ) : (
                   <p className="text-sm text-muted">Ek teknik bölüm bulunmuyor.</p>
                 )}
-              </motion.div>
+              </m.div>
             )}
 
             {currentTab === 'media' && (
-              <motion.div key="media" {...panelMotion}>
+              <m.div key="media" {...panelMotion}>
                 <MultimediaList features={vehicle.multimedia} accentColor={vehicle.accentColor} />
-              </motion.div>
+              </m.div>
             )}
 
             {currentTab === 'interior' && (
-              <motion.div key="interior" {...panelMotion}>
+              <m.div key="interior" {...panelMotion}>
                 <InteriorMaterials materials={vehicle.interiorMaterials} />
-              </motion.div>
+              </m.div>
             )}
 
             {currentTab === 'dims' && (
-              <motion.div key="dims" {...panelMotion}>
+              <m.div key="dims" {...panelMotion}>
                 <dl className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3">
                   {[
                     { label: 'Uzunluk', value: dimensions.lengthMm, unit: 'mm' },
@@ -193,11 +210,11 @@ export function VehicleDetailPage() {
                     </div>
                   ))}
                 </dl>
-              </motion.div>
+              </m.div>
             )}
 
             {currentTab === 'notes' && (
-              <motion.div key="notes" {...panelMotion} className="flex flex-col gap-4">
+              <m.div key="notes" {...panelMotion} className="flex flex-col gap-4">
                 {(vehicle.driverNotes && vehicle.driverNotes.length > 0
                   ? vehicle.driverNotes
                   : [{ title: 'Bilgi Bulunamadı', description: 'Bu araç için henüz kaydedilmiş bir sürücü notu bulunmamaktadır.' }]
@@ -210,13 +227,13 @@ export function VehicleDetailPage() {
                     </div>
                   </div>
                 ))}
-              </motion.div>
+              </m.div>
             )}
           </div>
 
           <FinanceCalculator price={vehicle.pricing.msrp} currency={resolveCurrency(vehicle.pricing)} onApply={requestTestDrive} />
         </PageContainer>
-      </motion.div>
+      </m.div>
 
       {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
       <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />

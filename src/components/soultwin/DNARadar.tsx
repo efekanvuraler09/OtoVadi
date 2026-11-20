@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { DriverDNA, DNADimension } from '../../utils/dnaEngine';
 import { DNA_LABELS } from '../../utils/dnaEngine';
 import { TRANSITION, staggerDelay } from '../../lib/motion';
@@ -11,7 +11,7 @@ const DIMENSIONS: DNADimension[] = ['performance', 'elegance', 'adventure', 'com
 
 export function DNARadar({ dna }: DNARadarProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={TRANSITION.slow}
@@ -24,7 +24,7 @@ export function DNARadar({ dna }: DNARadarProps) {
       </div>
 
       {DIMENSIONS.map((dim, index) => (
-        <motion.div
+        <m.div
           key={dim}
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
@@ -36,26 +36,26 @@ export function DNARadar({ dna }: DNARadarProps) {
             <span className="stat-label">
               {DNA_LABELS[dim]}
             </span>
-            <motion.span
+            <m.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ ...TRANSITION.base, delay: 0.2 + staggerDelay(index, 0.06) }}
               className="stat-value text-lg"
             >
               %{dna[dim]}
-            </motion.span>
+            </m.span>
           </div>
 
           {/* Bar Track */}
           <div className="relative h-[2px] w-full overflow-hidden bg-border-subtle">
-            <motion.div
+            <m.div
               initial={{ width: 0 }}
               animate={{ width: `${dna[dim]}%` }}
               transition={{ ...TRANSITION.slow, delay: 0.15 + staggerDelay(index, 0.06) }}
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-foreground/70 to-foreground/40"
             />
             {/* Glow tip */}
-            <motion.div
+            <m.div
               initial={{ left: '0%', opacity: 0 }}
               animate={{ left: `${dna[dim]}%`, opacity: 1 }}
               transition={{ ...TRANSITION.slow, delay: 0.15 + staggerDelay(index, 0.06) }}
@@ -63,8 +63,8 @@ export function DNARadar({ dna }: DNARadarProps) {
               style={{ boxShadow: '0 0 8px rgb(var(--color-foreground) / 0.3)' }}
             />
           </div>
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }

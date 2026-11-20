@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { subscribeCollectionBySlug } from '../services/collectionService';
 import { useVehicleStore } from '../store/useVehicleStore';
@@ -15,6 +15,7 @@ import { TRANSITION, fade, fadeUp } from '../lib/motion';
 import type { VehicleCollection } from '../types/collection';
 import type { Vehicle } from '../types/vehicle';
 
+import { usePageMeta } from '../hooks/usePageMeta';
 export function CollectionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [col, setCol] = useState<VehicleCollection | null>(null);
@@ -46,6 +47,15 @@ export function CollectionDetailPage() {
     );
     return () => unsub();
   }, [slug, attempt]);
+
+  // Bulunamadıysa null: içeride render edilen NotFoundPage kendi başlığını yazar
+  usePageMeta(
+    col
+      ? { title: col.title, description: col.subtitle || col.curatorNote, image: col.coverImage }
+      : notFound
+        ? null
+        : { title: 'Koleksiyonlar' },
+  );
 
   if (isLoading) {
     return <LoadingState label="Koleksiyon yükleniyor..." />;
@@ -84,7 +94,7 @@ export function CollectionDetailPage() {
     .filter((e) => e.vehicle) as ((typeof col.entries)[0] & { vehicle: Vehicle })[];
 
   return (
-    <motion.div {...fade} transition={TRANSITION.base}>
+    <m.div {...fade} transition={TRANSITION.base}>
       {/* ══════════════ HERO COVER ══════════════ */}
       <div className="relative h-[50svh] w-full overflow-hidden bg-black md:h-[60svh]">
         <SmartImage src={col.coverImage} alt={col.title} tone="dark" priority />
@@ -119,7 +129,7 @@ export function CollectionDetailPage() {
         {resolvedEntries.map((entry, index) => {
           const v = entry.vehicle;
           return (
-            <motion.article
+            <m.article
               key={entry.vehicleId}
               {...fadeUp}
               whileInView={fadeUp.animate}
@@ -190,7 +200,7 @@ export function CollectionDetailPage() {
                   </div>
                 </div>
               )}
-            </motion.article>
+            </m.article>
           );
         })}
 
@@ -202,6 +212,6 @@ export function CollectionDetailPage() {
           </div>
         )}
       </PageContainer>
-    </motion.div>
+    </m.div>
   );
 }

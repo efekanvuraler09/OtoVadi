@@ -1,9 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/discover.ts": { "maxDuration": 30 }
+    "api/discover.ts": { "maxDuration": 30 },
+    "api/og-meta.ts": { "maxDuration": 10 }
   },
   "rewrites": [
+    {
+      "source": "/arac/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|meta-externalagent|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Pinterestbot|redditbot|SkypeUriPreview|vkShare|Embedly|Iframely|Mastodon|Bluesky|Cardyb).*"
+        }
+      ],
+      "destination": "/api/og-meta?id=:id"
+    },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ],
   "headers": [

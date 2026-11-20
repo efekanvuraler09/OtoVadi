@@ -2,12 +2,11 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000000"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>' />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <!--
       Tema flaşını önler: React yüklenmeden önce, ilk boyamadan ÖNCE çalışır.
-      Öncelik: kullanıcının kaydettiği tercih (zustand persist: "theme-storage") → işletim sistemi tercihi → koyu.
+      Öncelik: kullanıcının kaydettiği tercih (zustand persist: "theme-storage"); kayıt yoksa HER ZAMAN koyu (işletim sistemi teması dikkate alınmaz).
       Renkler src/index.css'teki --color-void değerleriyle aynı olmalı.
     -->
     <style>
@@ -24,34 +23,69 @@
           var locale = JSON.parse(localStorage.getItem('otovadi-locale') || 'null');
           if (locale && locale.state && /^(tr|en|de)$/.test(locale.state.locale)) root.lang = locale.state.locale;
         } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        }
+        if (theme !== 'light' && theme !== 'dark') theme = 'dark';
         if (theme === 'dark') root.classList.add('dark');
         else root.classList.remove('dark');
         var meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+
+        // P1: Ana sayfada hero posteri (LCP) JS paketini beklemeden inmeye başlar. Diğer rotalarda indirilmez.
+        if (location.pathname === '/') {
+          var poster = document.createElement('link');
+          poster.rel = 'preload';
+          poster.as = 'image';
+          poster.href = '/hero-poster.webp';
+          poster.type = 'image/webp';
+          poster.setAttribute('fetchpriority', 'high');
+          document.head.appendChild(poster);
+        }
       })();
     </script>
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://otovadi.vercel.app/" />
-    <meta property="og:title" content="OtoVadi | Dijital Showroom" />
-    <meta property="og:image" content="https://otovadi.vercel.app/og-image.jpg" />
-    <meta property="og:image:secure_url" content="https://otovadi.vercel.app/og-image.jpg" />
-    <meta itemprop="image" content="https://otovadi.vercel.app/og-image.jpg" />
-    <link rel="image_src" href="https://otovadi.vercel.app/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="OtoVadi | Dijital Showroom" />
-    <meta name="twitter:image" content="https://otovadi.vercel.app/og-image.jpg" />
 
     <title>OtoVadi | Dijital Showroom</title>
+    <!-- Varsayılan SEO etiketleri. Rota bazında hooks/usePageMeta günceller; değerler src/lib/seo.ts ve api/og-meta.ts ile aynı. -->
+    <meta
+      name="description"
+      content="OtoVadi dijital showroom: araçları sinematik detay sayfalarında keşfedin, yan yana karşılaştırın, yapay zekâ destekli Akıllı Keşif ile size en uygun modeli bulun ve test sürüşü randevusu alın."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://otovadi.vercel.app/" />
+
+    <!-- İkonlar: SVG favicon işletim sistemi temasına göre renk değiştirir (açık sekmede siyah, koyu sekmede beyaz) -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="application-name" content="OtoVadi" />
+    <meta name="apple-mobile-web-app-title" content="OtoVadi" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Open Graph (WhatsApp, Facebook, LinkedIn). Araç sayfaları için botlara api/og-meta.ts araca özel kart döner. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="OtoVadi" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:url" content="https://otovadi.vercel.app/" />
+    <meta property="og:title" content="OtoVadi | Dijital Showroom" />
+    <meta
+      property="og:description"
+      content="OtoVadi dijital showroom: araçları sinematik detay sayfalarında keşfedin, yan yana karşılaştırın, yapay zekâ destekli Akıllı Keşif ile size en uygun modeli bulun ve test sürüşü randevusu alın."
+    />
+    <meta property="og:image" content="https://otovadi.vercel.app/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="OtoVadi logosu: çember içinde V monogramı ve OTOVADİ yazısı, siyah zemin üzerinde" />
+
+    <!-- X (Twitter) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OtoVadi | Dijital Showroom" />
+    <meta
+      name="twitter:description"
+      content="OtoVadi dijital showroom: araçları sinematik detay sayfalarında keşfedin, yan yana karşılaştırın, yapay zekâ destekli Akıllı Keşif ile size en uygun modeli bulun ve test sürüşü randevusu alın."
+    />
+    <meta name="twitter:image" content="https://otovadi.vercel.app/og-image.jpg" />
+    <meta name="twitter:image:alt" content="OtoVadi logosu: çember içinde V monogramı ve OTOVADİ yazısı, siyah zemin üzerinde" />
   </head>
   <body>
     <div id="root"></div>

@@ -1,6 +1,7 @@
+import { Suspense } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
-import { CrashScreen } from '../ui/DataState';
+import { CrashScreen, PageFallback } from '../ui/DataState';
 
 /**
  * Sayfa içeriğini sarar:
@@ -9,6 +10,8 @@ import { CrashScreen } from '../ui/DataState';
  *   sırasında yeni sayfayı da render ettiği için sayfalar iki kez mount oluyordu.)
  * - Sayfada oluşan render hatalarını yakalar; Navbar ve alt menü görünür kalır.
  *
+ * - Lazy sayfa parçası inerken (P2) Navbar yerinde kalır, yalnızca içerik alanında PageFallback görünür.
+ *
  * Giriş animasyonları her sayfanın kendi motion bileşenlerinde tanımlı olduğu için korunur.
  */
 export function RouteBoundary() {
@@ -16,7 +19,9 @@ export function RouteBoundary() {
 
   return (
     <ErrorBoundary key={pathname} fallback={(reset) => <CrashScreen onRetry={reset} />}>
-      <Outlet />
+      <Suspense fallback={<PageFallback />}>
+        <Outlet />
+      </Suspense>
     </ErrorBoundary>
   );
 }

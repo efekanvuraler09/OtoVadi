@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authToastMessage, setAuthToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -56,39 +57,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       disposed = true;
       unsubscribe();
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     };
   }, []);
 
-  const openAuthModal = (message?: string) => {
+  const openAuthModal = useCallback((message?: string) => {
     if (message) {
       setAuthToastMessage(message);
-      // Auto clear toast after 4s
-      setTimeout(() => setAuthToastMessage(null), 4000);
+      // Bildirim 4 sn sonra kapanır; art arda çağrıda önceki zamanlayıcı iptal edilir
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => setAuthToastMessage(null), 4000);
     }
     setIsAuthModalOpen(true);
-  };
+  }, []);
 
-  const closeAuthModal = () => {
+  const closeAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await signOut(auth);
-  };
+  }, []);
+
+  // Değer sabit referanslı: yalnızca ilgili durum değişince tüketiciler yeniden render olur
+  const value = useMemo<AuthContextType>(
+    () => ({ user, isAdmin, isLoading, isAuthModalOpen, authToastMessage, openAuthModal, closeAuthModal, logout }),
+    [user, isAdmin, isLoading, isAuthModalOpen, authToastMessage, openAuthModal, closeAuthModal, logout],
+  );
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        isAdmin, 
-        isLoading, 
-        isAuthModalOpen, 
-        authToastMessage,
-        openAuthModal, 
-        closeAuthModal, 
-        logout 
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
