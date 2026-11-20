@@ -124,7 +124,7 @@ export function VehicleDetailPage() {
         <PageContainer spacing="none" className="pb-16 pt-12 md:pb-24 md:pt-16">
           <section className="mb-12 md:mb-16">
             <p className="eyebrow mb-4">Donanımlar</p>
-            <h2 className="max-w-4xl text-display-sm font-light text-foreground">{vehicle.shortDescription}</h2>
+            <h2 className="max-w-4xl text-display-sm font-normal text-foreground">{vehicle.shortDescription}</h2>
             {vehicle.highlights.length > 0 && (
               <ul className="mt-8 flex flex-wrap gap-2">
                 {vehicle.highlights.map((tag) => (
@@ -152,7 +152,7 @@ export function VehicleDetailPage() {
                 <SpecGrid vehicle={vehicle} />
                 {technicalAccordionItems.length > 0 ? (
                   <div>
-                    <h3 className="mb-4 text-sm font-semibold text-foreground">Ek Teknik Bilgiler</h3>
+                    <h3 className="mb-4 font-sans text-sm font-semibold text-foreground">Ek Teknik Bilgiler</h3>
                     <Accordion items={technicalAccordionItems} />
                   </div>
                 ) : (

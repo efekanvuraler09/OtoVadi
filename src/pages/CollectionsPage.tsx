@@ -81,7 +81,7 @@ export function CollectionsPage() {
                     <p className="stat-label text-white/60">
                       <span className="tabular-nums">{col.entries.length}</span> araç
                     </p>
-                    <h2 className="mt-2 text-display-sm font-light text-white">{col.title}</h2>
+                    <h2 className="mt-2 text-display-sm font-normal text-white">{col.title}</h2>
                     {col.subtitle && <p className="mt-2 line-clamp-2 text-sm text-white/70">{col.subtitle}</p>}
                   </div>
 

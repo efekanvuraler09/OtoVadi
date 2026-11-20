@@ -86,7 +86,7 @@ export function HeroSection() {
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-[calc(var(--bottom-bar-height)+env(safe-area-inset-bottom,0px)+2rem)] pt-[calc(4rem+env(safe-area-inset-top,0px)+3rem)] md:px-8 md:pb-16 lg:px-12">
         <motion.div {...fadeUp} transition={TRANSITION.slow} className="max-w-4xl">
           <p className="eyebrow text-white/70">{t.hero.eyebrow}</p>
-          <h1 id="hero-title" className="mt-4 text-balance text-display-xl font-light text-white">
+          <h1 id="hero-title" className="mt-4 text-balance text-display-xl font-normal text-white">
             {t.hero.title}
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">{t.hero.subtitle}</p>
@@ -119,7 +119,7 @@ export function HeroSection() {
             {stats.map((stat) => (
               <div key={stat.label} className="flex flex-col-reverse gap-1">
                 <dt className="stat-label text-white/60">{stat.label}</dt>
-                <dd className="font-display text-3xl font-light tabular-nums md:text-4xl">
+                <dd className="font-sans text-3xl font-light tabular-nums md:text-4xl">
                   {isLoading && stat.value === 0 ? '—' : stat.value}
                 </dd>
               </div>

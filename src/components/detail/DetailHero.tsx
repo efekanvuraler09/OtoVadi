@@ -27,7 +27,6 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
         <SmartImage
           src={vehicle.media.heroImage}
           alt={vehicleName(vehicle)}
-          bodyType={vehicle.bodyType}
           colorHex={vehicle.media.colorHex}
           tone="dark"
           priority
@@ -71,7 +70,7 @@ export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
           <p className="eyebrow text-white/70">
             <span lang="en">{vehicleBrand(vehicle)}</span> · <span className="tabular-nums">{vehicle.year}</span>
           </p>
-          <h1 className="mt-3 text-display-lg font-light text-white">{vehicleModel(vehicle)}</h1>
+          <h1 className="mt-3 text-display-lg font-normal text-white">{vehicleModel(vehicle)}</h1>
           {vehicle.tagline && <p className="mt-2 max-w-2xl text-base text-white/75">{cleanText(vehicle.tagline)}</p>}
           <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <span className="text-xl font-medium tabular-nums text-white">{formatVehiclePrice(vehicle.pricing)}</span>

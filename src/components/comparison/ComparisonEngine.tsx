@@ -106,7 +106,7 @@ export function ComparisonEngine() {
       <div className="flex flex-col items-center py-6 min-w-0 px-2 text-center">
         <span className="stat-label mb-3 max-w-full truncate">{label}</span>
         <span
-          className={`max-w-full truncate font-display text-xl font-light tabular-nums transition-colors duration-350 sm:text-2xl md:text-4xl ${isWinner ? 'text-success' : 'text-foreground'}`}
+          className={`max-w-full truncate font-sans text-xl font-light tabular-nums transition-colors duration-350 sm:text-2xl md:text-4xl ${isWinner ? 'text-success' : 'text-foreground'}`}
           title={String(myValue)}
         >
           {myValue}
@@ -155,7 +155,6 @@ export function ComparisonEngine() {
             alt={vehicleName(vehicle)}
             aspectRatio="16 / 10"
             fit="contain"
-            bodyType={vehicle.bodyType}
             colorHex={vehicle.media.colorHex}
           />
         </div>

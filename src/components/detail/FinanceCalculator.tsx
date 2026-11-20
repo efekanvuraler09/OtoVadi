@@ -53,7 +53,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
         <div className="flex-1 w-full space-y-12">
           <div>
             <p className="eyebrow mb-3">Finansman</p>
-            <h3 className="mb-8 text-display-sm font-light text-foreground">Akıllı Finansman</h3>
+            <h3 className="mb-8 text-display-sm font-normal text-foreground">Akıllı Finansman</h3>
             
             {/* Downpayment Slider */}
             <div className="space-y-4">
@@ -122,7 +122,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               transition={TRANSITION.fast}
               className="text-center lg:text-right"
             >
-              <span className="font-display text-5xl font-light tabular-nums tracking-tight text-foreground md:text-6xl">
+              <span className="font-sans text-5xl font-light tabular-nums tracking-tight text-foreground md:text-6xl">
                 {formatCurrency(monthlyPayment)}
               </span>
             </motion.div>

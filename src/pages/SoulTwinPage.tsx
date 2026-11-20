@@ -105,7 +105,7 @@ export function SoulTwinPage() {
                 <Dna className="size-7 text-muted" strokeWidth={1} />
               </motion.div>
 
-              <h1 className="text-display-lg font-light text-foreground">
+              <h1 className="text-display-lg font-normal text-foreground">
                 {t.soulTwin.findSoulTwin}
               </h1>
 

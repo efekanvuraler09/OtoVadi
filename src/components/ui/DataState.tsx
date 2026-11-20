@@ -30,7 +30,7 @@ export function StatusScreen({ eyebrow, title, description, actions, compact = f
       {eyebrow && (
         <span className="eyebrow mb-4 block">{eyebrow}</span>
       )}
-      <Heading className={`${compact ? 'text-display-sm' : 'text-display-md'} font-light text-foreground`}>
+      <Heading className={`${compact ? 'text-display-sm' : 'text-display-md'} font-normal text-foreground`}>
         {title}
       </Heading>
       {description && (

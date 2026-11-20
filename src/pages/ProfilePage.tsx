@@ -170,7 +170,7 @@ export function ProfilePage() {
               className="hidden"
             />
           </div>
-          <h1 className="text-display-md font-light text-foreground">Profil Ayarları</h1>
+          <h1 className="text-display-md font-normal text-foreground">Profil Ayarları</h1>
           <p className="mt-3 text-base text-secondary">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
         </header>
 

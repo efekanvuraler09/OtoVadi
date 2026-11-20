@@ -1,5 +1,4 @@
 import { useState, type CSSProperties } from 'react';
-import { BodyTypeIcon } from '../icons/BodyTypeIcons';
 
 interface SmartImageProps {
   src?: string | null;
@@ -10,8 +9,6 @@ interface SmartImageProps {
    */
   aspectRatio?: string;
   fit?: 'cover' | 'contain';
-  /** Görsel yoksa/kırıksa gösterilecek siluet (Vehicle['bodyType']) */
-  bodyType?: string;
   /** Stüdyo gradyanına hafif renk tonu verir (Vehicle['media']['colorHex']) */
   colorHex?: string;
   /** Ekranın ilk görünen alanındaki görseller için: lazy yerine eager + yüksek öncelik */
@@ -57,7 +54,7 @@ function studioBackground(tone: 'theme' | 'dark', colorHex?: string): CSSPropert
 
 /**
  * Tüm araç/editoryal görselleri için tek bileşen (K11):
- * sabit oranlı kutu → yüklenirken shimmer → yumuşak belirme; görsel yok/kırıksa gövde tipine uygun siluet + stüdyo gradyanı.
+ * sabit oranlı kutu → yüklenirken shimmer → yumuşak belirme; görsel yok/kırıksa stüdyo gradyanı üzerinde tipografik OTOVADİ monogramı.
  * Asla sonsuz boş alan veya tarayıcının kırık görsel ikonu görünmez.
  */
 export function SmartImage({
@@ -65,7 +62,6 @@ export function SmartImage({
   alt,
   aspectRatio,
   fit = 'cover',
-  bodyType,
   colorHex,
   priority = false,
   tone = 'theme',
@@ -85,7 +81,7 @@ export function SmartImage({
     !resolved || failedSrc === resolved ? 'error' : loadedSrc === resolved ? 'loaded' : 'loading';
 
   const boxClass = aspectRatio ? 'relative w-full' : 'absolute inset-0 h-full w-full';
-  const silhouetteColor = tone === 'dark' ? 'text-white/20' : 'text-foreground/20';
+  const monogramColor = tone === 'dark' ? 'text-white/30' : 'text-foreground/25';
 
   return (
     <div
@@ -104,7 +100,22 @@ export function SmartImage({
 
       {status === 'error' && (
         <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-          <BodyTypeIcon bodyType={bodyType} className={`w-[42%] max-w-[16rem] ${silhouetteColor}`} />
+          {/* SVG metin kutuyla birlikte ölçeklenir: küçük arama küçük resminde de büyük heroda da orantılı kalır */}
+          <svg viewBox="0 0 240 48" className={`w-[44%] max-w-[15rem] ${monogramColor}`} fill="currentColor">
+            <text
+              x="120"
+              y="26"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="font-display"
+              fontSize="30"
+              fontWeight="400"
+              letterSpacing="7"
+            >
+              OTOVADİ
+            </text>
+            <line x1="96" y1="46" x2="144" y2="46" stroke="currentColor" strokeWidth="1" />
+          </svg>
         </div>
       )}
 

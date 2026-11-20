@@ -30,7 +30,6 @@ export function InteractiveGallery({ vehicle }: InteractiveGalleryProps) {
         <SmartImage
           src={studioImage}
           alt={`${vehicleName(vehicle)} stüdyo görseli`}
-          bodyType={vehicle.bodyType}
           colorHex={vehicle.media?.colorHex}
           onError={() => setImageFailed(true)}
           imgClassName="duration-550 group-hover:scale-[1.02]"

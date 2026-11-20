@@ -75,6 +75,11 @@
     @apply font-display;
   }
 
+  /* Playfair varsayılan olarak eski stil rakam çizer ("320i" → "32oi"); model adlarında hizalı rakam kullan */
+  h1, h2, h3, .font-display {
+    font-variant-numeric: lining-nums;
+  }
+
   /* Klavye odağı: yalnızca klavyeyle gezinirken görünür */
   :focus-visible {
     outline: 2px solid rgb(var(--color-foreground));
@@ -93,9 +98,9 @@
     @apply font-sans text-2xs font-medium uppercase tracking-eyebrow text-muted;
   }
 
-  /* Teknik değer / istatistik: rakamlar hizalı (tabular-nums) */
+  /* Teknik değer / istatistik: Inter ile hizalı rakamlar (tabular-nums). Serif display yalnızca başlıklar içindir. */
   .stat-value {
-    @apply font-display font-light tabular-nums text-foreground;
+    @apply font-sans font-light tabular-nums text-foreground;
   }
 
   .stat-label {

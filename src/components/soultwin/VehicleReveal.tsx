@@ -33,7 +33,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         <p className="eyebrow">
           {t.soulTwin.yourSoulmate}
         </p>
-        <h2 className="mt-3 text-display-md font-light text-foreground">{vehicleName(vehicle)}</h2>
+        <h2 className="mt-3 text-display-md font-normal text-foreground">{vehicleName(vehicle)}</h2>
         <p className="mt-2 text-sm text-secondary">
           {vehicle.tagline}
         </p>
@@ -46,7 +46,6 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
           alt={vehicleName(vehicle)}
           aspectRatio="16 / 9"
           fit="contain"
-          bodyType={vehicle.bodyType}
           colorHex={vehicle.media.colorHex}
           priority
           draggable={false}

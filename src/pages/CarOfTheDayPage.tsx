@@ -94,7 +94,7 @@ export function CarOfTheDayPage() {
         <motion.h1
           {...fadeUp}
           transition={TRANSITION.slow}
-          className="mb-6 text-balance text-display-xl font-light text-foreground"
+          className="mb-6 text-balance text-display-xl font-normal text-foreground"
         >
           {data.title}
         </motion.h1>
@@ -122,7 +122,7 @@ export function CarOfTheDayPage() {
           <motion.article {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.15 }} className="order-2 lg:order-1">
             {/* First paragraph with drop cap */}
             {paragraphs.length > 0 && (
-              <p className="mb-8 text-base leading-[1.85] text-secondary first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-6xl first-letter:font-light first-letter:leading-[0.8] first-letter:text-foreground md:text-lg">
+              <p className="mb-8 text-base leading-[1.85] text-secondary first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-6xl first-letter:font-normal first-letter:leading-[0.8] first-letter:text-foreground md:text-lg">
                 {paragraphs[0]}
               </p>
             )}
@@ -177,11 +177,11 @@ export function CarOfTheDayPage() {
             {data.conclusion && (
               <div className="bg-foreground text-void p-6">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-void/20">
-                  <h3 className="text-2xs font-semibold uppercase tracking-eyebrow">
+                  <h3 className="font-sans text-2xs font-semibold uppercase tracking-eyebrow">
                     Sonuç
                   </h3>
                   {data.verdictScore && (
-                    <span className="font-display text-3xl font-light tabular-nums">
+                    <span className="font-sans text-3xl font-light tabular-nums">
                       {data.verdictScore}<span className="text-base text-void/70">/10</span>
                     </span>
                   )}

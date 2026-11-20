@@ -103,7 +103,7 @@ export function CollectionDetailPage() {
           <p className="stat-label text-white/60">
             Koleksiyon · <span className="tabular-nums">{resolvedEntries.length}</span> Araç
           </p>
-          <h1 className="mt-3 text-display-lg font-light text-white">{col.title}</h1>
+          <h1 className="mt-3 text-display-lg font-normal text-white">{col.title}</h1>
           {col.subtitle && <p className="mt-3 max-w-xl text-base text-white/75">{col.subtitle}</p>}
         </div>
       </div>
@@ -112,7 +112,7 @@ export function CollectionDetailPage() {
         {/* ══════════════ CURATOR NOTE ══════════════ */}
         <div className="mb-16 border-l border-border-strong pl-6 md:mb-20 md:pl-10">
           <p className="eyebrow mb-4">Küratör Notu</p>
-          <p className="text-display-sm font-light leading-snug text-foreground">{col.curatorNote}</p>
+          <p className="text-display-sm font-normal leading-snug text-foreground">{col.curatorNote}</p>
         </div>
 
         {/* ══════════════ VEHICLE ENTRIES ══════════════ */}
@@ -128,7 +128,7 @@ export function CollectionDetailPage() {
               transition={TRANSITION.slow}
             >
               <div className="mb-6 flex items-center gap-4">
-                <span className="font-display text-4xl font-light tabular-nums text-foreground/15 md:text-5xl">
+                <span className="font-display text-4xl font-normal tabular-nums text-foreground/15 md:text-5xl">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div className="h-px flex-1 bg-border-subtle" />
@@ -138,7 +138,6 @@ export function CollectionDetailPage() {
                 src={v.media.heroImage}
                 alt={vehicleName(v)}
                 aspectRatio="16 / 9"
-                bodyType={v.bodyType}
                 colorHex={v.media.colorHex}
                 className="mb-6"
               />
@@ -146,7 +145,7 @@ export function CollectionDetailPage() {
               <p className="eyebrow">
                 <span lang="en">{vehicleBrand(v)}</span> · <span className="tabular-nums">{v.year}</span>
               </p>
-              <h2 className="mt-2 text-display-md font-light text-foreground">{vehicleModel(v)}</h2>
+              <h2 className="mt-2 text-display-md font-normal text-foreground">{vehicleModel(v)}</h2>
               {v.tagline && <p className="mt-3 text-lg text-secondary">{v.tagline}</p>}
 
               <dl className="my-6 grid grid-cols-3 border-y border-border-subtle py-4">
@@ -199,7 +198,7 @@ export function CollectionDetailPage() {
         {col.closingNote && (
           <div className="mt-20 border-t border-border-subtle pt-12 text-center">
             <p className="eyebrow mb-4">Kapanış</p>
-            <p className="text-display-sm font-light leading-snug text-foreground">{col.closingNote}</p>
+            <p className="text-display-sm font-normal leading-snug text-foreground">{col.closingNote}</p>
           </div>
         )}
       </PageContainer>

@@ -119,7 +119,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 transition={TRANSITION.base}
               >
                 <div className="mb-10 text-center">
-                  <h2 className="mb-2 text-display-sm font-light text-foreground">Test Sürüşü</h2>
+                  <h2 className="mb-2 text-display-sm font-normal text-foreground">Test Sürüşü</h2>
                   <p className="eyebrow" lang="en">{vehicleName(vehicle)}</p>
                 </div>
 
@@ -258,7 +258,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 <div className="mb-8 flex size-16 items-center justify-center rounded-full border border-success/30 bg-success/10">
                   <Check className="size-8 stroke-[1.5] text-success" />
                 </div>
-                <h3 className="font-display text-2xl font-light text-foreground mb-4">Randevunuz Onaylandı</h3>
+                <h3 className="font-display text-2xl font-normal text-foreground mb-4">Randevunuz Onaylandı</h3>
                 <p className="text-muted text-sm leading-relaxed mb-10 px-4">
                   {selectedDate} saat {selectedTime} için {selectedLocation} OtoVadi Center'da test sürüşü talebiniz başarıyla alındı. Temsilcilerimiz kısa süre içinde sizinle iletişime geçecektir.
                 </p>

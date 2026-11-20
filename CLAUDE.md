@@ -6,7 +6,7 @@ editoryal içerik (Günün Aracı, Koleksiyonlar) ve Firestore tabanlı admin CM
 ## Yığın
 React 19 · TypeScript ~6 · Vite 8 · Tailwind 3.4 (`darkMode: 'class'`) · framer-motion 12 · Zustand 5 ·
 React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function) ·
-fontlar self-host `@fontsource-variable/inter` + `inter-tight` (main.tsx'te import; Google Fonts yok).
+fontlar self-host `@fontsource/playfair-display` (400/500/600) + `@fontsource-variable/inter` (main.tsx'te import; Google Fonts yok).
 
 ## Doğrulama (her değişiklikten sonra)
 ```bash
@@ -52,14 +52,19 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 ## Tasarım sistemi (Faz 3)
 - **Tema flaşı:** `index.html`'deki inline script React'ten önce `dark` sınıfını ve `meta[name=theme-color]`'ı ayarlar
   (`theme-storage` → `prefers-color-scheme` → koyu). `--color-void` değişirse script'teki hex'leri ve `useThemeStore`'u da güncelle.
-- **Tipografi:** `font-display` = Inter Tight, `font-sans` = Inter (latin-ext: ğ ş İ ₺). Başlıklar `text-display-sm|md|lg|xl` (clamp).
+- **Görsel kimlik = Mercedes-Benz resmi showroom estetiği (Serif Display + temiz Sans).** Porsche/Polestar tarzı grotesk display'e
+  geri DÖNME (Inter Tight denendi ve kullanıcı tarafından reddedildi). `font-display` = Playfair Display (yalnızca 400–500, gerekirse 600;
+  `font-light` kullanma, Playfair'de 300 yok), `font-sans` = Inter (latin-ext: ğ ş İ ₺). Tüm serifler yalnızca `font-display` token'ından gelir;
+  Georgia/sistem serifi veya `font-serif` yok. Serif: hero, sayfa/bölüm başlıkları, araç/koleksiyon adları, kategori kartları.
+  Sans (Inter): arayüz, etiketler ve TÜM rakamlar (fiyat, teknik değer, istatistik → `tabular-nums`). Başlıklar `text-display-sm|md|lg|xl` (clamp).
   En küçük boyut `text-2xs` (11px); `text-[9px]/[10px]`, `tracking-[0.3–0.5em]`, `font-serif` yok. Etiketler `.eyebrow` / `.stat-label`
   (`tracking-eyebrow` 0.16em), değerler `.stat-value`; fiyat ve teknik değerlerde `tabular-nums`. Büyük harfle gösterilen
   marka/model/donanım adlarına `lang="en"` ver (Türkçe kural "AUDİ", "320İ" üretir).
 - **Sayfa iskeleti:** `layout/PageContainer` (`width`: narrow|medium|default|wide, `spacing`: page|section|none; yatay boşluk
   Navbar ile aynı) + `layout/PageHeader` (`PageHeader` h1, `SectionHeader` h2). Sayfalar `<main>` açmaz (AppShell sağlar).
-- **Görseller:** Her araç/editoryal görsel `ui/SmartImage` ile (`aspectRatio="16 / 10"` veya ebeveyni doldurur; `bodyType` + `colorHex`
-  → kırık/boş görselde siluet + stüdyo gradyanı; koyu sahnede `tone="dark"`; ilk ekranda `priority`). Çıplak `<img>` ekleme.
+- **Görseller:** Her araç/editoryal görsel `ui/SmartImage` ile (`aspectRatio="16 / 10"` veya ebeveyni doldurur; `colorHex`
+  → kırık/boş görselde stüdyo gradyanı + tipografik "OTOVADİ" monogramı; koyu sahnede `tone="dark"`; ilk ekranda `priority`). Çıplak `<img>` ekleme.
+  Araç çizimi/siluet SVG'si kullanma (BodyTypeIcons kaldırıldı); gövde tipi kartları yalnızca tipografiktir.
 - **Araç kartı:** `vehicle/VehicleCard` (`variant`: grid|featured) + `VehicleCardSkeleton`. Tek gerçek `<Link>` (başlık, `::after` ile kartı kaplar),
   garaj + karşılaştır (`/karsilastir?a=<slug>`) aksiyonları z-10. Araç metinleri `utils/vehicleText` (`vehicleName`, `cleanText`) ile trim'lenir.
 - **Ses:** Detayda Ses sekmesi yalnızca `usePlayableTracks` gerçekten çalınabilir kayıt doğrularsa görünür; kullanıcıya dosya yolu gösterme.

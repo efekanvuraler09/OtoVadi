@@ -49,7 +49,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...TRANSITION.base, delay: 0.05 }}
-          className="max-w-2xl text-balance text-center text-display-sm font-light text-foreground"
+          className="max-w-2xl text-balance text-center text-display-sm font-normal text-foreground"
         >
           {qData.prompt}
         </motion.h2>
@@ -73,7 +73,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           <span className="eyebrow relative mb-4">
             A
           </span>
-          <span className="relative text-display-md font-light text-foreground">
+          <span className="relative text-display-md font-normal text-foreground">
             {qData.optionA.label}
           </span>
           <span className="relative mt-4 max-w-xs text-center text-base leading-relaxed text-secondary">
@@ -108,7 +108,7 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           <span className="eyebrow relative mb-4">
             B
           </span>
-          <span className="relative text-display-md font-light text-foreground">
+          <span className="relative text-display-md font-normal text-foreground">
             {qData.optionB.label}
           </span>
           <span className="relative mt-4 max-w-xs text-center text-base leading-relaxed text-secondary">

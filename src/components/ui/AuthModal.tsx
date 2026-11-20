@@ -105,7 +105,7 @@ export function AuthModal() {
                     <div className="mb-6 flex size-16 items-center justify-center rounded-full border border-success/30 bg-success/10">
                       <Check className="size-8 stroke-[1.5] text-success" />
                     </div>
-                    <h3 className="font-display text-2xl font-light text-foreground">Hoş Geldiniz</h3>
+                    <h3 className="font-display text-2xl font-normal text-foreground">Hoş Geldiniz</h3>
                   </motion.div>
                 ) : (
                   <motion.div

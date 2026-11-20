@@ -36,14 +36,14 @@ export function AboutPage() {
           ].map((block) => (
             <div key={block.label} className="space-y-4">
               <p className="eyebrow">{block.label}</p>
-              <p className="text-display-sm font-light leading-snug text-foreground">{block.text}</p>
+              <p className="text-display-sm font-normal leading-snug text-foreground">{block.text}</p>
             </div>
           ))}
         </section>
 
         {/* Neden OtoVadi? */}
         <section className="border-t border-border-subtle pt-14 md:pt-20">
-          <h2 className="mb-10 text-center text-display-md font-light text-foreground md:mb-14">{t.about.whyOtoVadi}</h2>
+          <h2 className="mb-10 text-center text-display-md font-normal text-foreground md:mb-14">{t.about.whyOtoVadi}</h2>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
             {features.map(({ icon: Icon, title, desc }, index) => (

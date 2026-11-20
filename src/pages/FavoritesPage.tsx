@@ -11,7 +11,7 @@ export function FavoritesPage() {
 
   return (
     <div className="safe-top px-4 pt-6 pb-8 md:px-8 lg:px-12 py-16">
-      <h1 className="text-display-md font-light text-foreground">Favoriler</h1>
+      <h1 className="text-display-md font-normal text-foreground">Favoriler</h1>
       <p className="mt-2 text-sm text-muted">
         {favoriteVehicles.length} kayıtlı araç
       </p>

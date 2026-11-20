@@ -23,7 +23,7 @@ export function InteriorMaterials({ materials }: InteriorMaterialsProps) {
         >
           <div className="flex flex-col gap-2">
             <span className="stat-label">{zoneLabels[item.zone]}</span>
-            <span className="font-display text-xl font-light text-foreground md:text-2xl">{item.material}</span>
+            <span className="font-display text-xl font-normal text-foreground md:text-2xl">{item.material}</span>
             {item.finish && (
               <span className="text-sm text-muted">{item.finish}</span>
             )}

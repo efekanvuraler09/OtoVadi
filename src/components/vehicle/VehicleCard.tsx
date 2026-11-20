@@ -62,7 +62,6 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
           src={vehicle.media?.thumbnail || vehicle.media?.heroImage}
           alt={name}
           aspectRatio="16 / 10"
-          bodyType={vehicle.bodyType}
           colorHex={vehicle.media?.colorHex}
           priority={priority}
           imgClassName="group-hover:scale-[1.03]"

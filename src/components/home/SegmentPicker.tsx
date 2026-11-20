@@ -1,18 +1,17 @@
 import { useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, LayoutGrid } from 'lucide-react';
+import { ArrowRight, ChevronRight, LayoutGrid } from 'lucide-react';
 import type { BodyType, VehicleSegment } from '../../types/vehicle';
 import { getSegmentsByBodyType } from '../../data/segments';
 import { countBySegment, useVehicleStore } from '../../store/useVehicleStore';
 import { countByBodyType } from '../../lib/catalogStats';
 import { useI18n } from '../../i18n/useI18n';
-import { BodyTypeIcon } from '../icons/BodyTypeIcons';
 import { TRANSITION, fadeUp, staggerDelay } from '../../lib/motion';
 
 const BODY_TYPES: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup', 'muscle-car'];
 
 /**
- * Gövde tipi kutucukları (siluet + gerçek araç sayısı) ve seçili tipin segmentleri.
+ * Gövde tipi kutucukları (yalnızca tipografi + gerçek araç sayısı; araç çizimi yok) ve seçili tipin segmentleri.
  * İçinde araç olmayan gövde tipleri ve segmentler hiç gösterilmez ("YAKINDA" satırı yok).
  */
 export function SegmentPicker() {
@@ -66,18 +65,28 @@ export function SegmentPicker() {
               transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
               onClick={() => setChosen(id)}
               aria-pressed={active}
-              className={`group flex flex-col items-start gap-4 border p-4 text-left transition-colors md:p-5 ${
-                active ? 'border-foreground bg-surface' : 'border-border-subtle hover:border-border-strong hover:bg-surface'
+              // Yalnızca tipografi: ince kenarlık, hover'da kenarlık koyulaşır ve alt çizgi soldan sağa uzanır
+              className={`group relative flex min-h-[8.5rem] flex-col justify-between gap-6 overflow-hidden border p-5 text-left transition-colors duration-350 md:min-h-[9.5rem] md:p-6 ${
+                active ? 'border-foreground bg-surface' : 'border-border-subtle hover:border-border-strong'
               }`}
             >
-              <BodyTypeIcon
-                bodyType={id}
-                className={`h-10 w-20 transition-colors md:h-12 md:w-24 ${active ? 'text-foreground' : 'text-muted group-hover:text-secondary'}`}
-              />
-              <span className="flex w-full items-end justify-between gap-2">
-                <span className="font-display text-lg font-normal text-foreground">{t.catalog.bodyTypes[id]}</span>
-                <span className="text-xs tabular-nums text-muted">{count}</span>
+              <span className="font-display text-2xl font-normal leading-tight text-foreground md:text-[1.75rem]">
+                {t.catalog.bodyTypes[id]}
               </span>
+              <span className="flex w-full items-center justify-between gap-2">
+                <span className="stat-label">{vehiclesLabel(count)}</span>
+                <ArrowRight
+                  className={`size-4 transition-all duration-350 ${
+                    active ? 'translate-x-0 text-foreground opacity-100' : '-translate-x-1 text-muted opacity-0 group-hover:translate-x-0 group-hover:opacity-100'
+                  }`}
+                  strokeWidth={1.5}
+                  aria-hidden
+                />
+              </span>
+              <span
+                aria-hidden
+                className={`absolute bottom-0 left-0 h-px bg-foreground transition-all duration-550 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}
+              />
             </motion.button>
           );
         })}

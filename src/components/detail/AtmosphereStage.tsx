@@ -34,7 +34,7 @@ function FloatingSpec({ label, value, index }: FloatingSpecProps) {
       className="flex flex-col items-center gap-1 md:items-start"
     >
       <span className="stat-label text-white/55">{label}</span>
-      <span className="font-display text-3xl font-light tabular-nums text-white md:text-4xl lg:text-5xl">{value}</span>
+      <span className="font-sans text-3xl font-light tabular-nums text-white md:text-4xl lg:text-5xl">{value}</span>
     </motion.div>
   );
 }
@@ -104,7 +104,6 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
               alt={vehicleName(vehicle)}
               fit="contain"
               tone="dark"
-              bodyType={vehicle.bodyType}
               colorHex={vehicle.media.colorHex}
               priority
               draggable={false}
@@ -149,7 +148,7 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             <p className="stat-label text-white/55">
               <span lang="en">{vehicleBrand(vehicle)}</span> · <span className="tabular-nums">{vehicle.year}</span>
             </p>
-            <h2 className="mt-2 text-display-md font-light text-white">{vehicleModel(vehicle)}</h2>
+            <h2 className="mt-2 text-display-md font-normal text-white">{vehicleModel(vehicle)}</h2>
             <p className="mt-2 text-sm text-white/60 md:text-base">{vehicle.tagline}</p>
           </motion.div>
 

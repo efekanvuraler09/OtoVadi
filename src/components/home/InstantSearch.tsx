@@ -145,7 +145,6 @@ export function InstantSearch({ onShowAll }: InstantSearchProps) {
                             src={vehicle.media?.thumbnail || vehicle.media?.heroImage}
                             alt=""
                             aspectRatio="16 / 10"
-                            bodyType={vehicle.bodyType}
                             colorHex={vehicle.media?.colorHex}
                           />
                         </div>

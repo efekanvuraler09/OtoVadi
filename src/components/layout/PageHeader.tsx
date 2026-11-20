@@ -31,7 +31,7 @@ export function PageHeader({
     >
       <div className={centered ? 'flex flex-col items-center' : 'min-w-0'}>
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <Heading className="text-display-lg font-light text-foreground">{title}</Heading>
+        <Heading className="text-display-lg font-normal text-foreground">{title}</Heading>
         {description && (
           <p className={`mt-4 max-w-2xl text-base leading-relaxed text-secondary md:text-lg ${centered ? 'mx-auto' : ''}`}>
             {description}
@@ -58,7 +58,7 @@ export function SectionHeader({ title, eyebrow, description, actions, id, classN
     <div className={`mb-8 flex flex-col gap-4 md:mb-10 md:flex-row md:items-end md:justify-between ${className}`}>
       <div className="min-w-0">
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <h2 id={id} className="text-display-md font-light text-foreground">
+        <h2 id={id} className="text-display-md font-normal text-foreground">
           {title}
         </h2>
         {description && <p className="mt-3 max-w-2xl text-sm leading-relaxed text-secondary md:text-base">{description}</p>}

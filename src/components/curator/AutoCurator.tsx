@@ -224,7 +224,7 @@ export function AutoCurator() {
             className="w-full max-w-4xl px-4 md:px-8 flex flex-col items-center"
           >
             <Sparkles className="size-8 text-muted mb-8" strokeWidth={1} />
-            <h1 className="mb-12 text-balance text-center text-display-lg font-light text-foreground">
+            <h1 className="mb-12 text-balance text-center text-display-lg font-normal text-foreground">
               {copy.title}
             </h1>
             <form onSubmit={handleSearch} className="w-full relative group">
@@ -304,7 +304,7 @@ export function AutoCurator() {
                   {copy.quickMatchLabel}
                 </p>
               )}
-              <h2 className="mb-6 text-display-md font-light text-foreground">
+              <h2 className="mb-6 text-display-md font-normal text-foreground">
                 {vehicleName(result.vehicle)}
               </h2>
               <p className="min-h-[80px] text-base leading-relaxed text-secondary md:text-lg">
@@ -335,7 +335,6 @@ export function AutoCurator() {
                 alt={vehicleName(result.vehicle)}
                 aspectRatio="16 / 9"
                 fit="contain"
-                bodyType={result.vehicle.bodyType}
                 colorHex={result.vehicle.media?.colorHex}
                 priority
               />
@@ -384,7 +383,6 @@ export function AutoCurator() {
                             src={alt.media?.thumbnail || alt.media?.heroImage}
                             alt={vehicleName(alt)}
                             aspectRatio="16 / 10"
-                            bodyType={alt.bodyType}
                             colorHex={alt.media?.colorHex}
                           />
                         </div>

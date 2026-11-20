@@ -31,18 +31,19 @@ export default {
         toast: '90',
         stage: '100',
       },
-      // Self-host (@fontsource-variable, latin + latin-ext → Türkçe karakterler dahil). main.tsx'te import edilir.
+      // Mercedes-Benz showroom estetiği: Serif Display (başlık) + temiz Sans (arayüz). Self-host, latin + latin-ext
+      // (Türkçe karakterler dahil); main.tsx'te import edilir. Tüm serifler yalnızca font-display'den gelir.
       fontFamily: {
-        display: ['"Inter Tight Variable"', '"Inter Variable"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+        display: ['"Playfair Display"', 'serif'],
         sans: ['"Inter Variable"', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
       },
       // Tip ölçeği: en küçük boyut 2xs (11px). display-* başlıklar clamp() ile akışkan ölçeklenir.
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
-        'display-sm': ['clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        'display-md': ['clamp(1.75rem, 1.35rem + 1.6vw, 2.75rem)', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
-        'display-lg': ['clamp(2.25rem, 1.6rem + 2.6vw, 4rem)', { lineHeight: '1.04', letterSpacing: '-0.02em' }],
-        'display-xl': ['clamp(2.75rem, 1.7rem + 4.4vw, 6rem)', { lineHeight: '1', letterSpacing: '-0.025em' }],
+        'display-sm': ['clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem)', { lineHeight: '1.3', letterSpacing: '0' }],
+        'display-md': ['clamp(1.75rem, 1.35rem + 1.6vw, 2.75rem)', { lineHeight: '1.2', letterSpacing: '-0.005em' }],
+        'display-lg': ['clamp(2.25rem, 1.6rem + 2.6vw, 4rem)', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+        'display-xl': ['clamp(2.75rem, 1.7rem + 4.4vw, 5.5rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
       },
       letterSpacing: {
         // Büyük harfli etiketler için tek ölçü (eski 0.3–0.5em değerlerinin yerine)

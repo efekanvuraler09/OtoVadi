@@ -1,8 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-// Self-host değişken fontlar (latin + latin-ext → ğ ü ş ı İ ö ç ₺). Tailwind: font-sans / font-display
+// Self-host fontlar (latin + latin-ext → ğ ü ş ı İ ö ç ₺). Mercedes-Benz showroom estetiği: Serif Display + temiz Sans.
+// font-display = Playfair Display (400/500/600), font-sans = Inter (değişken)
 import '@fontsource-variable/inter';
-import '@fontsource-variable/inter-tight';
+import '@fontsource/playfair-display/400.css';
+import '@fontsource/playfair-display/500.css';
+import '@fontsource/playfair-display/600.css';
 import './index.css';
 import App from './App.tsx';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';

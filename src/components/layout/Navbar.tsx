@@ -144,7 +144,7 @@ export function Navbar() {
             className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80"
           >
             <BrandIcon />
-            <span className="font-display text-lg font-semibold uppercase tracking-widest">OtoVadi</span>
+            <span className="font-display text-lg font-medium uppercase tracking-widest">OtoVadi</span>
           </Link>
 
           {/* Masaüstü ana gezinme */}

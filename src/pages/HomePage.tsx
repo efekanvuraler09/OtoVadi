@@ -81,7 +81,7 @@ export function HomePage() {
                   Geri Dön
                 </button>
                 <p className="eyebrow">{resultsLabel}</p>
-                <h2 className="mt-2 text-display-sm font-light text-foreground">Araç Kataloğu</h2>
+                <h2 className="mt-2 text-display-sm font-normal text-foreground">Araç Kataloğu</h2>
                 <p className="mt-1 text-sm text-muted">
                   <span className="tabular-nums">{filteredVehicles.length}</span> araç
                   {searchQuery ? ` · "${searchQuery}"` : ''}
