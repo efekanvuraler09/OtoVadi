@@ -1,52 +1,99 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Globe } from 'lucide-react';
 import { useI18n, localeLabels, type Locale } from '../../i18n/useI18n';
 
 const locales: Locale[] = ['tr', 'en', 'de'];
 
-export function LanguageSwitcher() {
-  const { locale, setLocale } = useI18n();
+interface LanguageSwitcherProps {
+  /** dropdown: header'daki küçük açılır menü (rengi ebeveynden alır); segmented: menüdeki TR/EN/DE seçimi */
+  variant?: 'dropdown' | 'segmented';
+}
+
+export function LanguageSwitcher({ variant = 'dropdown' }: LanguageSwitcherProps) {
+  const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Dışarı tıklama / Escape ile kapanır
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (variant === 'segmented') {
+    return (
+      <div role="radiogroup" aria-label={t.nav.language} className="grid grid-cols-3 gap-1 border border-border-subtle p-1">
+        {locales.map((l) => {
+          const active = l === locale;
+          return (
+            <button
+              key={l}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => setLocale(l)}
+              className={`h-10 text-sm font-medium tracking-wide transition-colors ${
+                active ? 'bg-foreground text-void' : 'text-secondary hover:text-foreground'
+              }`}
+            >
+              {localeLabels[l]}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
-    <div className="relative">
+    <div ref={rootRef} className="relative">
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-black dark:text-neutral-400 hover:opacity-70 dark:hover:text-white transition-all select-none outline-none focus:outline-none"
-        aria-label="Dil Seçici"
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`${t.nav.language}: ${localeLabels[locale]}`}
+        className="flex h-10 items-center gap-1.5 rounded-full px-2.5 transition-opacity hover:opacity-70"
       >
-        <Globe className="size-[18px] stroke-[1.5]" />
-        <span className="text-[11px] font-semibold uppercase tracking-wider">
-          {localeLabels[locale]}
-        </span>
+        <Globe className="size-4" strokeWidth={1.5} aria-hidden />
+        <span className="text-xs font-semibold tracking-wider">{localeLabels[locale]}</span>
       </button>
 
       {open && (
-        <>
-          {/* Backdrop to close on outside click */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute top-full right-0 mt-2 z-50 min-w-[100px] border border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md shadow-2xl">
-            {locales.map((l) => (
+        <ul
+          role="listbox"
+          aria-label={t.nav.language}
+          className="absolute right-0 top-full mt-2 min-w-[7rem] border border-border-subtle bg-void py-1 text-foreground shadow-2xl"
+        >
+          {locales.map((l) => (
+            <li key={l}>
               <button
-                key={l}
+                type="button"
+                role="option"
+                aria-selected={l === locale}
                 onClick={() => {
                   setLocale(l);
                   setOpen(false);
                 }}
-                className={`block w-full text-left px-4 py-2.5 font-sans text-sm font-medium tracking-wider transition-colors select-none outline-none focus:outline-none ${
-                  l === locale
-                    ? 'text-neutral-900 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800/80'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                className={`block w-full px-4 py-2.5 text-left text-sm font-medium tracking-wide transition-colors ${
+                  l === locale ? 'bg-surface-elevated text-foreground' : 'text-secondary hover:bg-surface hover:text-foreground'
                 }`}
               >
                 {localeLabels[l]}
               </button>
-            ))}
-          </div>
-        </>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

@@ -1,10 +1,12 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { MatchResult } from '../../utils/dnaEngine';
 import { formatVehiclePrice } from '../../utils/formatPrice';
 import { useI18n } from '../../i18n/useI18n';
+import { SmartImage } from '../ui/SmartImage';
+import { vehicleName } from '../../utils/vehicleText';
+import { TRANSITION, fadeUp } from '../../lib/motion';
 
 interface VehicleRevealProps {
   match: MatchResult;
@@ -13,77 +15,55 @@ interface VehicleRevealProps {
 export function VehicleReveal({ match }: VehicleRevealProps) {
   const { t } = useI18n();
   const { vehicle, affinity } = match;
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const heroSrc =
-    vehicle.media.heroImage?.startsWith('http') || vehicle.media.heroImage?.startsWith('/')
-      ? vehicle.media.heroImage
-      : `/${vehicle.media.heroImage}`;
-
   const affinityPercent = Math.round(affinity * 100);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.0, ease: 'easeOut' }}
-      className="flex flex-col items-center gap-8 px-6 md:gap-10"
+      transition={TRANSITION.slow}
+      className="flex w-full flex-col items-center gap-8 md:gap-10"
     >
       {/* ── Title ── */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+        {...fadeUp}
+        transition={{ ...TRANSITION.slow, delay: 0.1 }}
         className="text-center"
       >
-        <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-muted">
+        <p className="eyebrow">
           {t.soulTwin.yourSoulmate}
         </p>
-        <h2 className="mt-3 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
-          {vehicle.brand} {vehicle.model}
-        </h2>
-        <p className="mt-2 font-sans text-sm font-light italic text-muted">
+        <h2 className="mt-3 text-display-md font-light text-foreground">{vehicleName(vehicle)}</h2>
+        <p className="mt-2 text-sm text-secondary">
           {vehicle.tagline}
         </p>
       </motion.div>
 
-      {/* ── Vehicle Image ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.95 }}
-        transition={{ delay: 0.6, duration: 1.2, ease: 'easeOut' }}
-        className="relative isolate w-full max-w-2xl overflow-hidden"
-      >
-        {/* Ambient glow behind vehicle (isolate: -z-10 bu kutunun içinde kalır, sayfa zemininin arkasına düşmez) */}
-        <div
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 50% 60%, rgba(255,255,255,0.04), transparent 70%)',
-          }}
-        />
-        <img
-          src={heroSrc}
-          alt={`${vehicle.brand} ${vehicle.model}`}
-          onLoad={() => setImageLoaded(true)}
-          className="h-auto w-full object-contain"
-          style={{ filter: 'brightness(0.9) contrast(1.05)' }}
+      {/* ── Vehicle Image: kırık görselde sonsuz boş alan yerine siluet ── */}
+      <motion.div {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.2 }} className="w-full max-w-2xl">
+        <SmartImage
+          src={vehicle.media.heroImage}
+          alt={vehicleName(vehicle)}
+          aspectRatio="16 / 9"
+          fit="contain"
+          bodyType={vehicle.bodyType}
+          colorHex={vehicle.media.colorHex}
+          priority
           draggable={false}
         />
       </motion.div>
 
       {/* ── Match Info ── */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0, duration: 0.7, ease: 'easeOut' }}
+        {...fadeUp}
+        transition={{ ...TRANSITION.base, delay: 0.3 }}
         className="flex flex-wrap items-center justify-center gap-6 text-center md:gap-10"
       >
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
+          <span className="stat-label">
             {t.soulTwin.affinity}
           </span>
-          <span className="font-display text-3xl font-light text-foreground">
+          <span className="stat-value text-2xl md:text-3xl">
             %{affinityPercent}
           </span>
         </div>
@@ -91,10 +71,10 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         <div className="h-8 w-[1px] bg-border-subtle" />
 
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
+          <span className="stat-label">
             {t.soulTwin.power}
           </span>
-          <span className="font-display text-3xl font-light text-foreground">
+          <span className="stat-value text-2xl md:text-3xl">
             {vehicle.engine.powerHp} HP
           </span>
         </div>
@@ -102,10 +82,10 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
         <div className="h-8 w-[1px] bg-border-subtle" />
 
         <div className="flex flex-col items-center gap-1">
-          <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-muted">
+          <span className="stat-label">
             Fiyat
           </span>
-          <span className="font-display text-3xl font-light text-foreground">
+          <span className="stat-value text-2xl md:text-3xl">
             {formatVehiclePrice(vehicle.pricing)}
           </span>
         </div>
@@ -113,14 +93,13 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
 
       {/* ── CTA ── */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.6, ease: 'easeOut' }}
+        {...fadeUp}
+        transition={{ ...TRANSITION.base, delay: 0.4 }}
         className="mt-4"
       >
         <Link
           to={`/arac/${vehicle.id}`}
-          className="group flex items-center gap-3 border border-border-subtle bg-foreground/5 px-8 py-4 font-sans text-xs font-medium uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10"
+          className="group inline-flex min-h-12 items-center gap-3 bg-foreground px-8 text-xs font-semibold uppercase tracking-eyebrow text-void transition-colors hover:bg-foreground/90"
         >
           <span>{t.soulTwin.inspectVehicle}</span>
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

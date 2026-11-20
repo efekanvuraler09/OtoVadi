@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import type { DNAQuestion } from '../../utils/dnaEngine';
 import { useI18n } from '../../i18n/useI18n';
+import { TRANSITION } from '../../lib/motion';
 
 interface QuestionCardProps {
   question: DNAQuestion;
@@ -19,11 +20,11 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: 'easeInOut' }}
-      className="flex min-h-dvh flex-col bg-void"
+      transition={TRANSITION.base}
+      className="flex min-h-[calc(100svh-4rem)] flex-col bg-void"
     >
       {/* ── Progress & Question Prompt ── */}
-      <div className="relative z-10 flex flex-col items-center gap-4 px-6 pb-4 pt-24 md:pt-28">
+      <div className="relative z-10 flex flex-col items-center gap-4 px-4 pb-4 pt-10 md:px-8 md:pt-14">
         {/* Step Dots */}
         <div className="flex items-center gap-3">
           {Array.from({ length: totalSteps }).map((_, i) => (
@@ -40,15 +41,15 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
           ))}
         </div>
 
-        <p className="font-display text-[11px] uppercase tracking-[0.5em] text-foreground/80 dark:text-muted">
+        <p className="eyebrow tabular-nums">
           {currentStep + 1} / {totalSteps}
         </p>
 
         <motion.h2
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.7, ease: 'easeOut' }}
-          className="max-w-xl text-center font-display text-2xl font-light leading-relaxed tracking-wide text-foreground md:text-3xl lg:text-4xl"
+          transition={{ ...TRANSITION.base, delay: 0.05 }}
+          className="max-w-2xl text-balance text-center text-display-sm font-light text-foreground"
         >
           {qData.prompt}
         </motion.h2>
@@ -60,34 +61,33 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
         <motion.button
           type="button"
           onClick={() => onAnswer('a')}
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
-          whileHover={{ scale: 1.015 }}
+          transition={{ ...TRANSITION.base, delay: 0.1 }}
           whileTap={{ scale: 0.985 }}
-          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-foreground/40 dark:border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm transition-all duration-500 hover:border-foreground dark:hover:border-foreground/30 hover:bg-foreground/10 md:p-12"
+          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-border-subtle bg-surface p-8 transition-colors duration-350 hover:border-foreground md:p-12"
         >
           {/* Subtle glow on hover */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-350 group-hover:opacity-100" />
 
-          <span className="relative mb-4 font-display text-[10px] uppercase tracking-[0.5em] text-muted md:text-[11px]">
+          <span className="eyebrow relative mb-4">
             A
           </span>
-          <span className="relative font-display text-3xl font-light tracking-wide text-foreground md:text-4xl lg:text-5xl">
+          <span className="relative text-display-md font-light text-foreground">
             {qData.optionA.label}
           </span>
-          <span className="relative mt-5 max-w-xs text-center font-display text-base font-light leading-relaxed text-muted md:text-lg">
+          <span className="relative mt-4 max-w-xs text-center text-base leading-relaxed text-secondary">
             {qData.optionA.desc}
           </span>
 
           {/* Bottom accent line */}
-          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-500 group-hover:w-2/3" />
+          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-350 group-hover:w-2/3" />
         </motion.button>
 
         {/* Divider */}
         <div className="flex items-center justify-center md:flex-col">
           <div className="h-[1px] w-12 bg-border-subtle md:h-12 md:w-[1px]" />
-          <span className="mx-3 font-display text-[9px] uppercase tracking-[0.5em] text-foreground/70 dark:text-muted md:mx-0 md:my-3">
+          <span className="eyebrow mx-3 md:mx-0 md:my-3">
             {t.soulTwin.or}
           </span>
           <div className="h-[1px] w-12 bg-border-subtle md:h-12 md:w-[1px]" />
@@ -97,26 +97,25 @@ export function QuestionCard({ question, currentStep, totalSteps, onAnswer }: Qu
         <motion.button
           type="button"
           onClick={() => onAnswer('b')}
-          initial={{ opacity: 0, x: 30 }}
+          initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
-          whileHover={{ scale: 1.015 }}
+          transition={{ ...TRANSITION.base, delay: 0.1 }}
           whileTap={{ scale: 0.985 }}
-          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-foreground/40 dark:border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm transition-all duration-500 hover:border-foreground dark:hover:border-foreground/30 hover:bg-foreground/10 md:p-12"
+          className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden border border-border-subtle bg-surface p-8 transition-colors duration-350 hover:border-foreground md:p-12"
         >
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-bl from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-bl from-foreground/5 via-transparent to-transparent opacity-0 transition-opacity duration-350 group-hover:opacity-100" />
 
-          <span className="relative mb-4 font-display text-[10px] uppercase tracking-[0.5em] text-muted md:text-[11px]">
+          <span className="eyebrow relative mb-4">
             B
           </span>
-          <span className="relative font-display text-3xl font-light tracking-wide text-foreground md:text-4xl lg:text-5xl">
+          <span className="relative text-display-md font-light text-foreground">
             {qData.optionB.label}
           </span>
-          <span className="relative mt-5 max-w-xs text-center font-display text-base font-light leading-relaxed text-muted md:text-lg">
+          <span className="relative mt-4 max-w-xs text-center text-base leading-relaxed text-secondary">
             {qData.optionB.desc}
           </span>
 
-          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-500 group-hover:w-2/3" />
+          <div className="absolute bottom-0 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-foreground/30 transition-all duration-350 group-hover:w-2/3" />
         </motion.button>
       </div>
     </motion.div>

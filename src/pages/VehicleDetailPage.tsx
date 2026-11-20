@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Info, Maximize2 } from 'lucide-react';
@@ -18,16 +18,24 @@ import { Accordion } from '../components/ui/Accordion';
 import { Tabs } from '../components/ui/Tabs';
 import { TestDriveModal } from '../components/ui/TestDriveModal';
 import { AtmosphereStage } from '../components/detail/AtmosphereStage';
+import { PageContainer } from '../components/layout/PageContainer';
+import { secondaryButtonClass } from '../components/ui/buttonStyles';
 import { useVehicleStore } from '../store/useVehicleStore';
+import { usePlayableTracks } from '../hooks/usePlayableTracks';
+import { TRANSITION, fade, fadeUp } from '../lib/motion';
 
-const DETAIL_TABS = [
-  { id: 'audio', label: 'Ses' },
+/** Ses sekmesi yalnızca çalınabilir bir kayıt doğrulandığında eklenir (K11) */
+const BASE_TABS = [
   { id: 'tech', label: 'Teknik' },
   { id: 'media', label: 'Multimedya' },
   { id: 'interior', label: 'İç Mekan' },
   { id: 'dims', label: 'Boyutlar' },
   { id: 'notes', label: 'Sürücü Notları' },
-] as const;
+];
+const AUDIO_TAB = { id: 'audio', label: 'Ses' };
+const DEFAULT_TAB = 'tech';
+
+const panelMotion = { ...fadeUp, transition: TRANSITION.base };
 
 export function VehicleDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,17 +47,21 @@ export function VehicleDetailPage() {
   const vehicle = id ? vehicles.find((v) => v.id === id) : undefined;
   const { user, openAuthModal } = useAuth();
   const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<string>(
-    tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl) ? tabFromUrl : 'audio',
-  );
+  const [activeTab, setActiveTab] = useState<string>(tabFromUrl ?? DEFAULT_TAB);
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
   const [isAtmosphereOpen, setIsAtmosphereOpen] = useState(false);
 
-  useEffect(() => {
-    if (tabFromUrl && DETAIL_TABS.some((t) => t.id === tabFromUrl)) {
-      setActiveTab(tabFromUrl);
-    }
-  }, [tabFromUrl]);
+  const { playable: audioTracks } = usePlayableTracks([vehicle?.audio?.idle, vehicle?.audio?.exhaust, vehicle?.audio?.rev]);
+  const tabs = audioTracks.length > 0 ? [BASE_TABS[0], AUDIO_TAB, ...BASE_TABS.slice(1)] : BASE_TABS;
+  // URL'deki sekme (ör. ?tab=audio) mevcut değilse varsayılana düşülür
+  const currentTab = tabs.some((t) => t.id === activeTab) ? activeTab : DEFAULT_TAB;
+
+  // URL'deki ?tab= değişirse (ör. geri/ileri) aktif sekme ona uyar — effect yerine render sırasında senkron
+  const [syncedUrlTab, setSyncedUrlTab] = useState(tabFromUrl);
+  if (tabFromUrl !== syncedUrlTab) {
+    setSyncedUrlTab(tabFromUrl);
+    if (tabFromUrl) setActiveTab(tabFromUrl);
+  }
 
   /** Hero, mobil aksiyon barı ve finans bölümündeki tüm "Test Sürüşü" butonları buradan geçer */
   const requestTestDrive = () => {
@@ -83,14 +95,11 @@ export function VehicleDetailPage() {
     id: section.id,
     title: section.title,
     content: (
-      <dl className="flex flex-col gap-2">
+      <dl className="flex flex-col">
         {section.items.map((item) => (
-          <div
-            key={item.label}
-            className="flex justify-between gap-4 border-b border-border-subtle/30 py-3 last:border-0"
-          >
-            <dt className="text-xs font-light tracking-wide text-muted">{item.label}</dt>
-            <dd className="text-right text-xs font-light tracking-wide text-foreground">{item.value}</dd>
+          <div key={item.label} className="flex justify-between gap-4 border-b border-border-subtle py-3 last:border-0">
+            <dt className="text-sm text-muted">{item.label}</dt>
+            <dd className="text-right text-sm tabular-nums text-foreground">{item.value}</dd>
           </div>
         ))}
       </dl>
@@ -99,210 +108,122 @@ export function VehicleDetailPage() {
 
   return (
     <>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <DetailHero vehicle={vehicle} onOpenTestDrive={requestTestDrive} />
+      <motion.div {...fade} transition={TRANSITION.base}>
+        <DetailHero vehicle={vehicle} onOpenTestDrive={requestTestDrive} />
 
-      {/* ── Atmosfer Sahne Butonu ── */}
-      <div className="flex justify-center py-5">
-        <motion.button
-          type="button"
-          onClick={() => setIsAtmosphereOpen(true)}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          className="group flex items-center gap-3 border border-border-subtle bg-void/80 px-7 py-3 font-sans text-xs uppercase tracking-[0.2em] text-muted backdrop-blur-sm transition-all duration-300 hover:border-foreground/30 hover:bg-foreground hover:text-void"
-        >
-          <Maximize2 className="size-4 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
-          <span>Atmosferi Yaşa</span>
-        </motion.button>
-      </div>
-
-      <div className="py-2">
-        <InteractiveGallery vehicle={vehicle} />
-      </div>
-
-      <div className="mx-auto w-full max-w-7xl px-6 pb-8 py-10 md:px-12 lg:px-24">
-        <section className="py-10">
-          <p className="font-display text-lg md:text-xl text-gray-500 dark:text-neutral-400 capitalize mb-4">Donanımlar</p>
-          <h2 className="text-3xl md:text-4xl font-serif text-foreground/90 font-light tracking-wide mb-8">
-            {vehicle.shortDescription}
-          </h2>
-          <div className="flex flex-wrap gap-8">
-            {vehicle.highlights.map((tag) => (
-              <span
-                key={tag}
-                className="text-foreground font-normal"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <Tabs
-          tabs={[...DETAIL_TABS]}
-          activeId={activeTab}
-          onChange={setActiveTab}
-        />
-
-        <div className="mt-6">
-          {activeTab === 'audio' && (
-            <motion.div
-              key="audio"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-4"
-            >
-              <AudioPlayer track={vehicle.audio.idle} />
-              <AudioPlayer track={vehicle.audio.exhaust} />
-              {vehicle.audio.rev && (
-                <AudioPlayer track={vehicle.audio.rev} />
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === 'tech' && (
-            <motion.div
-              key="tech"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-6"
-            >
-              <SpecGrid vehicle={vehicle} />
-              {technicalAccordionItems.length > 0 ? (
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-foreground">
-                    Ek Teknik Bilgiler
-                  </h3>
-                  <Accordion
-                    items={technicalAccordionItems}
-                  />
-                </div>
-              ) : (
-                <p className="text-sm text-muted">Ek teknik bölüm bulunmuyor.</p>
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === 'media' && (
-            <motion.div
-              key="media"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <MultimediaList
-                features={vehicle.multimedia}
-                accentColor={vehicle.accentColor}
-              />
-            </motion.div>
-          )}
-
-          {activeTab === 'interior' && (
-            <motion.div
-              key="interior"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <InteriorMaterials materials={vehicle.interiorMaterials} />
-            </motion.div>
-          )}
-
-          {activeTab === 'dims' && (
-            <motion.div
-              key="dims"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <dl className="grid grid-cols-2 gap-x-8 gap-y-12 py-6">
-                {[
-                  { label: 'Uzunluk', value: `${dimensions.lengthMm} mm` },
-                  { label: 'Genişlik', value: `${dimensions.widthMm} mm` },
-                  { label: 'Yükseklik', value: `${dimensions.heightMm} mm` },
-                  { label: 'Aks Mesafesi', value: `${dimensions.wheelbaseMm} mm` },
-                  { label: 'Bagaj', value: `${dimensions.bootCapacityL} L` },
-                  { label: 'Ağırlık', value: `${dimensions.curbWeightKg} kg` },
-                ].map(({ label, value }) => (
-                  <div
-                    key={label}
-                    className="flex flex-col gap-2 border-b border-border-subtle pb-4"
-                  >
-                    <dt className="font-display text-lg md:text-xl text-gray-500 dark:text-neutral-400 capitalize">{label}</dt>
-                    <dd className="text-4xl md:text-5xl font-light tracking-wide text-foreground">{value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </motion.div>
-          )}
-
-          {activeTab === 'notes' && (
-            <motion.div
-              key="notes"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-4"
-            >
-              {vehicle.driverNotes && vehicle.driverNotes.length > 0 ? (
-                vehicle.driverNotes.map((note, idx) => (
-                  <div key={idx} className="bg-muted/30 border-l-2 border-foreground/20 p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
-                    <div className="mt-1 shrink-0">
-                      <Info className="size-6 text-foreground/60" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-serif text-xl tracking-wide text-foreground">
-                        {note.title}
-                      </h3>
-                      <p className="font-sans text-sm md:text-base leading-relaxed text-muted">
-                        {note.description}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-muted/30 border-l-2 border-foreground/20 p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
-                  <div className="mt-1 shrink-0">
-                    <Info className="size-6 text-foreground/60" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <h3 className="font-serif text-xl tracking-wide text-foreground">
-                      Bilgi Bulunamadı
-                    </h3>
-                    <p className="font-sans text-sm md:text-base leading-relaxed text-muted">
-                      Bu araç için henüz kaydedilmiş bir sürücü notu bulunmamaktadır.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
+        {/* ── Atmosfer Sahne Butonu ── */}
+        <div className="flex justify-center py-6">
+          <button type="button" onClick={() => setIsAtmosphereOpen(true)} className={`group ${secondaryButtonClass}`}>
+            <Maximize2 className="size-4 transition-transform group-hover:scale-110" strokeWidth={1.5} aria-hidden />
+            Atmosferi Yaşa
+          </button>
         </div>
 
-        {/* Finance Calculator */}
-        <FinanceCalculator
-          price={vehicle.pricing.msrp}
-          currency={resolveCurrency(vehicle.pricing)}
-          onApply={requestTestDrive}
-        />
-      </div>
-    </motion.div>
+        <InteractiveGallery vehicle={vehicle} />
 
-    {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
-    <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />
+        <PageContainer spacing="none" className="pb-16 pt-12 md:pb-24 md:pt-16">
+          <section className="mb-12 md:mb-16">
+            <p className="eyebrow mb-4">Donanımlar</p>
+            <h2 className="max-w-4xl text-display-sm font-light text-foreground">{vehicle.shortDescription}</h2>
+            {vehicle.highlights.length > 0 && (
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {vehicle.highlights.map((tag) => (
+                  <li key={tag} className="border border-border-subtle px-3 py-1.5 text-sm text-secondary">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-    <TestDriveModal
-      vehicle={vehicle}
-      isOpen={isTestDriveOpen}
-      onClose={() => setIsTestDriveOpen(false)}
-    />
+          <Tabs tabs={tabs} activeId={currentTab} onChange={setActiveTab} />
 
-    <AtmosphereStage
-      vehicle={vehicle}
-      isOpen={isAtmosphereOpen}
-      onClose={() => setIsAtmosphereOpen(false)}
-    />
+          <div className="mt-8">
+            {currentTab === 'audio' && (
+              <motion.div key="audio" {...panelMotion} className="flex flex-col gap-6">
+                {audioTracks.map((track) => (
+                  <AudioPlayer key={track.id} track={track} />
+                ))}
+              </motion.div>
+            )}
+
+            {currentTab === 'tech' && (
+              <motion.div key="tech" {...panelMotion} className="flex flex-col gap-10">
+                <SpecGrid vehicle={vehicle} />
+                {technicalAccordionItems.length > 0 ? (
+                  <div>
+                    <h3 className="mb-4 text-sm font-semibold text-foreground">Ek Teknik Bilgiler</h3>
+                    <Accordion items={technicalAccordionItems} />
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted">Ek teknik bölüm bulunmuyor.</p>
+                )}
+              </motion.div>
+            )}
+
+            {currentTab === 'media' && (
+              <motion.div key="media" {...panelMotion}>
+                <MultimediaList features={vehicle.multimedia} accentColor={vehicle.accentColor} />
+              </motion.div>
+            )}
+
+            {currentTab === 'interior' && (
+              <motion.div key="interior" {...panelMotion}>
+                <InteriorMaterials materials={vehicle.interiorMaterials} />
+              </motion.div>
+            )}
+
+            {currentTab === 'dims' && (
+              <motion.div key="dims" {...panelMotion}>
+                <dl className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3">
+                  {[
+                    { label: 'Uzunluk', value: dimensions.lengthMm, unit: 'mm' },
+                    { label: 'Genişlik', value: dimensions.widthMm, unit: 'mm' },
+                    { label: 'Yükseklik', value: dimensions.heightMm, unit: 'mm' },
+                    { label: 'Aks Mesafesi', value: dimensions.wheelbaseMm, unit: 'mm' },
+                    { label: 'Bagaj', value: dimensions.bootCapacityL, unit: 'L' },
+                    { label: 'Ağırlık', value: dimensions.curbWeightKg, unit: 'kg' },
+                  ].map(({ label, value, unit }) => (
+                    <div key={label} className="flex flex-col gap-2 border-b border-border-subtle pb-4">
+                      <dt className="stat-label">{label}</dt>
+                      <dd className="stat-value text-2xl md:text-3xl">
+                        {value?.toLocaleString('tr-TR')}
+                        <span className="ml-1 text-base text-muted">{unit}</span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </motion.div>
+            )}
+
+            {currentTab === 'notes' && (
+              <motion.div key="notes" {...panelMotion} className="flex flex-col gap-4">
+                {(vehicle.driverNotes && vehicle.driverNotes.length > 0
+                  ? vehicle.driverNotes
+                  : [{ title: 'Bilgi Bulunamadı', description: 'Bu araç için henüz kaydedilmiş bir sürücü notu bulunmamaktadır.' }]
+                ).map((note, idx) => (
+                  <div key={idx} className="flex items-start gap-5 border-l-2 border-foreground/20 bg-surface p-6 md:p-8">
+                    <Info className="mt-0.5 size-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-display text-lg font-normal text-foreground">{note.title}</h3>
+                      <p className="text-sm leading-relaxed text-secondary md:text-base">{note.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+
+          <FinanceCalculator price={vehicle.pricing.msrp} currency={resolveCurrency(vehicle.pricing)} onApply={requestTestDrive} />
+        </PageContainer>
+      </motion.div>
+
+      {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
+      <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />
+
+      <TestDriveModal vehicle={vehicle} isOpen={isTestDriveOpen} onClose={() => setIsTestDriveOpen(false)} />
+
+      <AtmosphereStage vehicle={vehicle} isOpen={isAtmosphereOpen} onClose={() => setIsAtmosphereOpen(false)} />
     </>
   );
 }

@@ -10,8 +10,10 @@ import { DISCOVER_MAX_QUERY_LENGTH, requestDiscovery } from '../../services/disc
 import { matchVehiclesLocally, type LocalMatch, type MatchCriterion } from '../../utils/localVehicleMatcher';
 import { formatPrice, formatVehiclePrice } from '../../utils/formatPrice';
 import { StatusScreen } from '../ui/DataState';
-import { VehicleMediaCover } from '../ui/VehicleMediaCover';
+import { SmartImage } from '../ui/SmartImage';
 import { primaryButtonClass, secondaryButtonClass } from '../ui/buttonStyles';
+import { TRANSITION } from '../../lib/motion';
+import { vehicleName } from '../../utils/vehicleText';
 
 /**
  * idle     → sorgu formu
@@ -33,8 +35,6 @@ interface CuratorResult {
 const LOADING_STEP_MS = 2200;
 /** Karakter sayacı bu uzunluktan sonra görünür (sınır: DISCOVER_MAX_QUERY_LENGTH) */
 const COUNTER_THRESHOLD = 240;
-
-const vehicleName = (vehicle: Vehicle) => `${vehicle.brand} ${vehicle.model}`.replace(/\s+/g, ' ').trim();
 
 function formatList(items: string[], locale: Locale): string {
   return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(items);
@@ -216,14 +216,15 @@ export function AutoCurator() {
         {status === 'idle' && (
           <motion.div
             key="prompt"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -40, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-4xl px-6 flex flex-col items-center"
+            // blur geçişi mobilde pahalıydı: yalnızca opacity + translate
+            exit={{ opacity: 0, y: -24 }}
+            transition={TRANSITION.slow}
+            className="w-full max-w-4xl px-4 md:px-8 flex flex-col items-center"
           >
             <Sparkles className="size-8 text-muted mb-8" strokeWidth={1} />
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground text-center mb-12 tracking-wide">
+            <h1 className="mb-12 text-balance text-center text-display-lg font-light text-foreground">
               {copy.title}
             </h1>
             <form onSubmit={handleSearch} className="w-full relative group">
@@ -235,7 +236,7 @@ export function AutoCurator() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={copy.placeholder}
                 aria-label={copy.title}
-                className="w-full bg-transparent border-b border-border-subtle focus:border-foreground/50 pb-4 text-center font-sans text-lg md:text-xl text-foreground placeholder:text-muted/50 focus:outline-none transition-colors"
+                className="w-full bg-transparent border-b border-border-strong focus:border-foreground pb-4 px-10 text-center font-sans text-lg md:text-xl text-foreground placeholder:text-muted focus:outline-none transition-colors"
               />
               <button
                 type="submit"
@@ -266,20 +267,18 @@ export function AutoCurator() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={TRANSITION.base}
             className="flex flex-col items-center justify-center gap-6 px-6 text-center"
             role="status"
             aria-live="polite"
           >
-            <div className="relative flex items-center justify-center size-16">
-              <div className="absolute inset-0 border border-foreground/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
-              <div className="size-2 bg-foreground rounded-full" />
-            </div>
+            {/* animate-ping yerine sakin dönen halka */}
+            <div className="size-12 animate-spin rounded-full border border-border-subtle border-t-foreground motion-reduce:animate-none" aria-hidden />
             <motion.p
               key={loadingStep % loadingMessages.length}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-display text-xl text-muted tracking-widest uppercase"
+              className="eyebrow text-sm"
             >
               {loadingMessages[loadingStep % loadingMessages.length]}
             </motion.p>
@@ -290,25 +289,25 @@ export function AutoCurator() {
         {(status === 'success' || status === 'degraded') && result && (
           <motion.div
             key="result"
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={TRANSITION.slow}
             className="w-full max-w-7xl px-4 md:px-8 lg:px-12 py-12 flex flex-col items-center"
           >
             <div className="max-w-2xl text-center mb-12">
               {status === 'success' ? (
-                <p className="font-sans text-sm uppercase tracking-widest text-emerald-500/80 mb-6">{copy.perfectMatch}</p>
+                <p className="eyebrow mb-6 text-success">{copy.perfectMatch}</p>
               ) : (
-                <p className="mb-6 inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                <p className="mb-6 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-eyebrow text-warning">
                   <Zap className="size-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                   {copy.quickMatchLabel}
                 </p>
               )}
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight">
+              <h2 className="mb-6 text-display-md font-light text-foreground">
                 {vehicleName(result.vehicle)}
               </h2>
-              <p className="font-sans text-base md:text-lg text-muted leading-relaxed min-h-[80px]">
+              <p className="min-h-[80px] text-base leading-relaxed text-secondary md:text-lg">
                 {status === 'success' ? (
                   <>"<TypewriterText key={result.reasoning} text={result.reasoning} />"</>
                 ) : (
@@ -320,7 +319,7 @@ export function AutoCurator() {
                   {result.criteria.map((label) => (
                     <li
                       key={label}
-                      className="border border-border-subtle px-3 py-1 font-sans text-[11px] uppercase tracking-widest text-muted"
+                      className="border border-border-subtle px-3 py-1 text-2xs font-medium uppercase tracking-eyebrow text-secondary"
                     >
                       {label}
                     </li>
@@ -330,11 +329,15 @@ export function AutoCurator() {
             </div>
 
             {/* Araç stüdyo görseli */}
-            <div className="w-full h-64 md:h-96 relative flex justify-center mb-16">
-              <img
+            <div className="relative mb-16 w-full max-w-4xl">
+              <SmartImage
                 src={result.vehicle.interactiveGallery?.studioImage || result.vehicle.media.heroImage}
                 alt={vehicleName(result.vehicle)}
-                className="w-full h-full object-contain"
+                aspectRatio="16 / 9"
+                fit="contain"
+                bodyType={result.vehicle.bodyType}
+                colorHex={result.vehicle.media?.colorHex}
+                priority
               />
             </div>
 
@@ -342,7 +345,7 @@ export function AutoCurator() {
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               <Link
                 to={`/arac/${result.vehicle.id}`}
-                className="px-8 py-4 bg-foreground text-void font-sans text-sm font-medium uppercase tracking-widest hover:bg-foreground/90 transition-colors"
+                className={primaryButtonClass}
               >
                 {copy.inspectVehicle}
               </Link>
@@ -350,7 +353,7 @@ export function AutoCurator() {
                 <button
                   type="button"
                   onClick={() => void runDiscovery(lastQuery)}
-                  className="inline-flex items-center gap-2 border-b border-foreground/40 pb-1 text-sm font-medium uppercase tracking-widest text-foreground transition-colors hover:border-foreground"
+                  className="inline-flex items-center gap-2 border-b border-foreground/40 pb-1 text-xs font-semibold uppercase tracking-eyebrow text-foreground transition-colors hover:border-foreground"
                 >
                   <RotateCcw className="size-4" strokeWidth={1.5} aria-hidden="true" />
                   {copy.retry}
@@ -359,7 +362,7 @@ export function AutoCurator() {
               <button
                 type="button"
                 onClick={resetCurator}
-                className="text-sm font-medium uppercase tracking-widest text-muted hover:text-foreground transition-colors pb-1 border-b border-transparent hover:border-foreground"
+                className="border-b border-transparent pb-1 text-xs font-semibold uppercase tracking-eyebrow text-muted transition-colors hover:border-foreground hover:text-foreground"
               >
                 {copy.searchAgain}
               </button>
@@ -368,24 +371,26 @@ export function AutoCurator() {
             {/* Alternatifler */}
             {result.alternatives.length > 0 && (
               <div className="mt-16 w-full max-w-3xl">
-                <p className="mb-6 text-center font-sans text-xs uppercase tracking-widest text-muted">{copy.alternativesTitle}</p>
+                <p className="eyebrow mb-6 text-center">{copy.alternativesTitle}</p>
                 <ul className="grid gap-4 sm:grid-cols-2">
                   {result.alternatives.map((alt) => (
                     <li key={alt.id}>
                       <Link
                         to={`/arac/${alt.id}`}
-                        className="group flex items-center gap-4 border border-border-subtle bg-surface/10 p-4 transition-colors hover:bg-surface/30"
+                        className="group flex items-center gap-4 border border-border-subtle p-4 transition-colors hover:border-border-strong hover:bg-surface"
                       >
-                        <div className="relative h-14 w-20 shrink-0 overflow-hidden">
-                          <VehicleMediaCover
-                            src={alt.media?.thumbnail || alt.media?.heroImage || ''}
+                        <div className="w-20 shrink-0">
+                          <SmartImage
+                            src={alt.media?.thumbnail || alt.media?.heroImage}
                             alt={vehicleName(alt)}
-                            colorHex={alt.media?.colorHex || 'transparent'}
+                            aspectRatio="16 / 10"
+                            bodyType={alt.bodyType}
+                            colorHex={alt.media?.colorHex}
                           />
                         </div>
                         <div className="min-w-0 text-left">
-                          <p className="truncate font-display text-lg font-light text-foreground">{vehicleName(alt)}</p>
-                          <p className="font-sans text-xs text-muted">{formatVehiclePrice(alt.pricing)}</p>
+                          <p className="truncate font-display text-lg font-normal text-foreground">{vehicleName(alt)}</p>
+                          <p className="text-sm tabular-nums text-muted">{formatVehiclePrice(alt.pricing)}</p>
                         </div>
                         <ArrowRight
                           className="ml-auto size-4 shrink-0 text-muted transition-transform group-hover:translate-x-1"

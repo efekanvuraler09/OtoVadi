@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Check, Minus, ChevronDown } from 'lucide-react';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import type { Vehicle } from '../../types/vehicle';
 import { LoadingState, StatusScreen, VehicleLoadError } from '../ui/DataState';
 import { primaryButtonClass } from '../ui/buttonStyles';
+import { SmartImage } from '../ui/SmartImage';
+import { cleanText, vehicleName } from '../../utils/vehicleText';
 
 const COMPARE_FEATURES = [
   'Cam Tavan',
@@ -21,12 +22,15 @@ export function ComparisonEngine() {
   const vehicles = useVehicleStore((s) => s.vehicles);
   const isLoading = useVehicleStore((s) => s.isLoading);
   const loadError = useVehicleStore((s) => s.loadError);
-  // Default selection
-  const [leftId, setLeftId] = useState<string>('hyundai-tucson');
-  const [rightId, setRightId] = useState<string>('volkswagen-tiguan');
+  // Araç kartındaki "Karşılaştır" aksiyonu /karsilastir?a=<slug> ile gelir; yoksa varsayılan seçim
+  const [searchParams] = useSearchParams();
+  const [leftId, setLeftId] = useState<string>(() => searchParams.get('a') ?? 'hyundai-tucson');
+  const [rightId, setRightId] = useState<string>(() => searchParams.get('b') ?? 'volkswagen-tiguan');
 
   const leftVehicle: Vehicle | undefined = vehicles.find((v) => v.slug === leftId) || vehicles[0];
-  const rightVehicle: Vehicle | undefined = vehicles.find((v) => v.slug === rightId) || vehicles[1];
+  // Sağ sütun soldakiyle aynı araca düşmesin
+  const rightVehicle: Vehicle | undefined =
+    vehicles.find((v) => v.slug === rightId && v.id !== leftVehicle?.id) || vehicles.find((v) => v.id !== leftVehicle?.id);
 
   // Sayfa doğrudan açıldığında/yenilendiğinde veri henüz gelmemiş olabilir: boş listeyle render etme
   if (isLoading) {
@@ -56,11 +60,12 @@ export function ComparisonEngine() {
       <select
         value={currentId}
         onChange={(e) => setVehicle(e.target.value)}
-        className="w-full max-w-full truncate appearance-none bg-transparent font-display text-base sm:text-xl md:text-2xl font-light text-foreground text-center cursor-pointer focus:outline-none pr-8 pl-4 py-2 border-b border-transparent hover:border-border-subtle transition-colors"
+        aria-label="Karşılaştırılacak aracı seçin"
+        className="w-full max-w-full cursor-pointer appearance-none truncate border-b border-transparent bg-transparent py-2 pl-4 pr-8 text-center font-display text-base font-normal text-foreground transition-colors hover:border-border-strong focus:outline-none focus-visible:border-foreground sm:text-xl md:text-2xl"
       >
         {vehicles.map((v) => (
           <option key={v.slug} value={v.slug} className="text-base bg-void text-foreground">
-            {v.brand} {v.model}
+            {vehicleName(v)}
           </option>
         ))}
       </select>
@@ -99,9 +104,9 @@ export function ComparisonEngine() {
 
     return (
       <div className="flex flex-col items-center py-6 min-w-0 px-2 text-center">
-        <span className="text-[10px] uppercase tracking-widest text-muted mb-3 truncate max-w-full">{label}</span>
-        <span 
-          className={`font-display text-2xl sm:text-3xl md:text-5xl font-light break-words max-w-full truncate transition-colors duration-500 ${isWinner ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'}`} 
+        <span className="stat-label mb-3 max-w-full truncate">{label}</span>
+        <span
+          className={`max-w-full truncate font-display text-xl font-light tabular-nums transition-colors duration-350 sm:text-2xl md:text-4xl ${isWinner ? 'text-success' : 'text-foreground'}`}
           title={String(myValue)}
         >
           {myValue}
@@ -114,18 +119,18 @@ export function ComparisonEngine() {
     return (
       <div className="flex flex-col w-full px-2 sm:px-4 md:px-12 mt-12 gap-8 min-w-0">
         <div className="flex justify-center border-b border-border-subtle pb-4">
-          <span className="text-xs uppercase tracking-widest text-muted truncate">Öne Çıkan Donanımlar</span>
+          <span className="eyebrow truncate">Öne Çıkan Donanımlar</span>
         </div>
         <div className="flex flex-col gap-6">
           {COMPARE_FEATURES.map((feature) => {
             const hasFeature = vehicle.highlights.includes(feature);
             return (
               <div key={feature} className="flex flex-col items-center gap-2 min-w-0 text-center">
-                <span className="text-xs sm:text-sm font-medium text-foreground truncate max-w-full" title={feature}>{feature}</span>
+                <span className="max-w-full truncate text-xs font-medium text-foreground sm:text-sm" title={feature}>{feature}</span>
                 {hasFeature ? (
-                  <Check className="size-5 text-emerald-500 stroke-[1.5] shrink-0" />
+                  <Check className="size-5 shrink-0 stroke-[1.5] text-success" aria-label="Var" />
                 ) : (
-                  <Minus className="size-5 text-muted/30 stroke-[1] shrink-0" />
+                  <Minus className="size-5 shrink-0 stroke-[1] text-muted" aria-label="Yok" />
                 )}
               </div>
             );
@@ -142,22 +147,22 @@ export function ComparisonEngine() {
           {renderVehicleSelector(vehicle.slug, setVehicle)}
         </div>
         
-        {/* Studio Image */}
-        <div className="w-full flex justify-center py-12 px-4 h-64 md:h-80 lg:h-96 object-contain">
-          <motion.img 
+        {/* Studio Image: sabit oran, kırık görselde siluet */}
+        <div className="px-2 py-8 sm:px-4 md:py-12">
+          <SmartImage
             key={vehicle.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            src={vehicle.interactiveGallery?.studioImage || vehicle.media.heroImage} 
-            alt={`${vehicle.brand} ${vehicle.model}`}
-            className="w-full h-full object-contain"
+            src={vehicle.interactiveGallery?.studioImage || vehicle.media.heroImage}
+            alt={vehicleName(vehicle)}
+            aspectRatio="16 / 10"
+            fit="contain"
+            bodyType={vehicle.bodyType}
+            colorHex={vehicle.media.colorHex}
           />
         </div>
 
         {/* Pricing / Trim */}
         <div className="flex flex-col items-center mb-12">
-          <span className="text-xs uppercase tracking-widest text-muted">{vehicle.pricing.trim}</span>
+          <span className="eyebrow" lang="en">{cleanText(vehicle.pricing.trim)}</span>
         </div>
 
         {/* Stats */}
@@ -180,8 +185,8 @@ export function ComparisonEngine() {
   return (
     // overflow-x-clip: yatay taşmayı keser ama (overflow-x-auto'nun aksine) scroll container açmaz,
     // böylece araç seçicilerin sticky davranışı çalışır. min-w-[600px] mobilde yatay kaydırma yaratıyordu.
-    <section className="w-full min-h-screen bg-void pt-16 overflow-x-clip">
-      <div className="mx-auto max-w-[1600px] grid grid-cols-2 min-h-screen border-t border-border-subtle relative">
+    <section className="w-full overflow-x-clip bg-void">
+      <div className="relative mx-auto grid min-h-[calc(100svh-4rem)] max-w-[1600px] grid-cols-2 border-t border-border-subtle">
         {/* Left Column */}
         <div className="border-r border-border-subtle min-w-0">
           {renderColumn(leftVehicle, setLeftId, rightVehicle)}

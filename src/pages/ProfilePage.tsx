@@ -2,12 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Shield, Save, Camera, Loader2, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { LoadingState, StatusScreen } from '../components/ui/DataState';
+import { primaryButtonClass } from '../components/ui/buttonStyles';
+import { PageContainer } from '../components/layout/PageContainer';
+import { TRANSITION, fade } from '../lib/motion';
 import { getUserProfile, updateUserProfile } from '../services/userService';
 import { updateProfile } from 'firebase/auth';
 
 export function ProfilePage() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -116,18 +119,30 @@ export function ProfilePage() {
     }
   };
 
+  // Sayfa yenilendiğinde Firebase oturumu birkaç yüz ms sonra gelir; o ana kadar karar verme
+  if (isAuthLoading) {
+    return <LoadingState label="Oturum kontrol ediliyor..." />;
+  }
+
+  // Oturum yoksa sessizce ana sayfaya atmak yerine giriş çağrısı
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <StatusScreen
+        eyebrow="Hesabım"
+        title="Profilinizi görmek için giriş yapın"
+        description="Kişisel bilgilerinizi, garajınızı ve test sürüşü randevularınızı tek yerden yönetin."
+        actions={
+          <button type="button" onClick={() => openAuthModal()} className={primaryButtonClass}>
+            Giriş Yap
+          </button>
+        }
+      />
+    );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-void pt-24 pb-20 px-4 md:px-8 lg:px-12"
-    >
+    <motion.div {...fade} transition={TRANSITION.base}>
+      <PageContainer width="narrow">
       <div className="mx-auto max-w-2xl">
         <header className="mb-10 text-center">
           <div className="relative mx-auto flex size-24 items-center justify-center rounded-full border border-border-subtle bg-surface mb-6 group cursor-pointer overflow-hidden">
@@ -144,7 +159,7 @@ export function ProfilePage() {
                 className="absolute inset-0 bg-void/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Camera className="size-6 text-white" />
+                <Camera className="size-6 text-foreground" />
               </div>
             )}
             <input 
@@ -155,19 +170,19 @@ export function ProfilePage() {
               className="hidden"
             />
           </div>
-          <h1 className="font-display text-3xl font-light tracking-wide text-foreground">Profil Ayarları</h1>
-          <p className="mt-2 font-display text-base font-light tracking-wide text-muted">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
+          <h1 className="text-display-md font-light text-foreground">Profil Ayarları</h1>
+          <p className="mt-3 text-base text-secondary">Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin.</p>
         </header>
 
         <form className="space-y-8" onSubmit={handleSave}>
           <div className="space-y-6 rounded-none border border-border-subtle bg-surface p-6 md:p-10">
-            <h2 className="text-xs uppercase tracking-[0.2em] text-muted border-b border-border-subtle/30 pb-4">
+            <h2 className="eyebrow border-b border-border-subtle pb-4">
               Kişisel Bilgiler
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="firstName" className="text-[10px] uppercase tracking-widest text-muted">Ad</label>
+                <label htmlFor="firstName" className="stat-label">Ad</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" strokeWidth={1.5} />
                   <input
@@ -175,14 +190,14 @@ export function ProfilePage() {
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm font-light tracking-wide text-foreground outline-none focus:border-foreground transition-colors"
+                    className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm text-foreground outline-none transition-colors focus:border-foreground"
                     placeholder="Adınız"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="lastName" className="text-[10px] uppercase tracking-widest text-muted">Soyad</label>
+                <label htmlFor="lastName" className="stat-label">Soyad</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" strokeWidth={1.5} />
                   <input
@@ -190,7 +205,7 @@ export function ProfilePage() {
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm font-light tracking-wide text-foreground outline-none focus:border-foreground transition-colors"
+                    className="w-full rounded-none border border-border-subtle bg-void px-10 py-3 text-sm text-foreground outline-none transition-colors focus:border-foreground"
                     placeholder="Soyadınız"
                   />
                 </div>
@@ -198,7 +213,7 @@ export function ProfilePage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-[10px] uppercase tracking-widest text-muted">E-posta Adresi</label>
+              <label htmlFor="email" className="stat-label">E-posta Adresi</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" strokeWidth={1.5} />
                 <input
@@ -206,15 +221,15 @@ export function ProfilePage() {
                   type="email"
                   defaultValue={user.email || ''}
                   disabled
-                  className="w-full rounded-none border border-border-subtle bg-void/50 px-10 py-3 text-sm font-light tracking-wide text-muted outline-none cursor-not-allowed"
+                  className="w-full rounded-none border border-border-subtle bg-void/50 px-10 py-3 text-sm text-muted outline-none cursor-not-allowed"
                   placeholder="ornek@email.com"
                 />
               </div>
-              <p className="text-[10px] text-muted/60 mt-1">E-posta adresi değiştirilemez.</p>
+              <p className="mt-1 text-xs text-muted">E-posta adresi değiştirilemez.</p>
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="role" className="text-[10px] uppercase tracking-widest text-muted">Hesap Türü</label>
+              <label htmlFor="role" className="stat-label">Hesap Türü</label>
               <div className="relative">
                 <Shield className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" strokeWidth={1.5} />
                 <input
@@ -222,7 +237,7 @@ export function ProfilePage() {
                   type="text"
                   defaultValue={isAdmin ? 'Yönetici' : 'Standart Kullanıcı'}
                   disabled
-                  className="w-full rounded-none border border-border-subtle bg-void/50 px-10 py-3 text-sm font-light tracking-wide text-muted outline-none cursor-not-allowed"
+                  className="w-full rounded-none border border-border-subtle bg-void/50 px-10 py-3 text-sm text-muted outline-none cursor-not-allowed"
                 />
               </div>
             </div>
@@ -246,6 +261,7 @@ export function ProfilePage() {
           </div>
         </form>
       </div>
+      </PageContainer>
     </motion.div>
   );
 }

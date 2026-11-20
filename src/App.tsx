@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { MotionConfig } from 'framer-motion';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { RouteBoundary } from './components/layout/RouteBoundary';
@@ -24,6 +25,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AuthModal } from './components/ui/AuthModal';
 import { subscribeVehicles } from './services/vehicleService';
 import { useVehicleStore } from './store/useVehicleStore';
+import { TRANSITION } from './lib/motion';
 
 /** Firestore → Zustand gerçek zamanlı senkronizasyon */
 function FirestoreSync() {
@@ -44,6 +46,9 @@ function FirestoreSync() {
 
 export default function App() {
   return (
+    // reducedMotion="user": işletim sisteminde "hareketi azalt" açıksa transform animasyonları kapanır (opaklık kalır).
+    // Varsayılan geçiş, transition belirtmeyen tüm motion bileşenlerine ortak süre/eğriyi verir (lib/motion.ts).
+    <MotionConfig reducedMotion="user" transition={TRANSITION.base}>
     <AuthProvider>
       <GarageProvider>
         <FirestoreSync />
@@ -78,6 +83,7 @@ export default function App() {
         <AuthModal />
       </GarageProvider>
     </AuthProvider>
+    </MotionConfig>
   );
 }
 

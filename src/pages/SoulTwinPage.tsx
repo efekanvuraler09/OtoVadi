@@ -13,6 +13,11 @@ import {
 } from '../utils/dnaEngine';
 import { useVehicleStore } from '../store/useVehicleStore';
 import { useI18n } from '../i18n/useI18n';
+import { TRANSITION, fadeUp } from '../lib/motion';
+
+/** Temaya uyumlu çok hafif ortam ışığı (eskiden sabit beyaz rgba: açık temada görünmüyordu) */
+const ambientGlow = (y: number) =>
+  `radial-gradient(ellipse 55% 45% at 50% ${y}%, rgb(var(--color-foreground) / 0.035), transparent 70%)`;
 
 type Stage = 'intro' | 'quiz' | 'result';
 
@@ -76,39 +81,35 @@ export function SoulTwinPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex min-h-dvh flex-col items-center justify-center px-6"
+            transition={TRANSITION.base}
+            className="flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center px-4 py-16 md:px-8"
           >
             {/* Ambient background glow */}
             <div
               className="pointer-events-none fixed inset-0"
-              style={{
-                background:
-                  'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,255,255,0.02), transparent 70%)',
-              }}
+              style={{ background: ambientGlow(50) }}
             />
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+              {...fadeUp}
+              transition={{ ...TRANSITION.slow, delay: 0.05 }}
               className="relative flex flex-col items-center gap-6 text-center"
             >
               {/* Icon */}
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
-                className="flex size-16 items-center justify-center border border-foreground/10 bg-foreground/5"
+                transition={{ ...TRANSITION.base, delay: 0.1 }}
+                className="flex size-16 items-center justify-center border border-border-subtle bg-surface"
               >
                 <Dna className="size-7 text-muted" strokeWidth={1} />
               </motion.div>
 
-              <h1 className="font-display text-4xl font-light tracking-wide text-foreground md:text-5xl lg:text-6xl">
+              <h1 className="text-display-lg font-light text-foreground">
                 {t.soulTwin.findSoulTwin}
               </h1>
 
-              <p className="max-w-md font-display text-xl font-light leading-[1.6] text-muted md:text-2xl">
+              <p className="max-w-md text-xl font-light leading-relaxed text-secondary md:text-2xl">
                 {t.soulTwin.introDesc1}
                 <br />
                 {t.soulTwin.introDesc2}
@@ -117,8 +118,8 @@ export function SoulTwinPage() {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-                className="mt-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] font-light text-muted"
+                transition={{ ...TRANSITION.base, delay: 0.2 }}
+                className="eyebrow mt-4"
               >
                 {t.soulTwin.introDesc3}
               </motion.p>
@@ -127,12 +128,10 @@ export function SoulTwinPage() {
                 type="button"
                 onClick={handleStart}
                 disabled={!isReady}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0, duration: 0.5 }}
-                whileHover={isReady ? { scale: 1.02 } : undefined}
-                whileTap={isReady ? { scale: 0.97 } : undefined}
-                className="mt-8 border border-border-subtle/50 dark:border-foreground/15 bg-foreground/5 px-10 py-4 font-display text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-foreground/70 dark:text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                {...fadeUp}
+                transition={{ ...TRANSITION.base, delay: 0.25 }}
+                whileTap={isReady ? { scale: 0.98 } : undefined}
+                className="mt-8 inline-flex min-h-12 items-center justify-center bg-foreground px-10 text-xs font-semibold uppercase tracking-eyebrow text-void transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isReady ? t.soulTwin.startTest : isLoading ? 'Araçlar yükleniyor...' : 'Araç bulunamadı'}
               </motion.button>
@@ -167,16 +166,13 @@ export function SoulTwinPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex min-h-dvh flex-col items-center justify-center gap-12 px-6 py-20 md:gap-16"
+            transition={TRANSITION.slow}
+            className="flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center gap-12 px-4 py-16 md:gap-16 md:px-8"
           >
             {/* Ambient glow */}
             <div
               className="pointer-events-none fixed inset-0"
-              style={{
-                background:
-                  'radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255,255,255,0.02), transparent 70%)',
-              }}
+              style={{ background: ambientGlow(40) }}
             />
 
             {/* DNA Profile */}
@@ -186,7 +182,7 @@ export function SoulTwinPage() {
             <motion.div
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 100, opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
+              transition={{ ...TRANSITION.slow, delay: 0.3 }}
               className="h-px bg-border-subtle"
             />
 
@@ -195,15 +191,14 @@ export function SoulTwinPage() {
 
             {/* Actions */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 0.6 }}
+              {...fadeUp}
+              transition={{ ...TRANSITION.base, delay: 0.6 }}
               className="flex items-center gap-6"
             >
               <button
                 type="button"
                 onClick={handleRestart}
-                className="group flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-muted transition-colors hover:text-foreground md:text-[11px]"
+                className="group inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-eyebrow text-muted transition-colors hover:text-foreground"
               >
                 <RotateCcw className="size-4 transition-transform group-hover:-rotate-90" />
                 <span>{t.soulTwin.retakeTest}</span>

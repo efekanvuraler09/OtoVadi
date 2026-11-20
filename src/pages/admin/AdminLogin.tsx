@@ -31,7 +31,7 @@ export function AdminLogin() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-void flex items-center justify-center p-4">
+    <main className="w-full min-h-dvh bg-void flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export function AdminLogin() {
             />
             <label 
               htmlFor="admin-user" 
-              className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+              className="absolute left-0 -top-4 text-2xs uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
             >
               E-posta Adresi
             </label>
@@ -75,7 +75,7 @@ export function AdminLogin() {
             />
             <label 
               htmlFor="admin-pass" 
-              className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+              className="absolute left-0 -top-4 text-2xs uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
             >
               Şifre
             </label>

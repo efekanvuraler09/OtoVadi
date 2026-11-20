@@ -1,36 +1,56 @@
-import { motion } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
+import { useI18n } from '../../i18n/useI18n';
 
-export function ThemeToggle() {
-  const { theme, toggleTheme } = useThemeStore();
+interface ThemeToggleProps {
+  /** icon: header'daki yuvarlak ikon butonu (rengi ebeveynden alır); segmented: menüdeki Açık/Koyu seçimi */
+  variant?: 'icon' | 'segmented';
+}
 
-  return (
-    <motion.button
-      whileTap={{ scale: 0.95 }}
-      onClick={toggleTheme}
-      className="border border-border-subtle bg-surface flex h-10 w-[72px] items-center justify-between rounded-none p-1 relative"
-      aria-label="Temayı değiştir"
-    >
-      <motion.div
-        className="absolute h-8 w-8 rounded-none bg-foreground"
-        animate={{
-          x: theme === 'dark' ? 32 : 0,
-        }}
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      />
-      <div className="z-10 flex w-full justify-between px-1.5">
-        <Sun
-          className={`h-4 w-4 ${
-            theme === 'light' ? 'text-void' : 'text-muted'
-          }`}
-        />
-        <Moon
-          className={`h-4 w-4 ${
-            theme === 'dark' ? 'text-void' : 'text-muted'
-          }`}
-        />
+export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
+  const { theme, toggleTheme, setTheme } = useThemeStore();
+  const { t } = useI18n();
+
+  if (variant === 'segmented') {
+    return (
+      <div role="radiogroup" aria-label={t.nav.theme} className="grid grid-cols-2 gap-1 border border-border-subtle p-1">
+        {(['light', 'dark'] as const).map((value) => {
+          const active = theme === value;
+          const Icon = value === 'light' ? Sun : Moon;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => setTheme(value)}
+              className={`flex h-10 items-center justify-center gap-2 text-sm font-medium transition-colors ${
+                active ? 'bg-foreground text-void' : 'text-secondary hover:text-foreground'
+              }`}
+            >
+              <Icon className="size-4" strokeWidth={1.5} aria-hidden />
+              {value === 'light' ? t.nav.lightMode : t.nav.darkMode}
+            </button>
+          );
+        })}
       </div>
-    </motion.button>
+    );
+  }
+
+  const label = `${t.nav.theme}: ${theme === 'dark' ? t.nav.darkMode : t.nav.lightMode}`;
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={label}
+      title={label}
+      className="flex size-10 items-center justify-center rounded-full transition-opacity hover:opacity-70"
+    >
+      {theme === 'dark' ? (
+        <Moon className="size-[18px]" strokeWidth={1.5} aria-hidden />
+      ) : (
+        <Sun className="size-[18px]" strokeWidth={1.5} aria-hidden />
+      )}
+    </button>
   );
 }

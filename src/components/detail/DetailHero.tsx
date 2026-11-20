@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft, Bookmark } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
-import { VehicleMediaCover } from '../ui/VehicleMediaCover';
+import { SmartImage } from '../ui/SmartImage';
 import { formatVehiclePrice } from '../../utils/formatPrice';
+import { cleanText, vehicleBrand, vehicleModel, vehicleName } from '../../utils/vehicleText';
 import { useBackNavigation } from '../../hooks/useBackNavigation';
 import { useGarageToggle } from '../../hooks/useGarageToggle';
 
@@ -12,75 +13,69 @@ interface DetailHeroProps {
   onOpenTestDrive?: () => void;
 }
 
+const overlayButtonClass =
+  'flex size-11 items-center justify-center border border-border-subtle bg-void/70 text-foreground backdrop-blur-sm transition-colors hover:bg-void';
+
 export function DetailHero({ vehicle, onOpenTestDrive }: DetailHeroProps) {
   const goBack = useBackNavigation('/');
   const { isGaraged, isBusy, toggle } = useGarageToggle(vehicle);
+  const trim = cleanText(vehicle.pricing.trim);
 
   return (
     <header className="relative">
-      <div
-        className="relative h-80 w-full overflow-hidden bg-void md:h-[28rem]"
-      >
-        <VehicleMediaCover
+      <div className="relative h-[22rem] w-full overflow-hidden bg-black md:h-[30rem]">
+        <SmartImage
           src={vehicle.media.heroImage}
-          alt={`${vehicle.brand} ${vehicle.model}`}
+          alt={vehicleName(vehicle)}
+          bodyType={vehicle.bodyType}
           colorHex={vehicle.media.colorHex}
+          tone="dark"
+          priority
         />
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"
-        />
+        {/* Metin okunabilirliği için alttan ve (masaüstünde) soldan scrim; görsel her temada koyu zemin üzerinde */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
+        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-black/50 via-black/10 to-transparent md:block" />
 
         <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-3 md:px-8">
-          <button
-            type="button"
-            onClick={goBack}
-            className="flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none"
-            aria-label="Geri dön"
-          >
-            <ArrowLeft className="size-5 text-foreground" />
+          <button type="button" onClick={goBack} className={overlayButtonClass} aria-label="Geri dön">
+            <ArrowLeft className="size-5" strokeWidth={1.5} aria-hidden />
           </button>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={onOpenTestDrive}
-              className="flex items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm px-6 font-sans text-xs uppercase tracking-widest text-foreground transition-colors hover:bg-foreground hover:text-void"
+              className="hidden h-11 items-center justify-center border border-border-subtle bg-void/70 px-6 text-xs font-semibold uppercase tracking-eyebrow text-foreground backdrop-blur-sm transition-colors hover:bg-foreground hover:text-void md:flex"
             >
               Test Sürüşü
             </button>
             <motion.button
               type="button"
               disabled={isBusy}
-              whileTap={isBusy ? {} : { scale: 0.9 }}
+              whileTap={isBusy ? {} : { scale: 0.94 }}
               onClick={toggle}
-              className={`flex size-11 items-center justify-center border border-border-subtle bg-void/60 backdrop-blur-sm rounded-none ${isBusy ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`${overlayButtonClass} ${isBusy ? 'cursor-not-allowed opacity-50' : ''}`}
               aria-label={isGaraged ? 'Garajdan çıkar' : 'Garaja ekle'}
               aria-pressed={isGaraged}
             >
               {isBusy ? (
-                <div className="size-5 rounded-full border-[1.5px] border-muted border-t-foreground animate-spin" />
+                <span className="size-5 animate-spin rounded-full border-[1.5px] border-muted border-t-foreground" />
               ) : (
-                <Bookmark
-                  className={`size-5 ${isGaraged ? 'fill-foreground text-foreground stroke-foreground' : 'text-muted stroke-[1.5]'}`}
-                />
+                <Bookmark className={`size-5 ${isGaraged ? 'fill-current' : ''}`} strokeWidth={1.5} aria-hidden />
               )}
             </motion.button>
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-6 md:px-8 lg:px-12">
-          <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">
-            {vehicle.brand} · {vehicle.year}
+        <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-7xl px-4 pb-8 md:px-8 lg:px-12">
+          <p className="eyebrow text-white/70">
+            <span lang="en">{vehicleBrand(vehicle)}</span> · <span className="tabular-nums">{vehicle.year}</span>
           </p>
-          <h1 className="mt-1 font-display text-4xl md:text-5xl font-light tracking-wide text-white/90">
-            {vehicle.model}
-          </h1>
-          <p className="mt-1 font-display text-base text-white/70 font-light tracking-wide">{vehicle.tagline}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="text-lg font-sans font-light text-white">
-              {formatVehiclePrice(vehicle.pricing)}
-            </span>
-            <span className="text-xs text-white/70">{vehicle.pricing.trim}</span>
+          <h1 className="mt-3 text-display-lg font-light text-white">{vehicleModel(vehicle)}</h1>
+          {vehicle.tagline && <p className="mt-2 max-w-2xl text-base text-white/75">{cleanText(vehicle.tagline)}</p>}
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span className="text-xl font-medium tabular-nums text-white">{formatVehiclePrice(vehicle.pricing)}</span>
+            {trim && <span className="text-sm text-white/70">{trim}</span>}
           </div>
         </div>
       </div>

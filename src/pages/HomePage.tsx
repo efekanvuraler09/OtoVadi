@@ -1,13 +1,18 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
+import { FeaturedShowcase } from '../components/home/FeaturedShowcase';
+import { InstantSearch } from '../components/home/InstantSearch';
 import { SegmentPicker } from '../components/home/SegmentPicker';
-import { VehicleCard } from '../components/home/VehicleCard';
+import { VehicleCard } from '../components/vehicle/VehicleCard';
 import { VehicleLoadError } from '../components/ui/DataState';
+import { PageContainer } from '../components/layout/PageContainer';
+import { SectionHeader } from '../components/layout/PageHeader';
 import { getSegmentOption } from '../data/segments';
 import { filterVehicles, useVehicleStore } from '../store/useVehicleStore';
 import { useI18n } from '../i18n/useI18n';
+import { fadeUp } from '../lib/motion';
 
 export function HomePage() {
   const { t } = useI18n();
@@ -19,117 +24,105 @@ export function HomePage() {
   const selectedBodyType = useVehicleStore((s) => s.selectedBodyType);
   const setSelectedCategory = useVehicleStore((s) => s.setSelectedCategory);
 
-  const segmentInfo = (selectedSegment && selectedBodyType) ? getSegmentOption(selectedSegment, selectedBodyType) : null;
+  const segmentInfo = selectedSegment && selectedBodyType ? getSegmentOption(selectedSegment, selectedBodyType) : null;
+  const showResults = Boolean(selectedBodyType || searchQuery);
 
   const filteredVehicles = useMemo(
     () => filterVehicles(vehicles, searchQuery, selectedSegment, selectedBodyType),
     [vehicles, searchQuery, selectedSegment, selectedBodyType],
   );
 
+  const resetFilters = () => {
+    setSelectedCategory(null, null);
+    setSearchQuery('');
+  };
+
+  const resultsLabel = segmentInfo
+    ? t.catalog.segments[`${segmentInfo.segment}-${segmentInfo.bodyType}` as keyof typeof t.catalog.segments] || segmentInfo.label
+    : selectedBodyType
+      ? t.catalog.bodyTypes[selectedBodyType]
+      : 'Arama Sonuçları';
+
+  const showAllResults = (query: string) => {
+    setSelectedCategory(null, null);
+    setSearchQuery(query);
+    requestAnimationFrame(() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
+
   return (
     <>
-      <HeroSection showCatalogCta={!selectedSegment} />
+      <HeroSection />
 
-      {/* GLOBAL SEARCH BAR */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-12 pb-4">
-        <div className="border border-border-subtle bg-transparent flex min-h-14 items-center gap-4 rounded-none px-6 w-full hover:border-foreground/50 transition-colors focus-within:border-foreground">
-          <Search className="size-5 shrink-0 text-muted" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.catalog.searchPlaceholder}
-            className="w-full bg-transparent font-display text-base font-light tracking-wide text-foreground outline-none placeholder:text-muted"
-            aria-label="Araç ara"
-          />
-        </div>
-      </div>
+      <FeaturedShowcase />
 
-      {loadError && vehicles.length === 0 ? (
-        // Firestore'a ulaşılamadıysa boş "YAKINDA" listesi yerine bağlantı hatası + tekrar dene
-        <VehicleLoadError compact />
-      ) : !selectedBodyType && !searchQuery ? (
-        <SegmentPicker />
-      ) : (
-        // scroll-mt-20: sticky header (h-16) başlığın üstünü örtmesin
-        <section id="catalog" className="scroll-mt-20 px-4 pt-6 md:px-8 lg:px-12 py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
-          >
-            {(selectedBodyType || searchQuery) && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCategory(null, null);
-                  setSearchQuery('');
-                }}
-                className="mb-4 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
-              >
-                <ArrowLeft className="size-4" />
-                Geri Dön
-              </button>
-            )}
+      <section aria-labelledby="explore-title" className="border-t border-border-subtle">
+        <PageContainer spacing="section">
+          <SectionHeader id="explore-title" title={t.home.bodyTypesTitle} description={t.home.bodyTypesSubtitle} />
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-left">
-                <p className="text-xs font-medium uppercase tracking-mb-wider text-muted">
-                  {segmentInfo ? segmentInfo.label : (searchQuery ? 'Arama Sonuçları' : '')}
-                </p>
-                <h2 className="mt-1 text-xl font-display font-light tracking-wide text-foreground md:text-2xl">
-                  Araç Kataloğu
-                </h2>
-                <p className="mt-1 text-sm text-muted">
-                  {filteredVehicles.length} araç
-                  {searchQuery ? ` · "${searchQuery}"` : ''}
-                </p>
-              </div>
-            </div>
-          </motion.div>
+          <div className="mb-10 md:mb-12">
+            <InstantSearch onShowAll={showAllResults} />
+          </div>
 
-          {filteredVehicles.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="border border-border-subtle rounded-none px-6 py-12 text-center"
-            >
-              <p className="text-sm text-muted">
-                Bu klasmanda henüz araç yok veya aramanızla eşleşmedi.
-              </p>
-              <div className="mt-4 flex flex-col items-center gap-2">
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="text-sm font-medium text-foreground hover:text-foreground/80 transition-colors"
-                  >
-                    Aramayı temizle
-                  </button>
-                )}
+          {loadError && vehicles.length === 0 ? (
+            // Firestore'a ulaşılamadıysa boş liste yerine bağlantı hatası + tekrar dene
+            <VehicleLoadError compact />
+          ) : !showResults ? (
+            <SegmentPicker />
+          ) : (
+            // scroll-mt-20: sticky header (h-16) başlığın üstünü örtmesin
+            <div id="catalog" className="scroll-mt-20">
+              <motion.div {...fadeUp} className="mb-8">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedCategory(null, null);
-                    setSearchQuery('');
-                  }}
-                  className="text-sm font-medium text-muted underline hover:text-foreground transition-colors"
+                  onClick={resetFilters}
+                  className="mb-6 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-secondary transition-colors hover:text-foreground"
                 >
-                  Başka klasman seç
+                  <ArrowLeft className="size-4" strokeWidth={1.5} aria-hidden />
+                  Geri Dön
                 </button>
-              </div>
-            </motion.div>
-          ) : (
-            <ul className="flex flex-col gap-12 md:grid md:grid-cols-2 md:gap-16 lg:grid-cols-2 xl:grid-cols-3">
-              {filteredVehicles.map((vehicle, index) => (
-                <li key={vehicle.id} className="w-full">
-                  <VehicleCard vehicle={vehicle} index={index} />
-                </li>
-              ))}
-            </ul>
+                <p className="eyebrow">{resultsLabel}</p>
+                <h2 className="mt-2 text-display-sm font-light text-foreground">Araç Kataloğu</h2>
+                <p className="mt-1 text-sm text-muted">
+                  <span className="tabular-nums">{filteredVehicles.length}</span> araç
+                  {searchQuery ? ` · "${searchQuery}"` : ''}
+                </p>
+              </motion.div>
+
+              {filteredVehicles.length === 0 ? (
+                <div className="border border-border-subtle px-6 py-12 text-center">
+                  <p className="text-sm text-muted">Bu klasmanda henüz araç yok veya aramanızla eşleşmedi.</p>
+                  <div className="mt-4 flex flex-col items-center gap-2">
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="text-sm font-medium text-foreground transition-colors hover:text-secondary"
+                      >
+                        Aramayı temizle
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="text-sm font-medium text-muted underline underline-offset-4 transition-colors hover:text-foreground"
+                    >
+                      Başka klasman seç
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
+                  {filteredVehicles.map((vehicle, index) => (
+                    <li key={vehicle.id}>
+                      <VehicleCard vehicle={vehicle} index={index} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
-        </section>
-      )}
+        </PageContainer>
+      </section>
     </>
   );
 }

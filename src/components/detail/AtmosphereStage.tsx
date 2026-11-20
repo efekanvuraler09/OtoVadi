@@ -1,10 +1,13 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useI18n } from '../../i18n/useI18n';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { SmartImage } from '../ui/SmartImage';
+import { vehicleBrand, vehicleModel, vehicleName } from '../../utils/vehicleText';
+import { TRANSITION, staggerDelay } from '../../lib/motion';
 
 interface AtmosphereStageProps {
   vehicle: Vehicle;
@@ -23,22 +26,15 @@ interface FloatingSpecProps {
 function FloatingSpec({ label, value, index }: FloatingSpecProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{
-        delay: 1.2 + index * 0.6,
-        duration: 0.9,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+      exit={{ opacity: 0, y: -8 }}
+      // Eskiden son değer 3. saniyede geliyordu; artık tümü ~0.6 sn içinde yerinde
+      transition={{ ...TRANSITION.slow, delay: 0.3 + staggerDelay(index, 0.08) }}
       className="flex flex-col items-center gap-1 md:items-start"
     >
-      <span className="font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/40">
-        {label}
-      </span>
-      <span className="font-display text-3xl font-light tracking-wider text-white/90 md:text-5xl lg:text-6xl">
-        {value}
-      </span>
+      <span className="stat-label text-white/55">{label}</span>
+      <span className="font-display text-3xl font-light tabular-nums text-white md:text-4xl lg:text-5xl">{value}</span>
     </motion.div>
   );
 }
@@ -47,7 +43,6 @@ function FloatingSpec({ label, value, index }: FloatingSpecProps) {
 
 export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStageProps) {
   const { t } = useI18n();
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   /* ── ESC key handler ── */
   const handleKeyDown = useCallback(
@@ -69,11 +64,6 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
     };
   }, [isOpen, handleKeyDown]);
 
-  /* ── Reset image state on reopen ── */
-  useEffect(() => {
-    if (isOpen) setImageLoaded(false);
-  }, [isOpen]);
-
   /* ── Build spec metrics from vehicle data ── */
   const specs = buildSpecs(vehicle);
 
@@ -83,10 +73,6 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
       ? 'rgba(180, 40, 40, 0.12)'
       : 'rgba(40, 80, 180, 0.12)';
 
-  const heroSrc = vehicle.media.heroImage?.startsWith('http') || vehicle.media.heroImage?.startsWith('/')
-    ? vehicle.media.heroImage
-    : `/${vehicle.media.heroImage}`;
-
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -95,10 +81,10 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          transition={TRANSITION.slow}
           role="dialog"
           aria-modal="true"
-          aria-label={`${vehicle.brand} ${vehicle.model} Atmosfer Sahnesi`}
+          aria-label={`${vehicleName(vehicle)} Atmosfer Sahnesi`}
         >
           {/* ── Ambient Glow ── */}
           <div
@@ -111,26 +97,22 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             }}
           />
 
-          {/* ── Ken Burns Hero Image ── */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            initial={{ scale: 1.0, opacity: 0 }}
-            animate={{ scale: 1.0, opacity: imageLoaded ? 1 : 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-          >
-            <img
-              src={heroSrc}
-              alt={`${vehicle.brand} ${vehicle.model}`}
-              onLoad={() => setImageLoaded(true)}
-              className="atmosphere-ken-burns pointer-events-none h-full w-full object-contain md:object-contain"
-              style={{
-                maxHeight: '75vh',
-                objectPosition: 'center center',
-                filter: 'brightness(0.85) contrast(1.05)',
-              }}
+          {/* ── Ken Burns Hero Image: görsel kırıksa sonsuz siyah ekran yerine siluet + stüdyo zemini ── */}
+          <div className="absolute inset-x-0 top-1/2 h-[75svh] -translate-y-1/2">
+            <SmartImage
+              src={vehicle.media.heroImage}
+              alt={vehicleName(vehicle)}
+              fit="contain"
+              tone="dark"
+              bodyType={vehicle.bodyType}
+              colorHex={vehicle.media.colorHex}
+              priority
               draggable={false}
+              className="!bg-none"
+              imgClassName="atmosphere-ken-burns pointer-events-none"
+              imgStyle={{ filter: 'brightness(0.85) contrast(1.05)' }}
             />
-          </motion.div>
+          </div>
 
           {/* ── Vignette Overlay ── */}
           <div
@@ -149,8 +131,8 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute right-6 top-6 z-10 flex items-center gap-3 rounded-full border border-neutral-700 bg-neutral-900/80 px-5 py-2.5 font-sans text-xs font-medium uppercase tracking-[0.2em] text-neutral-300 backdrop-blur-md transition-all duration-300 hover:border-neutral-500 hover:text-white md:right-8 md:top-8 dark:bg-neutral-800/80"
+            transition={{ ...TRANSITION.base, delay: 0.2 }}
+            className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top,0px))] z-10 flex min-h-11 items-center gap-3 rounded-full border border-white/20 bg-black/60 px-5 text-xs font-semibold uppercase tracking-eyebrow text-white/85 backdrop-blur-md transition-colors hover:border-white/50 hover:text-white md:right-8 md:top-8"
             aria-label={t.catalog.exitStage}
           >
             <span className="hidden sm:inline">{t.catalog.exitStage}</span>
@@ -159,20 +141,16 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
 
           {/* ── Vehicle Identity ── */}
           <motion.div
-            className="absolute left-6 top-8 z-10 max-w-[60%] md:left-12 md:top-12"
-            initial={{ opacity: 0, x: -16 }}
+            className="absolute left-4 top-[calc(5rem+env(safe-area-inset-top,0px))] z-10 max-w-[80%] md:left-12 md:top-12 md:max-w-[60%]"
+            initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
+            transition={{ ...TRANSITION.slow, delay: 0.15 }}
           >
-            <p className="font-display text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-white/40">
-              {vehicle.brand} · {vehicle.year}
+            <p className="stat-label text-white/55">
+              <span lang="en">{vehicleBrand(vehicle)}</span> · <span className="tabular-nums">{vehicle.year}</span>
             </p>
-            <h2 className="mt-2 font-display text-3xl font-light tracking-widest text-white/90 md:text-4xl lg:text-5xl">
-              {vehicle.model}
-            </h2>
-            <p className="mt-2 font-display text-sm md:text-base font-light text-white/40">
-              {vehicle.tagline}
-            </p>
+            <h2 className="mt-2 text-display-md font-light text-white">{vehicleModel(vehicle)}</h2>
+            <p className="mt-2 text-sm text-white/60 md:text-base">{vehicle.tagline}</p>
           </motion.div>
 
           {/* ── Floating Specs ── */}
@@ -203,17 +181,17 @@ function buildSpecs(vehicle: Vehicle) {
 
   specs.push({
     label: 'Beygir Gücü',
-    value: `${vehicle.engine.powerHp} HP`,
+    value: `${vehicle.engine.powerHp.toLocaleString('tr-TR')} HP`,
   });
 
   specs.push({
     label: 'Tork',
-    value: `${vehicle.engine.torqueNm} Nm`,
+    value: `${vehicle.engine.torqueNm.toLocaleString('tr-TR')} Nm`,
   });
 
   specs.push({
     label: '0–100 km/h',
-    value: `${vehicle.performance.zeroTo100Kmh}s`,
+    value: `${vehicle.performance.zeroTo100Kmh.toLocaleString('tr-TR')} sn`,
   });
 
   specs.push({

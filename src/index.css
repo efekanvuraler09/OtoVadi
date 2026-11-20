@@ -7,35 +7,58 @@
    * Renk tokenları "R G B" kanalları olarak tutulur (ör. 255 255 255).
    * Tailwind tarafında rgb(var(--token) / <alpha-value>) ile kullanılır.
    * Doğrudan CSS'te kullanırken: rgb(var(--color-foreground)) veya rgb(var(--color-foreground) / 0.5)
+   *
+   * Gri hiyerarşisi: foreground (birincil metin) → secondary (gövde/ikincil metin) → muted (etiket, meta).
+   * Kontrast (zemin void üzerinde): secondary ≥ 10:1, muted ≥ 5:1 — her iki temada WCAG AA.
+   * Medya (video/fotoğraf) üzerindeki metinler temadan bağımsızdır: orada white/black kullanılabilir.
    */
   :root {
+    color-scheme: light;
     --color-void: 255 255 255;            /* #ffffff */
     --color-surface: 250 250 250;         /* #fafafa */
     --color-surface-elevated: 245 245 245; /* #f5f5f5 */
-    --color-muted: 115 115 115;           /* #737373 */
     --color-foreground: 0 0 0;            /* #000000 */
+    --color-secondary: 64 64 64;          /* #404040 */
+    --color-muted: 107 107 107;           /* #6b6b6b */
     --color-border-subtle: 229 229 229;   /* #e5e5e5 */
+    --color-border-strong: 163 163 163;   /* #a3a3a3 */
+    --color-success: 4 120 87;            /* #047857 */
+    --color-warning: 180 83 9;            /* #b45309 */
+    --color-danger: 185 28 28;            /* #b91c1c */
 
     /* Mobil alt bar (BottomNav ve detay aksiyon barı) yüksekliği */
     --bottom-bar-height: 5rem;
   }
 
   .dark {
+    color-scheme: dark;
     --color-void: 0 0 0;                  /* #000000 */
     --color-surface: 10 10 10;            /* #0a0a0a */
     --color-surface-elevated: 20 20 20;   /* #141414 */
-    --color-muted: 115 115 115;           /* #737373 */
     --color-foreground: 255 255 255;      /* #ffffff */
+    --color-secondary: 190 190 190;       /* #bebebe */
+    --color-muted: 145 145 145;           /* #919191 */
     --color-border-subtle: 38 38 38;      /* #262626 */
+    --color-border-strong: 82 82 82;      /* #525252 */
+    --color-success: 52 211 153;          /* #34d399 */
+    --color-warning: 251 191 36;          /* #fbbf24 */
+    --color-danger: 248 113 113;          /* #f87171 */
   }
 
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
-    @apply bg-void font-sans text-foreground antialiased transition-colors duration-300;
+    @apply bg-void font-sans text-foreground antialiased transition-colors duration-350;
     min-height: 100dvh;
     overscroll-behavior-y: none;
   }
@@ -44,19 +67,61 @@
     @apply min-h-dvh w-full;
   }
 
-  /* Mercedes-style selection */
   ::selection {
     @apply bg-foreground text-void;
   }
 
-  /* Mercedes-style heading defaults */
   h1, h2, h3 {
     @apply font-display;
+  }
+
+  /* Klavye odağı: yalnızca klavyeyle gezinirken görünür */
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-foreground));
+    outline-offset: 2px;
   }
 
   /* Prevent blinking text caret on non-input areas */
   *:not(input):not(textarea):not([contenteditable="true"]) {
     caret-color: transparent;
+  }
+}
+
+@layer components {
+  /* Büyük harfli küçük üst başlık (eyebrow). En küçük boyut 11px, harf aralığı tek ölçü. */
+  .eyebrow {
+    @apply font-sans text-2xs font-medium uppercase tracking-eyebrow text-muted;
+  }
+
+  /* Teknik değer / istatistik: rakamlar hizalı (tabular-nums) */
+  .stat-value {
+    @apply font-display font-light tabular-nums text-foreground;
+  }
+
+  .stat-label {
+    @apply font-sans text-2xs font-medium uppercase tracking-eyebrow text-muted;
+  }
+
+  /* Yüklenirken parlama efekti (SmartImage ve iskelet kartlar). Hareket azaltma tercihinde durur. */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: rgb(var(--color-surface-elevated));
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(var(--color-foreground) / 0.06), transparent);
+    animation: shimmer 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer::after {
+      animation: none;
+    }
   }
 }
 
@@ -95,6 +160,12 @@
   }
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* ── Atmosphere Stage: Ken Burns cinematic zoom ── */
 @keyframes kenBurns {
   0% {
@@ -111,4 +182,10 @@
 .atmosphere-ken-burns {
   animation: kenBurns 20s ease-in-out infinite;
   will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere-ken-burns {
+    animation: none;
+  }
 }

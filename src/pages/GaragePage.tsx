@@ -1,102 +1,77 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, BookmarkMinus } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useGarage } from '../context/GarageContext';
 import { useAuth } from '../context/AuthContext';
 import { useVehicleStore } from '../store/useVehicleStore';
+import { PageContainer } from '../components/layout/PageContainer';
+import { PageHeader } from '../components/layout/PageHeader';
+import { VehicleCard } from '../components/vehicle/VehicleCard';
+import { LoadingState, StatusScreen, VehicleLoadError } from '../components/ui/DataState';
+import { primaryButtonClass } from '../components/ui/buttonStyles';
 
 export function GaragePage() {
-  const { user, openAuthModal } = useAuth();
-  const { garagedSlugs, removeVehicle } = useGarage();
+  const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
+  const { garagedSlugs } = useGarage();
   const vehicles = useVehicleStore((s) => s.vehicles);
-  
+  const isLoading = useVehicleStore((s) => s.isLoading);
+  const loadError = useVehicleStore((s) => s.loadError);
+
+  // Sayfa yenilendiğinde Firebase oturumu birkaç yüz ms sonra gelir; o ana kadar karar verme
+  if (isAuthLoading) {
+    return <LoadingState label="Oturum kontrol ediliyor..." />;
+  }
+
   if (!user) {
-    // If somehow landed here without auth, show empty and prompt
     return (
-      <main className="w-full min-h-screen bg-void pt-24 pb-32 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="font-display text-3xl font-light text-muted mb-6">Garaja Erişim Yok</h2>
-          <p className="text-muted/70 mb-12 max-w-sm mx-auto">Kişisel koleksiyonunuzu görüntülemek için giriş yapmanız gerekmektedir.</p>
-          <button 
-            onClick={() => openAuthModal()}
-            className="inline-flex items-center gap-3 border border-foreground/30 px-8 py-4 font-sans text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-all duration-300 hover:bg-foreground hover:text-void"
-          >
+      <StatusScreen
+        eyebrow="Garajım"
+        title="Garajınızı görmek için giriş yapın"
+        description="Beğendiğiniz araçları kaydedin, dilediğiniz zaman karşılaştırın."
+        actions={
+          <button type="button" onClick={() => openAuthModal()} className={primaryButtonClass}>
             Giriş Yap
           </button>
-        </div>
-      </main>
+        }
+      />
     );
   }
 
-  const garagedVehicles = vehicles.filter(v => garagedSlugs.includes(v.slug));
+  // Garaj geçiş döneminde slug veya id saklayabilir
+  const garagedVehicles = vehicles.filter((v) => garagedSlugs.includes(v.slug) || garagedSlugs.includes(v.id));
 
   return (
-    <main className="w-full min-h-screen bg-void pt-24 pb-32">
-      <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 flex flex-col">
-        
-        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-16 tracking-wide">
-          Garajım
-        </h1>
+    <PageContainer>
+      <PageHeader
+        eyebrow="Kişisel Koleksiyon"
+        title="Garajım"
+        description={garagedVehicles.length > 0 ? `${garagedVehicles.length} kayıtlı araç` : undefined}
+      />
 
-        {garagedVehicles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <h2 className="font-display text-3xl font-light text-muted mb-6">Garajınız şu an boş.</h2>
-            <p className="text-muted/70 mb-12">Hayalinizdeki aracı keşfetmek için koleksiyonumuzu inceleyin.</p>
-            <Link 
-              to="/modeller"
-              className="inline-flex items-center gap-3 border border-foreground/30 px-8 py-4 font-sans text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-all duration-300 hover:bg-foreground hover:text-void"
-            >
+      {isLoading && vehicles.length === 0 ? (
+        <LoadingState compact label="Garaj yükleniyor..." />
+      ) : loadError && vehicles.length === 0 ? (
+        <VehicleLoadError compact />
+      ) : garagedVehicles.length === 0 ? (
+        <StatusScreen
+          compact
+          title="Garajınız şu an boş"
+          description="Araç kartlarındaki kaydet simgesiyle beğendiğiniz modelleri buraya ekleyebilirsiniz."
+          actions={
+            <Link to="/modeller" className={primaryButtonClass}>
               Koleksiyonu Keşfet
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-4" strokeWidth={1.5} aria-hidden />
             </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {garagedVehicles.map((vehicle) => (
-              <motion.div
-                key={vehicle.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-                className="group relative flex flex-col border border-border-subtle bg-surface/30 backdrop-blur-md p-8 overflow-hidden h-[400px]"
-              >
-                {/* Remove Button */}
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    removeVehicle(vehicle.slug, `${vehicle.brand} ${vehicle.model}`);
-                  }}
-                  className="absolute top-6 right-6 z-20 text-muted hover:text-foreground transition-colors"
-                  aria-label="Garajdan Çıkar"
-                >
-                  <BookmarkMinus className="size-6 stroke-[1.5]" />
-                </button>
-
-                {/* Brand & Model */}
-                <Link to={`/arac/${vehicle.id}`} className="relative z-10 mb-4 block">
-                  <h3 className="font-display text-2xl md:text-3xl font-light text-foreground mb-1">
-                    {vehicle.brand} {vehicle.model}
-                  </h3>
-                  <p className="font-sans text-xs uppercase tracking-widest text-muted mt-1">
-                    {vehicle.pricing.trim}
-                  </p>
-                </Link>
-
-                {/* Studio Image */}
-                <div className="relative flex-1 flex items-center justify-center my-6 z-10 pointer-events-none">
-                  <img
-                    src={vehicle.interactiveGallery?.studioImage || vehicle.media.heroImage}
-                    alt={`${vehicle.brand} ${vehicle.model}`}
-                    className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-      </div>
-    </main>
+          }
+        />
+      ) : (
+        <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
+          {garagedVehicles.map((vehicle, index) => (
+            <li key={vehicle.id}>
+              <VehicleCard vehicle={vehicle} index={index} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </PageContainer>
   );
 }

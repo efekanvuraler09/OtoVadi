@@ -15,6 +15,10 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Tek bir ses kaydı oynatıcısı. Detay sayfası yalnızca usePlayableTracks ile doğrulanmış kayıtları gönderir;
+ * yine de oynatma sırasında hata olursa kullanıcıya sade bir mesaj gösterilir (geliştirici yolu/dosya adı gösterilmez).
+ */
 export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -118,50 +122,43 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
   };
 
   return (
-    <div
-      className={`border-b border-neutral-800/50 ${compact ? 'pb-4' : 'pb-6'}`}
-    >
+    <div className={`border-b border-border-subtle ${compact ? 'pb-4' : 'pb-6'}`}>
       <audio ref={audioRef} src={track.src} preload="metadata" />
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4">
         <motion.button
           type="button"
-          whileTap={{ scale: 0.92 }}
+          whileTap={{ scale: 0.94 }}
           onClick={togglePlay}
           disabled={unavailable}
           aria-label={isPlaying ? 'Duraklat' : 'Oynat'}
-          className={`flex shrink-0 items-center justify-center rounded-none bg-foreground text-void hover:bg-foreground/90 transition-colors ${
-            compact ? 'size-12' : 'size-14 min-h-[56px] min-w-[56px]'
-          } disabled:opacity-50`}
+          className={`flex shrink-0 items-center justify-center bg-foreground text-void transition-colors hover:bg-foreground/90 disabled:opacity-40 ${
+            compact ? 'size-12' : 'size-14'
+          }`}
         >
           {isPlaying ? (
-            <Pause className={compact ? 'size-5' : 'size-6'} fill="currentColor" />
+            <Pause className={compact ? 'size-5' : 'size-6'} fill="currentColor" aria-hidden />
           ) : (
-            <Play className={`${compact ? 'size-5' : 'size-6'} ml-0.5`} fill="currentColor" />
+            <Play className={`${compact ? 'size-5' : 'size-6'} ml-0.5`} fill="currentColor" aria-hidden />
           )}
         </motion.button>
 
         <div className="min-w-0 flex-1">
-          <h4 className={`font-display font-light tracking-wide text-foreground ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
+          <h4 className={`font-display font-normal text-foreground ${compact ? 'text-lg' : 'text-xl md:text-2xl'}`}>
             {track.label}
           </h4>
-          {!compact && (
-            <p className="mt-1 text-base font-light text-gray-500 dark:text-neutral-400">
-              {track.description}
-            </p>
-          )}
+          {!compact && track.description && <p className="mt-1 text-sm text-secondary md:text-base">{track.description}</p>}
 
           {unavailable ? (
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-amber-400/90">
-              <AlertCircle className="size-3.5 shrink-0" />
-              <span className="font-light">
-                Ses dosyası henüz yüklenmedi — <code className="text-[10px] bg-neutral-800/50 px-1 py-0.5 rounded-sm">public/audio</code>
-              </span>
-            </div>
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-warning">
+              <AlertCircle className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
+              Bu kayıt şu an oynatılamıyor.
+            </p>
           ) : (
             <>
               <div
                 role="slider"
+                aria-label={`${track.label} ilerleme`}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={Math.round(progress)}
@@ -169,21 +166,14 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
                 onClick={handleSeek}
                 onKeyDown={(e) => {
                   if (e.key === 'ArrowRight' && audioRef.current) {
-                    audioRef.current.currentTime = Math.min(
-                      audioRef.current.duration,
-                      audioRef.current.currentTime + 2,
-                    );
+                    audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 2);
                   }
                 }}
-                className="mt-3 h-2 cursor-pointer overflow-hidden rounded-full bg-foreground/10"
+                className="mt-3 h-1.5 cursor-pointer overflow-hidden rounded-full bg-foreground/10"
               >
-                <motion.div
-                  className="h-full rounded-full bg-foreground"
-                  style={{ width: `${progress}%` }}
-                  layout
-                />
+                <div className="h-full rounded-full bg-foreground transition-[width] duration-200" style={{ width: `${progress}%` }} />
               </div>
-              <div className="mt-1.5 flex justify-between text-[10px] text-muted">
+              <div className="mt-1.5 flex justify-between text-2xs tabular-nums text-muted">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -193,17 +183,10 @@ export function AudioPlayer({ track, compact = false }: AudioPlayerProps) {
       </div>
 
       {isPlaying && !unavailable && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-3 flex items-center gap-2 text-[10px] font-medium text-foreground"
-        >
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full opacity-75 bg-foreground" />
-            <span className="relative inline-flex size-2 rounded-full bg-foreground" />
-          </span>
+        <p className="mt-3 flex items-center gap-2 text-2xs font-medium uppercase tracking-eyebrow text-foreground">
+          <span className="size-1.5 rounded-full bg-foreground motion-safe:animate-pulse" aria-hidden />
           Dinleniyor…
-        </motion.div>
+        </p>
       )}
     </div>
   );

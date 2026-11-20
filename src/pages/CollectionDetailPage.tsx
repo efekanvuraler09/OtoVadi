@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { subscribeCollectionBySlug } from '../services/collectionService';
 import { useVehicleStore } from '../store/useVehicleStore';
 import { formatVehiclePrice } from '../utils/formatPrice';
-import { LoadErrorState } from '../components/ui/DataState';
+import { vehicleBrand, vehicleModel, vehicleName } from '../utils/vehicleText';
+import { LoadErrorState, LoadingState } from '../components/ui/DataState';
+import { SmartImage } from '../components/ui/SmartImage';
+import { PageContainer } from '../components/layout/PageContainer';
 import { useBackNavigation } from '../hooks/useBackNavigation';
 import { NotFoundPage } from './NotFoundPage';
+import { TRANSITION, fade, fadeUp } from '../lib/motion';
 import type { VehicleCollection } from '../types/collection';
 import type { Vehicle } from '../types/vehicle';
 
@@ -44,11 +48,7 @@ export function CollectionDetailPage() {
   }, [slug, attempt]);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-void">
-        <Loader2 className="size-8 animate-spin text-muted" />
-      </div>
-    );
+    return <LoadingState label="Koleksiyon yükleniyor..." />;
   }
 
   if (loadFailed && !col) {
@@ -75,175 +75,134 @@ export function CollectionDetailPage() {
   }
 
   // Match entries to actual vehicle data from Zustand store
-  const resolvedEntries = col.entries
+  const resolvedEntries = [...col.entries]
     .sort((a, b) => a.position - b.position)
     .map((entry) => ({
       ...entry,
       vehicle: vehicles.find((v) => v.id === entry.vehicleId),
     }))
-    .filter((e) => e.vehicle) as (typeof col.entries[0] & { vehicle: Vehicle })[];
+    .filter((e) => e.vehicle) as ((typeof col.entries)[0] & { vehicle: Vehicle })[];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="bg-void"
-    >
+    <motion.div {...fade} transition={TRANSITION.base}>
       {/* ══════════════ HERO COVER ══════════════ */}
-      <div className="relative h-[50vh] w-full overflow-hidden md:h-[60vh]">
-        <img
-          src={col.coverImage}
-          alt={col.title}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+      <div className="relative h-[50svh] w-full overflow-hidden bg-black md:h-[60svh]">
+        <SmartImage src={col.coverImage} alt={col.title} tone="dark" priority />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
 
-        {/* Back Button */}
         <button
           type="button"
           onClick={goBack}
-          className="absolute left-4 top-4 z-10 flex size-11 items-center justify-center border border-white/10 bg-black/40 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-black/60 md:left-8 md:top-8"
+          className="absolute left-4 top-4 z-10 flex size-11 items-center justify-center border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:border-white/50 hover:bg-black/60 md:left-8 md:top-8"
           aria-label="Geri dön"
         >
-          <ArrowLeft className="size-5 text-white/70" />
+          <ArrowLeft className="size-5" strokeWidth={1.5} aria-hidden />
         </button>
 
-        {/* Title Block */}
-        <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-10 md:px-12 lg:px-24">
-          <p className="font-sans text-[10px] uppercase tracking-[0.35em] text-white/35">
-            Koleksiyon · {resolvedEntries.length} Araç
+        <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-7xl px-4 pb-10 md:px-8 lg:px-12">
+          <p className="stat-label text-white/60">
+            Koleksiyon · <span className="tabular-nums">{resolvedEntries.length}</span> Araç
           </p>
-          <h1 className="mt-2 font-display text-4xl font-light tracking-wide text-white/95 md:text-5xl lg:text-6xl">
-            {col.title}
-          </h1>
-          <p className="mt-2 max-w-xl font-sans text-base font-light text-white/50">
-            {col.subtitle}
-          </p>
+          <h1 className="mt-3 text-display-lg font-light text-white">{col.title}</h1>
+          {col.subtitle && <p className="mt-3 max-w-xl text-base text-white/75">{col.subtitle}</p>}
         </div>
       </div>
 
-      {/* ══════════════ CURATOR NOTE ══════════════ */}
-      <div className="mx-auto max-w-3xl px-6 py-16 md:px-12 md:py-20">
-        <div className="border-l border-foreground/15 pl-6 md:pl-10">
-          <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-6 block">
-            Küratör Notu
-          </span>
-          <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] text-foreground/90">
-            {col.curatorNote}
-          </p>
+      <PageContainer width="narrow">
+        {/* ══════════════ CURATOR NOTE ══════════════ */}
+        <div className="mb-16 border-l border-border-strong pl-6 md:mb-20 md:pl-10">
+          <p className="eyebrow mb-4">Küratör Notu</p>
+          <p className="text-display-sm font-light leading-snug text-foreground">{col.curatorNote}</p>
         </div>
-      </div>
 
-      {/* ══════════════ VEHICLE ENTRIES ══════════════ */}
-      <div className="mx-auto max-w-5xl px-6 pb-20 md:px-12 lg:px-16">
+        {/* ══════════════ VEHICLE ENTRIES ══════════════ */}
         {resolvedEntries.map((entry, index) => {
           const v = entry.vehicle;
-          const heroSrc =
-            v.media.heroImage?.startsWith('http') || v.media.heroImage?.startsWith('/')
-              ? v.media.heroImage
-              : `/${v.media.heroImage}`;
-
           return (
-            <motion.div
+            <motion.article
               key={entry.vehicleId}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              {...fadeUp}
+              whileInView={fadeUp.animate}
+              animate={undefined}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              transition={TRANSITION.slow}
             >
-              {/* Entry Number */}
               <div className="mb-6 flex items-center gap-4">
-                <span className="font-display text-5xl font-light text-foreground/10 md:text-6xl">
+                <span className="font-display text-4xl font-light tabular-nums text-foreground/15 md:text-5xl">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <div className="h-[1px] flex-1 bg-border-subtle" />
+                <div className="h-px flex-1 bg-border-subtle" />
               </div>
 
-              {/* Vehicle Image */}
-              <div className="relative mb-6 overflow-hidden">
-                <img
-                  src={heroSrc}
-                  alt={`${v.brand} ${v.model}`}
-                  className="h-56 w-full object-cover md:h-72 lg:h-80"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              </div>
+              <SmartImage
+                src={v.media.heroImage}
+                alt={vehicleName(v)}
+                aspectRatio="16 / 9"
+                bodyType={v.bodyType}
+                colorHex={v.media.colorHex}
+                className="mb-6"
+              />
 
-              {/* Vehicle Info */}
-              <div className="mb-4">
-                <p className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase">
-                  {v.brand} · {v.year}
-                </p>
-                <h2 className="mt-2 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
-                  {v.model}
-                </h2>
-                <p className="mt-3 font-display text-lg md:text-xl font-light text-muted">
-                  {v.tagline}
-                </p>
-              </div>
+              <p className="eyebrow">
+                <span lang="en">{vehicleBrand(v)}</span> · <span className="tabular-nums">{v.year}</span>
+              </p>
+              <h2 className="mt-2 text-display-md font-light text-foreground">{vehicleModel(v)}</h2>
+              {v.tagline && <p className="mt-3 text-lg text-secondary">{v.tagline}</p>}
 
-              {/* Quick Specs */}
-              <div className="mb-8 flex flex-wrap gap-8 border-y border-foreground/5 py-4 mt-6">
-                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
-                  <span className="font-display text-foreground/90 font-light text-xl mr-2">{v.engine.powerHp}</span> HP
-                </span>
-                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
-                  <span className="font-display text-foreground/90 font-light text-xl mr-2">{v.performance.zeroTo100Kmh}s</span> 0-100
-                </span>
-                <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-widest text-muted">
-                  <span className="font-display text-foreground/90 font-light text-xl">{formatVehiclePrice(v.pricing)}</span>
-                </span>
-              </div>
-
-              {/* Editorial Note */}
-              {entry.editorialNote && (
-                <div className="mb-8 border-l border-border-subtle pl-6 md:pl-8 py-2">
-                  <p className="font-display text-xl md:text-2xl leading-[1.6] text-foreground/80 italic">
-                    "{entry.editorialNote}"
-                  </p>
+              <dl className="my-6 grid grid-cols-3 border-y border-border-subtle py-4">
+                <div>
+                  <dt className="stat-label">Güç</dt>
+                  <dd className="stat-value mt-1 text-xl">
+                    {v.engine.powerHp} <span className="text-sm text-muted">HP</span>
+                  </dd>
                 </div>
+                <div className="border-l border-border-subtle pl-4">
+                  <dt className="stat-label">0–100</dt>
+                  <dd className="stat-value mt-1 text-xl">
+                    {v.performance.zeroTo100Kmh.toLocaleString('tr-TR')} <span className="text-sm text-muted">sn</span>
+                  </dd>
+                </div>
+                <div className="border-l border-border-subtle pl-4">
+                  <dt className="stat-label">Fiyat</dt>
+                  <dd className="stat-value mt-1 truncate text-xl">{formatVehiclePrice(v.pricing)}</dd>
+                </div>
+              </dl>
+
+              {entry.editorialNote && (
+                <blockquote className="mb-8 border-l border-border-strong py-1 pl-6 md:pl-8">
+                  <p className="text-xl font-light italic leading-relaxed text-secondary md:text-2xl">“{entry.editorialNote}”</p>
+                </blockquote>
               )}
 
-              {/* CTA */}
               <Link
                 to={`/arac/${v.id}`}
-                className="group inline-flex items-center gap-3 font-sans text-[10px] md:text-[11px] uppercase tracking-[0.4em] font-medium text-muted transition-colors duration-300 hover:text-foreground"
+                className="group inline-flex min-h-10 items-center gap-3 text-xs font-semibold uppercase tracking-eyebrow text-foreground"
               >
-                <span>İncele</span>
-                <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
+                İncele
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} aria-hidden />
               </Link>
 
-              {/* Spacer between entries */}
               {index < resolvedEntries.length - 1 && (
-                <div className="my-14 flex justify-center md:my-20">
+                <div className="my-14 flex justify-center md:my-20" aria-hidden>
                   <div className="flex items-center gap-3">
-                    <div className="h-[1px] w-6 bg-border-subtle" />
-                    <div className="size-1.5 rotate-45 border border-border-subtle" />
-                    <div className="h-[1px] w-6 bg-border-subtle" />
+                    <div className="h-px w-6 bg-border-subtle" />
+                    <div className="size-1.5 rotate-45 border border-border-strong" />
+                    <div className="h-px w-6 bg-border-subtle" />
                   </div>
                 </div>
               )}
-            </motion.div>
+            </motion.article>
           );
         })}
-      </div>
 
-      {/* ══════════════ CLOSING NOTE ══════════════ */}
-      {col.closingNote && (
-        <div className="mx-auto max-w-3xl px-6 pb-20 md:px-12">
-          <div className="border-t border-border-subtle pt-12 text-center">
-            <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-6 block">
-              Kapanış
-            </span>
-            <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] text-foreground/90">
-              {col.closingNote}
-            </p>
+        {/* ══════════════ CLOSING NOTE ══════════════ */}
+        {col.closingNote && (
+          <div className="mt-20 border-t border-border-subtle pt-12 text-center">
+            <p className="eyebrow mb-4">Kapanış</p>
+            <p className="text-display-sm font-light leading-snug text-foreground">{col.closingNote}</p>
           </div>
-        </div>
-      )}
+        )}
+      </PageContainer>
     </motion.div>
   );
 }

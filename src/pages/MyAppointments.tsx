@@ -6,6 +6,16 @@ import { useAuth } from '../context/AuthContext';
 import { subscribeToUserTestDrives, type TestDriveRequest } from '../services/testDriveService';
 import { LoadErrorState, LoadingState, StatusScreen } from '../components/ui/DataState';
 import { primaryButtonClass } from '../components/ui/buttonStyles';
+import { PageContainer } from '../components/layout/PageContainer';
+import { PageHeader } from '../components/layout/PageHeader';
+import { TRANSITION, fade, fadeUp, staggerDelay } from '../lib/motion';
+
+/** Randevu durumları: semantik tokenlar (her iki temada AA kontrastlı) */
+const STATUS_STYLES = {
+  pending: { label: 'Bekliyor', badge: 'border-warning/40 bg-warning/10 text-warning', bar: 'bg-warning' },
+  approved: { label: 'Onaylandı', badge: 'border-success/40 bg-success/10 text-success', bar: 'bg-success' },
+  rejected: { label: 'Reddedildi', badge: 'border-danger/40 bg-danger/10 text-danger', bar: 'bg-danger' },
+} as const;
 
 interface AppointmentsSnapshot {
   /** Hangi kullanıcı + deneme için alındığı; eski anlık görüntü yeni oturumda gösterilmez */
@@ -57,21 +67,13 @@ export function MyAppointments() {
   const appointments = current?.items ?? [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-void pt-24 pb-20 px-4 md:px-8 lg:px-12"
-    >
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-10 text-center">
-          <div className="mx-auto flex size-20 items-center justify-center rounded-full border border-border-subtle bg-foreground/5 mb-6">
-            <Calendar className="size-8 text-foreground" strokeWidth={1} />
-          </div>
-          <h1 className="font-serif text-3xl font-light tracking-wide text-foreground">Sürüş Randevularım</h1>
-          <p className="mt-2 text-sm text-muted">Test sürüşü taleplerinizin güncel durumunu buradan takip edebilirsiniz.</p>
-        </header>
+    <motion.div {...fade} transition={TRANSITION.base}>
+      <PageContainer width="narrow">
+        <PageHeader
+          eyebrow="Hesabım"
+          title="Sürüş Randevularım"
+          description="Test sürüşü taleplerinizin güncel durumunu buradan takip edebilirsiniz."
+        />
 
         {!current ? (
           <LoadingState compact label="Randevular yükleniyor..." />
@@ -83,63 +85,58 @@ export function MyAppointments() {
             onRetry={() => setRetryToken((n) => n + 1)}
           />
         ) : appointments.length === 0 ? (
-          <div className="text-center py-16 border border-border-subtle bg-surface/10">
-            <Car className="size-12 text-muted mx-auto mb-4 stroke-[1]" />
-            <h3 className="font-display text-xl font-light text-foreground mb-2">Henüz Randevunuz Yok</h3>
-            <p className="text-muted text-sm">Hayalinizdeki aracı bulup hemen bir test sürüşü planlayabilirsiniz.</p>
+          <div className="border border-border-subtle bg-surface px-6 py-16 text-center">
+            <Car className="mx-auto mb-4 size-10 text-muted" strokeWidth={1} aria-hidden />
+            <h2 className="mb-2 font-display text-xl font-normal text-foreground">Henüz randevunuz yok</h2>
+            <p className="text-sm text-secondary">Hayalinizdeki aracı bulup hemen bir test sürüşü planlayabilirsiniz.</p>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {appointments.map((appointment) => (
+          <div className="grid gap-4">
+            {appointments.map((appointment, index) => {
+              const status = STATUS_STYLES[appointment.status as keyof typeof STATUS_STYLES] ?? STATUS_STYLES.rejected;
+              return (
               <motion.div
                 key={appointment.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="group relative overflow-hidden border border-border-subtle bg-surface/10 hover:bg-surface/30 transition-colors p-6 md:p-8"
+                {...fadeUp}
+                transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
+                className="relative overflow-hidden border border-border-subtle bg-surface p-6 pl-7 transition-colors hover:border-border-strong md:p-8 md:pl-9"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center justify-between md:justify-start gap-4">
-                      <h2 className="font-display text-2xl font-medium text-foreground">
+                      <h2 className="font-display text-xl font-normal text-foreground md:text-2xl">
                         {appointment.vehicleName}
                       </h2>
-                      <span className={`px-3 py-1 text-[10px] uppercase tracking-wider border ${
-                        appointment.status === 'pending' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' :
-                        appointment.status === 'approved' ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/5' :
-                        'border-red-500/50 text-red-500 bg-red-500/5'
-                      }`}>
-                        {appointment.status === 'pending' ? 'Bekliyor' : appointment.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
+                      <span className={`shrink-0 border px-3 py-1 text-2xs font-semibold uppercase tracking-eyebrow ${status.badge}`}>
+                        {status.label}
                       </span>
                     </div>
 
                     <div className="flex flex-wrap gap-x-8 gap-y-3">
                       <div className="flex items-center gap-2 text-sm text-muted">
                         <Calendar className="size-4" strokeWidth={1.5} />
-                        <span className="font-sans tracking-wide">{appointment.date}</span>
+                        <span className="tabular-nums">{appointment.date}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted">
                         <Clock className="size-4" strokeWidth={1.5} />
-                        <span className="font-sans tracking-wide">{appointment.time}</span>
+                        <span className="tabular-nums">{appointment.time}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted">
                         <MapPin className="size-4" strokeWidth={1.5} />
-                        <span className="font-sans tracking-wide">{appointment.location} OtoVadi Center</span>
+                        <span>{appointment.location} OtoVadi Center</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Decorative Side Element */}
-                <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-                  appointment.status === 'pending' ? 'bg-yellow-500' :
-                  appointment.status === 'approved' ? 'bg-emerald-500' :
-                  'bg-red-500'
-                }`} />
+                {/* Durum şeridi */}
+                <div className={`absolute inset-y-0 left-0 w-1 ${status.bar}`} aria-hidden />
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         )}
-      </div>
+      </PageContainer>
     </motion.div>
   );
 }

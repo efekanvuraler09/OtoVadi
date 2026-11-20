@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { useVehicleStore } from '../../store/useVehicleStore';
 import { primaryButtonClass, secondaryButtonClass } from './buttonStyles';
+import { TRANSITION, fadeUp } from '../../lib/motion';
 
 /* ── Genel durum ekranı (404, hata, boş durum) ───────────────────── */
 
@@ -20,23 +21,20 @@ export function StatusScreen({ eyebrow, title, description, actions, compact = f
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={`mx-auto flex w-full max-w-xl flex-col items-center justify-center px-6 text-center ${
+      {...fadeUp}
+      transition={TRANSITION.base}
+      className={`mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4 text-center md:px-8 ${
         compact ? 'py-16' : 'min-h-[calc(100svh-4rem)] py-20'
       }`}
     >
       {eyebrow && (
-        <span className="mb-6 block font-display text-[11px] font-light uppercase tracking-[0.5em] text-muted">
-          {eyebrow}
-        </span>
+        <span className="eyebrow mb-4 block">{eyebrow}</span>
       )}
-      <Heading className="font-display text-3xl font-light tracking-wide text-foreground md:text-4xl">
+      <Heading className={`${compact ? 'text-display-sm' : 'text-display-md'} font-light text-foreground`}>
         {title}
       </Heading>
       {description && (
-        <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-muted md:text-base">{description}</p>
+        <p className="mt-4 max-w-md text-sm leading-relaxed text-secondary md:text-base">{description}</p>
       )}
       {actions && <div className="mt-10 flex flex-wrap items-center justify-center gap-4">{actions}</div>}
     </motion.section>
@@ -59,7 +57,7 @@ export function LoadingState({ label = 'Yükleniyor...', compact = false }: Load
     >
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="size-8 animate-spin text-muted" />
-        <p className="font-sans text-xs uppercase tracking-widest text-muted">{label}</p>
+        <p className="eyebrow">{label}</p>
       </div>
     </div>
   );

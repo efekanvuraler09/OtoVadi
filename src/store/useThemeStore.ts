@@ -9,41 +9,42 @@ interface ThemeState {
   setTheme: (theme: Theme) => void;
 }
 
+/** Tarayıcı çubuğu rengi (index.html'deki inline script ile aynı değerler) */
+const THEME_COLOR: Record<Theme, string> = { light: '#ffffff', dark: '#000000' };
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement;
+  root.classList.toggle('dark', theme === 'dark');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[theme]);
+}
+
+/**
+ * index.html'deki inline script, React yüklenmeden önce kayıtlı tercihi (yoksa işletim sistemi tercihini)
+ * <html> sınıfına uygular. Store aynı kararla başlar; böylece ilk render ile ilk boyama arasında tema değişmez.
+ */
+const initialTheme: Theme =
+  typeof document !== 'undefined' && !document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: 'dark',
+      theme: initialTheme,
       toggleTheme: () =>
         set((state) => {
-          const newTheme = state.theme === 'light' ? 'dark' : 'light';
-          if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-          return { theme: newTheme };
+          const theme: Theme = state.theme === 'light' ? 'dark' : 'light';
+          applyTheme(theme);
+          return { theme };
         }),
       setTheme: (theme) =>
         set(() => {
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
+          applyTheme(theme);
           return { theme };
         }),
     }),
     {
       name: 'theme-storage',
       onRehydrateStorage: () => (state) => {
-        // Hydration sırasında sınıfı uygula
-        if (state) {
-          if (state.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        }
+        if (state) applyTheme(state.theme);
       },
     },
   ),

@@ -2,6 +2,7 @@ import { Bookmark } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { formatVehiclePrice } from '../../utils/formatPrice';
 import { useGarageToggle } from '../../hooks/useGarageToggle';
+import { vehicleName } from '../../utils/vehicleText';
 
 interface MobileActionBarProps {
   vehicle: Vehicle;
@@ -17,15 +18,13 @@ export function MobileActionBar({ vehicle, onTestDrive }: MobileActionBarProps) 
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-bottombar md:hidden pb-safe bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 transition-colors duration-300"
+      className="fixed inset-x-0 bottom-0 z-bottombar border-t border-border-subtle bg-void/90 pb-safe backdrop-blur-md transition-colors duration-350 md:hidden"
       role="region"
       aria-label="Araç işlemleri"
     >
       <div className="flex h-20 items-center gap-3 px-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[10px] uppercase tracking-widest text-muted">
-            {vehicle.brand} {vehicle.model}
-          </p>
+          <p className="eyebrow truncate" lang="en">{vehicleName(vehicle)}</p>
           <p className="mt-0.5 truncate font-sans text-lg font-light tabular-nums text-foreground">
             {formatVehiclePrice(vehicle.pricing)}
           </p>

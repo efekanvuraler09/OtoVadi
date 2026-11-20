@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatPrice, type Currency } from '../../utils/formatPrice';
+import { secondaryButtonClass } from '../ui/buttonStyles';
+import { TRANSITION } from '../../lib/motion';
 
 interface FinanceCalculatorProps {
   price: number;
@@ -44,22 +46,24 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
   }, [loanAmount, term, monthlyRate]);
 
   return (
-    <section className="w-full border-t border-border-subtle pt-16 pb-8 mt-16">
+    <section className="mt-16 w-full border-t border-border-subtle pb-8 pt-16">
       <div className="flex flex-col lg:flex-row gap-16 items-start">
         
         {/* Controls Column */}
         <div className="flex-1 w-full space-y-12">
           <div>
-            <h3 className="font-serif text-2xl font-light text-foreground mb-8">Akıllı Finansman</h3>
+            <p className="eyebrow mb-3">Finansman</p>
+            <h3 className="mb-8 text-display-sm font-light text-foreground">Akıllı Finansman</h3>
             
             {/* Downpayment Slider */}
             <div className="space-y-4">
               <div className="flex justify-between items-end">
-                <span className="text-xs uppercase tracking-widest text-muted">Peşinat</span>
-                <span className="font-display text-xl text-foreground">{formatCurrency(downpaymentAmount)} <span className="text-sm text-muted">({downpaymentPercent}%)</span></span>
+                <span className="stat-label">Peşinat</span>
+                <span className="text-xl font-medium tabular-nums text-foreground">{formatCurrency(downpaymentAmount)} <span className="text-sm font-normal text-muted">(%{downpaymentPercent})</span></span>
               </div>
               <input 
-                type="range" 
+                type="range"
+                aria-label="Peşinat oranı"
                 min="10" 
                 max="80" 
                 step="5"
@@ -75,13 +79,13 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
 
           {/* Terms */}
           <div className="space-y-4">
-            <span className="text-xs uppercase tracking-widest text-muted block mb-4">Vade Seçenekleri</span>
+            <span className="stat-label mb-4 block">Vade Seçenekleri</span>
             <div className="flex gap-4">
               {TERMS.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTerm(t)}
-                  className={`flex-1 py-3 text-sm font-medium transition-all duration-300 border-b ${
+                  className={`flex-1 border-b py-3 text-sm font-medium tabular-nums transition-colors ${
                     term === t 
                       ? 'border-foreground text-foreground' 
                       : 'border-border-subtle text-muted hover:border-muted'
@@ -94,7 +98,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
           </div>
           
           <div className="space-y-3 pt-4">
-            <div className="flex flex-wrap justify-between gap-x-6 gap-y-2 text-xs text-muted uppercase tracking-widest">
+            <div className="flex flex-wrap justify-between gap-x-6 gap-y-2 text-xs tabular-nums text-muted">
               <span>Araç Fiyatı: {formatCurrency(price)}</span>
               <span>Aylık Faiz: %{formattedRate} (temsili)</span>
             </div>
@@ -107,17 +111,18 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
 
         {/* Result Column */}
         <div className="flex-1 w-full flex flex-col items-center lg:items-end justify-center py-8">
-          <span className="text-xs uppercase tracking-widest text-muted mb-4">Aylık Ödeme</span>
+          <span className="stat-label mb-4">Aylık Ödeme</span>
           <AnimatePresence mode="wait">
             <motion.div
               key={monthlyPayment}
-              initial={{ opacity: 0, filter: 'blur(4px)', y: -10 }}
-              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              exit={{ opacity: 0, filter: 'blur(4px)', y: 10 }}
-              transition={{ duration: 0.3 }}
+              // blur yerine opacity + translate (mobilde ucuz)
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={TRANSITION.fast}
               className="text-center lg:text-right"
             >
-              <span className="font-serif text-6xl md:text-7xl lg:text-8xl font-light text-foreground tracking-tighter">
+              <span className="font-display text-5xl font-light tabular-nums tracking-tight text-foreground md:text-6xl">
                 {formatCurrency(monthlyPayment)}
               </span>
             </motion.div>
@@ -127,7 +132,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               <button
                 type="button"
                 onClick={onApply}
-                className="px-8 py-4 border border-foreground text-foreground hover:bg-foreground hover:text-void transition-colors font-sans text-sm font-medium uppercase tracking-widest"
+                className={secondaryButtonClass}
               >
                 Test Sürüşü Planla
               </button>

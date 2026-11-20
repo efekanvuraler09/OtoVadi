@@ -1,86 +1,66 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Compass, GitCompare } from 'lucide-react';
 import { useI18n } from '../i18n/useI18n';
+import { PageContainer } from '../components/layout/PageContainer';
+import { PageHeader } from '../components/layout/PageHeader';
+import { TRANSITION, fade, fadeUp, staggerDelay } from '../lib/motion';
 
 export function AboutPage() {
   const { t } = useI18n();
 
+  const features = [
+    { icon: Sparkles, title: t.about.feature1Title, desc: t.about.feature1Desc },
+    { icon: Compass, title: t.about.feature2Title, desc: t.about.feature2Desc },
+    { icon: GitCompare, title: t.about.feature3Title, desc: t.about.feature3Desc },
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-void pt-24 pb-20"
-    >
-      {/* Hero Section */}
-      <section className="px-4 md:px-8 lg:px-12 mb-24">
-        <div className="mx-auto max-w-4xl text-center">
-          <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase mb-6 block">{t.about.tagline}</span>
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light tracking-wide text-foreground leading-tight">
-            {t.about.titleLine1} <br className="hidden md:block" /> {t.about.titleLine2}
-          </h1>
-          <p className="mt-6 font-display text-lg md:text-xl text-foreground/80 font-light max-w-2xl mx-auto leading-relaxed">
-            {t.about.description}
-          </p>
-        </div>
-      </section>
+    <motion.div {...fade} transition={TRANSITION.base}>
+      <PageContainer width="medium">
+        <PageHeader
+          align="center"
+          eyebrow={t.about.tagline}
+          title={
+            <>
+              {t.about.titleLine1} <br className="hidden md:block" /> {t.about.titleLine2}
+            </>
+          }
+          description={t.about.description}
+        />
 
-      {/* Vizyon & Misyon */}
-      <section className="px-4 md:px-8 lg:px-12 mb-24">
-        <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
-          <div className="space-y-6">
-            <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase block">{t.about.vision}</span>
-            <p className="font-display text-2xl md:text-3xl font-light leading-[1.6] text-foreground/90">
-              {t.about.visionDesc}
-            </p>
-          </div>
-          <div className="space-y-6">
-            <span className="font-display text-[10px] md:text-[11px] tracking-[0.5em] font-light text-muted uppercase block">{t.about.mission}</span>
-            <p className="font-display text-2xl md:text-3xl font-light leading-[1.6] text-foreground/90">
-              {t.about.missionDesc}
-            </p>
-          </div>
-        </div>
-      </section>
+        {/* Vizyon & Misyon */}
+        <section className="grid grid-cols-1 gap-12 border-t border-border-subtle py-14 md:grid-cols-2 md:gap-16 md:py-20">
+          {[
+            { label: t.about.vision, text: t.about.visionDesc },
+            { label: t.about.mission, text: t.about.missionDesc },
+          ].map((block) => (
+            <div key={block.label} className="space-y-4">
+              <p className="eyebrow">{block.label}</p>
+              <p className="text-display-sm font-light leading-snug text-foreground">{block.text}</p>
+            </div>
+          ))}
+        </section>
 
-      {/* Neden OtoVadi? */}
-      <section className="px-4 md:px-8 lg:px-12 border-t border-border-subtle/30 pt-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl md:text-5xl font-light tracking-wide text-foreground">{t.about.whyOtoVadi}</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {/* Özellik 1 */}
-            <div className="flex flex-col items-center text-center p-8 border border-border-subtle/50 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors">
-              <Sparkles className="size-8 text-foreground mb-6" strokeWidth={1} />
-              <h3 className="font-display text-xl mb-4">{t.about.feature1Title}</h3>
-              <p className="font-sans text-sm text-muted leading-relaxed">
-                {t.about.feature1Desc}
-              </p>
-            </div>
-            
-            {/* Özellik 2 */}
-            <div className="flex flex-col items-center text-center p-8 border border-border-subtle/50 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors">
-              <Compass className="size-8 text-foreground mb-6" strokeWidth={1} />
-              <h3 className="font-display text-xl mb-4">{t.about.feature2Title}</h3>
-              <p className="font-sans text-sm text-muted leading-relaxed">
-                {t.about.feature2Desc}
-              </p>
-            </div>
+        {/* Neden OtoVadi? */}
+        <section className="border-t border-border-subtle pt-14 md:pt-20">
+          <h2 className="mb-10 text-center text-display-md font-light text-foreground md:mb-14">{t.about.whyOtoVadi}</h2>
 
-            {/* Özellik 3 */}
-            <div className="flex flex-col items-center text-center p-8 border border-border-subtle/50 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors">
-              <GitCompare className="size-8 text-foreground mb-6" strokeWidth={1} />
-              <h3 className="font-display text-xl mb-4">{t.about.feature3Title}</h3>
-              <p className="font-sans text-sm text-muted leading-relaxed">
-                {t.about.feature3Desc}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+            {features.map(({ icon: Icon, title, desc }, index) => (
+              <motion.div
+                key={title}
+                {...fadeUp}
+                transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
+                className="flex flex-col items-start border border-border-subtle bg-surface p-6 transition-colors hover:border-border-strong md:p-8"
+              >
+                <Icon className="mb-6 size-7 text-foreground" strokeWidth={1.25} aria-hidden />
+                <h3 className="mb-3 font-display text-lg font-normal text-foreground">{title}</h3>
+                <p className="text-sm leading-relaxed text-secondary">{desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </PageContainer>
     </motion.div>
   );
 }

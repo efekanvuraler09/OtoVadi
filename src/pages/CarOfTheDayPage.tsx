@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Gauge, Zap, Weight, Timer, Wind, Loader2 } from 'lucide-react';
+import { Calendar, Gauge, Zap, Weight, Timer, Wind } from 'lucide-react';
 import { subscribeCarOfTheDay, type CarOfTheDayData } from '../services/carOfTheDayService';
-import { LoadErrorState } from '../components/ui/DataState';
+import { LoadErrorState, LoadingState, StatusScreen } from '../components/ui/DataState';
+import { SmartImage } from '../components/ui/SmartImage';
+import { PageContainer } from '../components/layout/PageContainer';
+import { TRANSITION, fade, fadeUp } from '../lib/motion';
 
 const SPEC_ICONS = [
   { label: 'Motor Hacmi', key: 'engine' as const, icon: Gauge },
@@ -35,16 +38,7 @@ export function CarOfTheDayPage() {
   }, [attempt]);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-void">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="size-8 animate-spin text-muted" />
-          <p className="font-sans text-xs uppercase tracking-widest text-muted">
-            Editöryal İçerik Yükleniyor...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingState label="Editoryal içerik yükleniyor..." />;
   }
 
   if (loadFailed && !data) {
@@ -61,12 +55,11 @@ export function CarOfTheDayPage() {
 
   if (!data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-void">
-        <div className="flex flex-col items-center gap-4 text-center px-6">
-          <p className="font-serif text-2xl text-foreground/80">Henüz bir içerik yayınlanmadı.</p>
-          <p className="text-sm text-muted">Yönetim panelinden &quot;Günün Aracı&quot; içeriğini ekleyebilirsiniz.</p>
-        </div>
-      </div>
+      <StatusScreen
+        eyebrow="Günün Aracı"
+        title="Henüz bir içerik yayınlanmadı"
+        description="Yeni sürüş izlenimi yayınlandığında burada olacak."
+      />
     );
   }
 
@@ -74,26 +67,21 @@ export function CarOfTheDayPage() {
   const todayStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-void pt-24 pb-20"
-    >
+    <motion.div {...fade} transition={TRANSITION.base}>
+      <PageContainer width="medium">
       {/* Header strip */}
-      <div className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12 mb-8">
+      <div className="mb-10">
         <div className="flex items-center justify-between border-b border-border-subtle pb-4">
           <div className="flex items-center gap-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-foreground font-medium border border-foreground px-3 py-1">
+            <span className="border border-foreground px-3 py-1 text-2xs font-semibold uppercase tracking-eyebrow text-foreground">
               SÜRÜŞ İZLENİMİ
             </span>
-            <span className="text-[10px] uppercase tracking-widest text-muted hidden sm:inline">
+            <span className="eyebrow hidden sm:inline">
               OtoVadi Editöryal
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-[10px] uppercase tracking-widest text-muted flex items-center gap-1.5">
+            <span className="eyebrow flex items-center gap-1.5">
               <Calendar className="size-3" />
               {todayStr}
             </span>
@@ -102,20 +90,18 @@ export function CarOfTheDayPage() {
       </div>
 
       {/* Title block */}
-      <section className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12 mb-12">
+      <section className="mb-12">
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.6 }}
-          className="font-serif text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-foreground leading-[0.95] mb-6"
+          {...fadeUp}
+          transition={TRANSITION.slow}
+          className="mb-6 text-balance text-display-xl font-light text-foreground"
         >
           {data.title}
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="font-serif text-xl md:text-2xl font-light text-foreground/70 leading-relaxed max-w-3xl"
+          {...fadeUp}
+          transition={{ ...TRANSITION.slow, delay: 0.05 }}
+          className="max-w-3xl text-xl font-light leading-relaxed text-secondary md:text-2xl"
         >
           {data.spotText}
         </motion.p>
@@ -123,36 +109,20 @@ export function CarOfTheDayPage() {
 
       {/* Hero image */}
       {data.imageUrl && (
-        <motion.section
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.7 }}
-          className="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 mb-16"
-        >
-          <div className="aspect-video w-full overflow-hidden bg-surface/20 border border-border-subtle">
-            <img
-              src={data.imageUrl}
-              alt={data.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+        <motion.section {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.1 }} className="mb-16">
+          <SmartImage src={data.imageUrl} alt={data.title} aspectRatio="16 / 9" priority className="border border-border-subtle" />
         </motion.section>
       )}
 
       {/* Editorial body + sidebar grid */}
-      <section className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12 lg:gap-16">
+      <section>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_300px] lg:gap-16">
 
           {/* Main article body */}
-          <motion.article
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="order-2 lg:order-1"
-          >
+          <motion.article {...fadeUp} transition={{ ...TRANSITION.slow, delay: 0.15 }} className="order-2 lg:order-1">
             {/* First paragraph with drop cap */}
             {paragraphs.length > 0 && (
-              <p className="font-serif text-base md:text-lg leading-[1.9] text-foreground/85 mb-8 first-letter:text-6xl first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:leading-[0.8] first-letter:text-foreground first-letter:font-serif">
+              <p className="mb-8 text-base leading-[1.85] text-secondary first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-6xl first-letter:font-light first-letter:leading-[0.8] first-letter:text-foreground md:text-lg">
                 {paragraphs[0]}
               </p>
             )}
@@ -163,7 +133,7 @@ export function CarOfTheDayPage() {
                 {paragraphs.slice(1).map((p, i) => (
                   <p
                     key={i}
-                    className="font-serif text-base md:text-[15px] leading-[1.85] text-foreground/80 break-inside-avoid"
+                    className="break-inside-avoid text-base leading-[1.85] text-secondary"
                   >
                     {p}
                   </p>
@@ -174,14 +144,13 @@ export function CarOfTheDayPage() {
 
           {/* Sidebar */}
           <motion.aside
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="order-1 lg:order-2 space-y-6 lg:sticky lg:top-24 lg:self-start"
+            {...fadeUp}
+            transition={{ ...TRANSITION.slow, delay: 0.2 }}
+            className="order-1 space-y-6 lg:sticky lg:top-24 lg:order-2 lg:self-start"
           >
             {/* Technical Data Box */}
             <div className="border border-border-subtle p-6">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] text-foreground font-medium mb-6 pb-3 border-b border-border-subtle">
+              <h3 className="eyebrow mb-6 border-b border-border-subtle pb-3 text-foreground">
                 Teknik Veriler
               </h3>
               <dl className="space-y-4">
@@ -191,8 +160,8 @@ export function CarOfTheDayPage() {
                   if (!value) return null;
                   return (
                     <div key={spec.key} className="flex items-center justify-between gap-4">
-                      <dt className="flex items-center gap-2.5 text-xs text-muted">
-                        <Icon className="size-3.5 text-foreground/40" strokeWidth={1.5} />
+                      <dt className="flex items-center gap-2.5 text-sm text-muted">
+                        <Icon className="size-4 text-muted" strokeWidth={1.5} aria-hidden />
                         {spec.label}
                       </dt>
                       <dd className="text-sm font-medium text-foreground tracking-wide tabular-nums">
@@ -208,16 +177,16 @@ export function CarOfTheDayPage() {
             {data.conclusion && (
               <div className="bg-foreground text-void p-6">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-void/20">
-                  <h3 className="text-[10px] uppercase tracking-[0.2em] font-medium">
+                  <h3 className="text-2xs font-semibold uppercase tracking-eyebrow">
                     Sonuç
                   </h3>
                   {data.verdictScore && (
-                    <span className="text-3xl font-light font-serif tracking-tight">
-                      {data.verdictScore}<span className="text-base text-void/50">/10</span>
+                    <span className="font-display text-3xl font-light tabular-nums">
+                      {data.verdictScore}<span className="text-base text-void/70">/10</span>
                     </span>
                   )}
                 </div>
-                <p className="font-serif text-sm leading-relaxed opacity-90">
+                <p className="text-sm leading-relaxed opacity-90">
                   {data.conclusion}
                 </p>
               </div>
@@ -227,16 +196,17 @@ export function CarOfTheDayPage() {
       </section>
 
       {/* Bottom divider */}
-      <div className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12 mt-20">
-        <div className="border-t border-border-subtle pt-8 flex items-center justify-between">
-          <p className="text-[10px] uppercase tracking-widest text-muted">
+      <div className="mt-20">
+        <div className="flex items-center justify-between border-t border-border-subtle pt-8">
+          <p className="eyebrow">
             © {new Date().getFullYear()} OtoVadi Editöryal
           </p>
-          <p className="text-[10px] uppercase tracking-widest text-muted">
+          <p className="eyebrow">
             Günün Aracı Serisi
           </p>
         </div>
       </div>
+      </PageContainer>
     </motion.div>
   );
 }

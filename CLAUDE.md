@@ -5,14 +5,15 @@ editoryal içerik (Günün Aracı, Koleksiyonlar) ve Firestore tabanlı admin CM
 
 ## Yığın
 React 19 · TypeScript ~6 · Vite 8 · Tailwind 3.4 (`darkMode: 'class'`) · framer-motion 12 · Zustand 5 ·
-React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function).
+React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function) ·
+fontlar self-host `@fontsource-variable/inter` + `inter-tight` (main.tsx'te import; Google Fonts yok).
 
 ## Doğrulama (her değişiklikten sonra)
 ```bash
 npx tsc -p tsconfig.app.json --noEmit    # src'yi gerçekten tarar
 npx tsc -p tsconfig.node.json --noEmit   # vite.config.ts + api/
 npm run build                            # tsc -b && vite build (500 kB chunk uyarısı bilinen durum)
-npx eslint .                             # 60 hata önceden var (çoğu AdminDashboard `any`); sayı ARTMAMALI
+npx eslint .                             # 56 hata önceden var (48'i AdminDashboard `any`); sayı ARTMAMALI
 ```
 Kökte düz `npx tsc --noEmit` hiçbir dosyayı taramaz (`tsconfig.json` → `files: []`), güvence vermez.
 Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` isteklerini `api/<ad>.ts`'e yönlendirir ve
@@ -28,7 +29,9 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 ## Mimari kurallar (Faz 1)
 1. **Renk tokenları:** `index.css`'te "R G B" kanalları (`--color-foreground: 0 0 0`), Tailwind'de `rgb(var(--x) / <alpha-value>)`.
    `bg-void/80` gibi opaklık sınıfları buna bağlıdır. Ham CSS/inline stilde `rgb(var(--color-foreground))` yaz; çıplak
-   `var(--color-...)` artık geçerli bir renk DEĞİLDİR. Temaya bağlı renklerde yeni hex kullanma.
+   `var(--color-...)` geçerli bir renk DEĞİLDİR. Gri hiyerarşisi: `foreground` → `secondary` (gövde metni) → `muted` (etiket);
+   kenarlık `border-subtle` / `border-strong`; durum `success` / `warning` / `danger`. `gray-*`, `neutral-*`, `emerald-*`, `#0a0a0a`,
+   `white/10` gibi temaya bağlı ham renk YOK (istisna: video/fotoğraf üstü metin ve her zaman koyu sahneler → `white`/`black`).
 2. **z-index:** Yalnızca isimli skala: `z-header` / `z-bottombar` 40, `z-drawer-backdrop` 60, `z-drawer` 70, `z-modal` 80,
    `z-toast` 90, `z-stage` 100. Sayfa içi yerel değerler 0–30. `main`'e z-index verme (stacking context tuzağı); `z-[9999]` gibi keyfi değer ekleme.
 3. **Overlay/modal:** `createPortal(..., document.body)` ile render et. `AnimatePresence` `isOpen` koşulunun dışında olmalı
@@ -45,6 +48,26 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
    Para birimini tutardan tahmin etme, para birimi kodunu metne elle ekleme.
 8. **Diğer:** Garaj işlemleri `useGarageToggle(vehicle)`; giriş gerektiren aksiyonlar `openAuthModal(mesaj)`;
    bulunamayan kayıtta sessiz `Navigate to="/"` yerine `NotFoundPage`.
+
+## Tasarım sistemi (Faz 3)
+- **Tema flaşı:** `index.html`'deki inline script React'ten önce `dark` sınıfını ve `meta[name=theme-color]`'ı ayarlar
+  (`theme-storage` → `prefers-color-scheme` → koyu). `--color-void` değişirse script'teki hex'leri ve `useThemeStore`'u da güncelle.
+- **Tipografi:** `font-display` = Inter Tight, `font-sans` = Inter (latin-ext: ğ ş İ ₺). Başlıklar `text-display-sm|md|lg|xl` (clamp).
+  En küçük boyut `text-2xs` (11px); `text-[9px]/[10px]`, `tracking-[0.3–0.5em]`, `font-serif` yok. Etiketler `.eyebrow` / `.stat-label`
+  (`tracking-eyebrow` 0.16em), değerler `.stat-value`; fiyat ve teknik değerlerde `tabular-nums`. Büyük harfle gösterilen
+  marka/model/donanım adlarına `lang="en"` ver (Türkçe kural "AUDİ", "320İ" üretir).
+- **Sayfa iskeleti:** `layout/PageContainer` (`width`: narrow|medium|default|wide, `spacing`: page|section|none; yatay boşluk
+  Navbar ile aynı) + `layout/PageHeader` (`PageHeader` h1, `SectionHeader` h2). Sayfalar `<main>` açmaz (AppShell sağlar).
+- **Görseller:** Her araç/editoryal görsel `ui/SmartImage` ile (`aspectRatio="16 / 10"` veya ebeveyni doldurur; `bodyType` + `colorHex`
+  → kırık/boş görselde siluet + stüdyo gradyanı; koyu sahnede `tone="dark"`; ilk ekranda `priority`). Çıplak `<img>` ekleme.
+- **Araç kartı:** `vehicle/VehicleCard` (`variant`: grid|featured) + `VehicleCardSkeleton`. Tek gerçek `<Link>` (başlık, `::after` ile kartı kaplar),
+  garaj + karşılaştır (`/karsilastir?a=<slug>`) aksiyonları z-10. Araç metinleri `utils/vehicleText` (`vehicleName`, `cleanText`) ile trim'lenir.
+- **Ses:** Detayda Ses sekmesi yalnızca `usePlayableTracks` gerçekten çalınabilir kayıt doğrularsa görünür; kullanıcıya dosya yolu gösterme.
+- **Animasyon:** `lib/motion.ts` → `DURATION` (0.2/0.35/0.55), tek eğri `EASE_OUT`, `TRANSITION`, `fadeUp`/`fade`, `staggerDelay(i)` (ilk 6 öğe).
+  App `<MotionConfig reducedMotion="user">`; otomatik oynayan medya için ayrıca `useReducedMotion`. `filter: blur` geçişi ve `animate-ping` yok;
+  CSS'te `transition` varsayılanı 200ms + aynı eğri, sürekli animasyonlar `motion-safe:`.
+- **Header:** xl+ tüm linkler + dil/tema; lg 5 link + menü; mobil üst bar yalnızca marka/garaj/menü (dil + tema menüde, hesap BottomNav'da).
+  Ana sayfada hero üzerinde şeffaf, kaydırınca dolgun; bunun için `HeroSection` header yüksekliği kadar negatif margin alır.
 
 ## Akıllı Keşif ve güvenlik (Faz 2)
 - Akış: `AutoCurator` → `services/discoveryService.ts` → `POST /api/discover` → Gemini (`responseSchema`, slug enum + sunucuda
@@ -66,7 +89,8 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 - Doküman id = `vehicle.id`; `slug` farklı olabilir. Garaj (`users/{uid}.savedVehicles`) slug saklar; id ve slug'ı birlikte kontrol et.
 - Admin'den eklenen araçlarda boyutlar sahte varsayılandır (4500 mm, 500 L, 1500 kg), ses `src: ''`, multimedya/iç mekan boştur; güvenilir sayma.
 - Muscle car kayıtlarında `segment: "muscle-car"` olabilir (tip `'-'` bekler).
-- `public/audio/` ve `public/images/vehicles/` boştur; görseller dış hotlink'tir (Wikimedia/Unsplash) ve kırılabilir.
+- `public/audio/` ve `public/images/vehicles/` boştur (bu yüzden Ses sekmesi şu an hiçbir araçta görünmez); görseller dış hotlink'tir
+  (Wikimedia/Unsplash/hdcarwallpapers) ve kırılabilir — SmartImage fallback'i bunu karşılar. Marka/model alanlarında baş/son boşluk var.
 - Canlı veritabanına script ile yazma veya migration çalıştırma yalnızca kullanıcının açık onayıyla yapılır.
 
 ## Dokunma / hassas noktalar
@@ -81,11 +105,11 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
 - TS: `verbatimModuleSyntax` (tipler `import type`), `erasableSyntaxOnly` (enum / parameter property yok), `noUnused*`. Yeni `any` ekleme.
 - `react-refresh` kuralı: `.tsx` dosyaları yalnızca bileşen export eder; sabitler `.ts` dosyasına (ör. `components/ui/buttonStyles.ts`).
 - Yorumlar ve arayüz metinleri Türkçe. i18n (`useI18n`, tr/en/de) kısmidir: zaten çevrilmiş alanlarda (nav, hero, catalog…) yeni metni locale dosyalarına ekle.
-- Stil: Tailwind tokenları (`void`, `surface`, `foreground`, `muted`, `border-subtle`) ve mevcut buton dili (`primaryButtonClass`, `secondaryButtonClass`).
-  İstenmeyen tasarım/tipografi değişikliği yapma.
+- Stil: Tailwind tokenları ve Faz 3 tasarım sistemi; buton dili `primaryButtonClass`, `secondaryButtonClass`. İstenmeyen tasarım değişikliği yapma.
 - Kapsam dışı bir sorun görürsen sessizce düzeltme; raporla.
 
 ## Yol haritası
 Analiz maddeleri: K1–K14 (hata/güvenlik), U1–U13 (UI/UX), P1–P8 (performans/SEO), Y1–Y7 (yeni özellik).
 Faz 1 tamamlandı: K5–K10. Faz 2 tamamlandı: K1–K4, P8 (CI ve Speed Insights hariç).
+Faz 3 tamamlandı: K11, K13, U1, U2, U3, U6, U8, U9, U10 (görsellerin kendi depolamaya taşınması hariç).
 Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.

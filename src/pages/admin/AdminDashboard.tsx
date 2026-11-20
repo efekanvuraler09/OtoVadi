@@ -46,7 +46,7 @@ const FloatingInput = ({ id, label, value, type = 'text', onChange, step }: any)
     />
     <label 
       htmlFor={id} 
-      className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+      className="absolute left-0 -top-4 text-2xs uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
     >
       {label}
     </label>
@@ -69,7 +69,7 @@ const FloatingSelect = ({ id, label, value, options, onChange, disabled }: any) 
     </select>
     <label 
       htmlFor={id} 
-      className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground"
+      className="absolute left-0 -top-4 text-2xs uppercase tracking-widest text-foreground"
     >
       {label}
     </label>
@@ -106,7 +106,7 @@ const FloatingTextarea = ({ id, label, value, onChange, rows = 3 }: any) => (
     />
     <label 
       htmlFor={id} 
-      className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+      className="absolute left-0 -top-4 text-2xs uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
     >
       {label}
     </label>
@@ -488,13 +488,13 @@ function AdminDashboardContent() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-void flex">
+    <div className="w-full min-h-dvh bg-void flex">
       {/* Sidebar */}
       <aside className="w-64 border-r border-border-subtle flex flex-col pt-8">
         <div className="px-8 mb-12">
           <Link to="/" className="block cursor-pointer transition-opacity hover:opacity-80 select-none outline-none focus:outline-none">
             <h1 className="font-display text-2xl font-bold tracking-wide text-foreground">OtoVadi</h1>
-            <p className="font-sans text-[10px] uppercase tracking-widest text-muted">Admin Panel</p>
+            <p className="font-sans text-2xs uppercase tracking-widest text-muted">Admin Panel</p>
           </Link>
         </div>
 
@@ -524,7 +524,7 @@ function AdminDashboardContent() {
                 <Check className="size-3" />
               </span>
               {testDrives.filter(t => t.status === 'pending').length > 0 && (
-                <span className="absolute -top-1 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold text-void">
+                <span className="absolute -top-1 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-2xs font-bold text-void">
                   {testDrives.filter(t => t.status === 'pending').length}
                 </span>
               )}
@@ -616,7 +616,7 @@ function AdminDashboardContent() {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-display text-xl font-medium text-foreground">{td.customerName}</h3>
-                      <span className={`px-2 py-0.5 text-[10px] uppercase tracking-wider border ${
+                      <span className={`px-2 py-0.5 text-2xs uppercase tracking-wider border ${
                         td.status === 'pending' ? 'border-yellow-500/50 text-yellow-500' :
                         td.status === 'approved' ? 'border-emerald-500/50 text-emerald-500' :
                         'border-red-500/50 text-red-500'

@@ -10,9 +10,16 @@ export default {
         void: 'rgb(var(--color-void) / <alpha-value>)',
         surface: 'rgb(var(--color-surface) / <alpha-value>)',
         'surface-elevated': 'rgb(var(--color-surface-elevated) / <alpha-value>)',
-        muted: 'rgb(var(--color-muted) / <alpha-value>)',
+        // Gri hiyerarşisi (koyudan açığa): foreground → secondary → muted. gray-*/neutral-* kullanma.
         foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
+        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+        muted: 'rgb(var(--color-muted) / <alpha-value>)',
         'border-subtle': 'rgb(var(--color-border-subtle) / <alpha-value>)',
+        'border-strong': 'rgb(var(--color-border-strong) / <alpha-value>)',
+        // Semantik durum renkleri (her iki temada AA kontrastlı)
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
+        danger: 'rgb(var(--color-danger) / <alpha-value>)',
       },
       // Uygulama genelindeki katman sırası (alttan üste). Sayfa içi yerel z değerleri 0-30 aralığında kalmalı.
       zIndex: {
@@ -24,28 +31,32 @@ export default {
         toast: '90',
         stage: '100',
       },
+      // Self-host (@fontsource-variable, latin + latin-ext → Türkçe karakterler dahil). main.tsx'te import edilir.
       fontFamily: {
-        display: [
-          'Corporate A',
-          'Corporate A BQ',
-          'Playfair Display',
-          'Georgia',
-          'Times New Roman',
-          'serif',
-        ],
-        sans: [
-          'MBCorpo S Text',
-          'MBCorpo Title',
-          'Montserrat',
-          'system-ui',
-          '-apple-system',
-          'Segoe UI',
-          'sans-serif',
-        ],
+        display: ['"Inter Tight Variable"', '"Inter Variable"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+        sans: ['"Inter Variable"', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
+      },
+      // Tip ölçeği: en küçük boyut 2xs (11px). display-* başlıklar clamp() ile akışkan ölçeklenir.
+      fontSize: {
+        '2xs': ['0.6875rem', { lineHeight: '1rem' }],
+        'display-sm': ['clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        'display-md': ['clamp(1.75rem, 1.35rem + 1.6vw, 2.75rem)', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
+        'display-lg': ['clamp(2.25rem, 1.6rem + 2.6vw, 4rem)', { lineHeight: '1.04', letterSpacing: '-0.02em' }],
+        'display-xl': ['clamp(2.75rem, 1.7rem + 4.4vw, 6rem)', { lineHeight: '1', letterSpacing: '-0.025em' }],
       },
       letterSpacing: {
-        'mb-wide': '0.15em',
-        'mb-wider': '0.25em',
+        // Büyük harfli etiketler için tek ölçü (eski 0.3–0.5em değerlerinin yerine)
+        eyebrow: '0.16em',
+      },
+      // Tek easing eğrisi ve kısa varsayılan süre (src/lib/motion.ts ile aynı değerler)
+      transitionTimingFunction: {
+        DEFAULT: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'out-expo': 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      transitionDuration: {
+        DEFAULT: '200ms',
+        350: '350ms',
+        550: '550ms',
       },
     },
   },

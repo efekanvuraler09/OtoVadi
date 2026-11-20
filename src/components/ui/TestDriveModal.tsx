@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check } from 'lucide-react';
+import { X, Check, Loader2 } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { useAuth } from '../../context/AuthContext';
 import { createTestDriveRequest } from '../../services/testDriveService';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { TRANSITION } from '../../lib/motion';
+import { vehicleName } from '../../utils/vehicleText';
 
 interface TestDriveModalProps {
   vehicle: Vehicle;
@@ -42,7 +44,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
       await createTestDriveRequest({
         userId: user.uid,
         vehicleId: vehicle.id,
-        vehicleName: `${vehicle.brand} ${vehicle.model}`,
+        vehicleName: vehicleName(vehicle),
         customerName: `${formData.name} ${formData.surname}`,
         customerPhone: formData.phone,
         location: selectedLocation,
@@ -76,7 +78,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
         className="fixed inset-0 z-modal flex items-end justify-center sm:items-center sm:px-4"
         role="dialog"
         aria-modal="true"
-        aria-label={`${vehicle.brand} ${vehicle.model} test sürüşü`}
+        aria-label={`${vehicleName(vehicle)} test sürüşü`}
       >
         {/* Backdrop */}
         <motion.div
@@ -111,13 +113,14 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
             {modalState === 'form' && (
               <motion.div
                 key="form"
-                initial={{ opacity: 0, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, filter: 'blur(4px)' }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={TRANSITION.base}
               >
                 <div className="mb-10 text-center">
-                  <h2 className="font-display text-3xl font-light text-foreground mb-2">Test Sürüşü</h2>
-                  <p className="font-sans text-xs uppercase tracking-widest text-muted">{vehicle.brand} {vehicle.model}</p>
+                  <h2 className="mb-2 text-display-sm font-light text-foreground">Test Sürüşü</h2>
+                  <p className="eyebrow" lang="en">{vehicleName(vehicle)}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8 flex flex-col">
@@ -136,7 +139,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                       />
                       <label 
                         htmlFor="td-name" 
-                        className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+                        className="absolute left-0 -top-4 text-2xs uppercase tracking-eyebrow text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-eyebrow peer-focus:text-foreground cursor-text"
                       >
                         Adınız
                       </label>
@@ -154,7 +157,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                       />
                       <label 
                         htmlFor="td-surname" 
-                        className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+                        className="absolute left-0 -top-4 text-2xs uppercase tracking-eyebrow text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-eyebrow peer-focus:text-foreground cursor-text"
                       >
                         Soyadınız
                       </label>
@@ -172,7 +175,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                       />
                       <label 
                         htmlFor="td-phone" 
-                        className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+                        className="absolute left-0 -top-4 text-2xs uppercase tracking-eyebrow text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-eyebrow peer-focus:text-foreground cursor-text"
                       >
                         Telefon Numaranız
                       </label>
@@ -181,7 +184,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
 
                   {/* Location Dropdown */}
                   <div className="relative">
-                    <label className="block text-xs uppercase tracking-widest text-muted mb-2">Showroom</label>
+                    <label className="stat-label mb-2 block">Showroom</label>
                     <select 
                       value={selectedLocation}
                       onChange={(e) => setSelectedLocation(e.target.value)}
@@ -196,7 +199,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                   {/* Quick Select: Dates & Times */}
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs uppercase tracking-widest text-muted mb-2">Tarih</label>
+                      <label className="stat-label mb-2 block">Tarih</label>
                       <input 
                         type="date"
                         min={todayStr}
@@ -207,7 +210,7 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                       />
                     </div>
                     <div>
-                      <label className="block text-xs uppercase tracking-widest text-muted mb-2">Saat</label>
+                      <label className="stat-label mb-2 block">Saat</label>
                       <input 
                         type="time"
                         required
@@ -238,11 +241,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-20"
               >
-                <div className="relative flex items-center justify-center size-16 mb-6">
-                  <div className="absolute inset-0 border border-foreground/30 rounded-full animate-ping" style={{ animationDuration: '1.5s' }} />
-                  <div className="size-2 bg-foreground rounded-full" />
-                </div>
-                <p className="font-sans text-xs uppercase tracking-widest text-muted">
+                <Loader2 className="mb-6 size-8 animate-spin text-muted" strokeWidth={1.5} aria-hidden />
+                <p className="eyebrow" role="status">
                   Talebiniz işleniyor...
                 </p>
               </motion.div>
@@ -255,8 +255,8 @@ export function TestDriveModal({ vehicle, isOpen, onClose }: TestDriveModalProps
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex flex-col items-center justify-center py-16 text-center"
               >
-                <div className="size-16 rounded-full border border-emerald-500/30 flex items-center justify-center mb-8 bg-emerald-500/10">
-                  <Check className="size-8 text-emerald-500 stroke-[1.5]" />
+                <div className="mb-8 flex size-16 items-center justify-center rounded-full border border-success/30 bg-success/10">
+                  <Check className="size-8 stroke-[1.5] text-success" />
                 </div>
                 <h3 className="font-display text-2xl font-light text-foreground mb-4">Randevunuz Onaylandı</h3>
                 <p className="text-muted text-sm leading-relaxed mb-10 px-4">

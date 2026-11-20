@@ -102,8 +102,8 @@ export function AuthModal() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center py-12 text-center"
                   >
-                    <div className="size-16 rounded-full border border-emerald-500/30 flex items-center justify-center mb-6 bg-emerald-500/10">
-                      <Check className="size-8 text-emerald-500 stroke-[1.5]" />
+                    <div className="mb-6 flex size-16 items-center justify-center rounded-full border border-success/30 bg-success/10">
+                      <Check className="size-8 stroke-[1.5] text-success" />
                     </div>
                     <h3 className="font-display text-2xl font-light text-foreground">Hoş Geldiniz</h3>
                   </motion.div>
@@ -142,7 +142,7 @@ export function AuthModal() {
                         />
                         <label 
                           htmlFor="auth-email" 
-                          className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+                          className="absolute left-0 -top-4 text-2xs uppercase tracking-eyebrow text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-eyebrow peer-focus:text-foreground cursor-text"
                         >
                           E-posta Adresi
                         </label>
@@ -160,7 +160,7 @@ export function AuthModal() {
                         />
                         <label 
                           htmlFor="auth-password" 
-                          className="absolute left-0 -top-4 text-[10px] uppercase tracking-widest text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-foreground cursor-text"
+                          className="absolute left-0 -top-4 text-2xs uppercase tracking-eyebrow text-foreground transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-muted peer-focus:-top-4 peer-focus:text-2xs peer-focus:uppercase peer-focus:tracking-eyebrow peer-focus:text-foreground cursor-text"
                         >
                           Şifre
                         </label>
@@ -187,7 +187,7 @@ export function AuthModal() {
                       </button>
 
                       {error && (
-                        <p className="text-center text-xs text-red-500 uppercase tracking-widest">
+                        <p className="text-center text-sm text-danger" role="alert">
                           {error}
                         </p>
                       )}
