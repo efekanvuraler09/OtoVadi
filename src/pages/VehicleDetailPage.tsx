@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { m } from 'framer-motion';
-import { Info, Maximize2 } from 'lucide-react';
+import { FileText, Info, Maximize2, MessageCircle } from 'lucide-react';
 import { DetailHero } from '../components/detail/DetailHero';
 import { MobileActionBar } from '../components/detail/MobileActionBar';
 import { LoadingState, VehicleLoadError } from '../components/ui/DataState';
@@ -29,6 +29,29 @@ import { TRANSITION, fade, fadeUp } from '../lib/motion';
 
 import { usePageMeta } from '../hooks/usePageMeta';
 import { cleanText, vehicleName } from '../utils/vehicleText';
+import { VehicleBrochure } from '../components/print/VehicleBrochure';
+import { UnverifiedNote } from '../components/detail/UnverifiedNote';
+import { printDocument } from '../lib/print';
+import { arrivedViaVehicleTransition } from '../lib/viewTransition';
+import { DEFAULT_PLAN, type OwnershipPlan } from '../lib/finance';
+import { trustedSpec, type DimensionSpecKey } from '../lib/specTrust';
+import { useRecentStore } from '../store/useRecentStore';
+
+/** 2.1 — Danışman çekmecesi ayrı parça: yalnızca ilk açılışta (veya butona yaklaşınca) iner */
+const loadAdvisor = () => import('../components/advisor/AdvisorDrawer');
+const AdvisorDrawer = lazy(() => loadAdvisor().then((mod) => ({ default: mod.AdvisorDrawer })));
+const prefetchAdvisor = () => {
+  void loadAdvisor().catch(() => undefined);
+};
+
+const DIMENSIONS: { key: DimensionSpecKey; label: string; unit: string }[] = [
+  { key: 'lengthMm', label: 'Uzunluk', unit: 'mm' },
+  { key: 'widthMm', label: 'Genişlik', unit: 'mm' },
+  { key: 'heightMm', label: 'Yükseklik', unit: 'mm' },
+  { key: 'wheelbaseMm', label: 'Aks Mesafesi', unit: 'mm' },
+  { key: 'bootCapacityL', label: 'Bagaj', unit: 'L' },
+  { key: 'curbWeightKg', label: 'Ağırlık', unit: 'kg' },
+];
 /** Ses sekmesi yalnızca çalınabilir bir kayıt doğrulandığında eklenir (K11) */
 const BASE_TABS = [
   { id: 'tech', label: 'Teknik' },
@@ -45,6 +68,9 @@ const panelMotion = { ...fadeUp, transition: TRANSITION.base };
 export function VehicleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  // 1.1: kart geçişiyle gelindiyse sayfa solması ve hero perdesi atlanır (görsel zaten yerine "uçarak" oturdu)
+  const [arrivedViaTransition] = useState(() => arrivedViaVehicleTransition(location.state));
   const isLoading = useVehicleStore((s) => s.isLoading);
   const loadError = useVehicleStore((s) => s.loadError);
   // Listeye abone olunur: Firestore'dan gelen güncellemeler sayfaya da yansır
@@ -57,11 +83,27 @@ export function VehicleDetailPage() {
   const [isAtmosphereOpen, setIsAtmosphereOpen] = useState(false);
 
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  // Finansman / TCO seçimi: panel, A4 broşür ve danışman aynı değerleri kullanır
+  const [plan, setPlan] = useState<OwnershipPlan>(DEFAULT_PLAN);
+  const updatePlan = (patch: Partial<OwnershipPlan>) => setPlan((current) => ({ ...current, ...patch }));
+  // Danışman: ilk açılışta mount edilir, sonra kapanış animasyonu ve konuşma için mount kalır
+  const [isAdvisorOpen, setIsAdvisorOpen] = useState(false);
+  const [advisorMounted, setAdvisorMounted] = useState(false);
+  const openAdvisor = () => {
+    setAdvisorMounted(true);
+    setIsAdvisorOpen(true);
+  };
   const [heroPassed, setHeroPassed] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   // Masaüstü yapışkan şerit: hero header'ın altına kaydığında görünür (rootMargin = sticky header yüksekliği)
   const vehicleId = vehicle?.id;
+
+  // 1.3 — "Kaldığınız Yerden": yalnızca bu tarayıcıda (localStorage), Firestore'a yazılmaz
+  useEffect(() => {
+    if (vehicleId) useRecentStore.getState().record(vehicleId);
+  }, [vehicleId]);
+
   useEffect(() => {
     const el = heroRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
@@ -133,7 +175,9 @@ export function VehicleDetailPage() {
     );
   }
 
-  const { dimensions, technicalSections } = vehicle;
+  const { technicalSections } = vehicle;
+  const printBrochure = () => void printDocument(`OtoVadi Teknik Künye — ${vehicleName(vehicle)}`);
+  const hasUnverifiedDimensions = DIMENSIONS.some(({ key }) => trustedSpec(vehicle, key) === null);
   const images = vehicleImages(vehicle);
   const studioImage = vehicle.interactiveGallery?.studioImage?.trim();
   const studioIndex = studioImage ? Math.max(0, images.indexOf(studioImage)) : 0;
@@ -155,21 +199,38 @@ export function VehicleDetailPage() {
 
   return (
     <>
-      <m.div {...fade} transition={TRANSITION.base}>
+      <m.div {...fade} initial={arrivedViaTransition ? false : fade.initial} transition={TRANSITION.base}>
         <div ref={heroRef}>
           <DetailHero
             vehicle={vehicle}
             onOpenTestDrive={requestTestDrive}
             onOpenGallery={images.length > 0 ? () => setGalleryIndex(0) : undefined}
             imageCount={images.length}
+            onPrintBrochure={printBrochure}
+            curtain={!arrivedViaTransition}
           />
         </div>
 
-        {/* ── Atmosfer Sahne Butonu ── */}
-        <div className="flex justify-center py-6">
+        {/* ── Aksiyon alanı: Atmosfer sahnesi + Danışmana Sor (2.1) + Broşür (1.2, mobilde "Daha fazla" menüsünde) ── */}
+        <div className="flex flex-wrap justify-center gap-3 px-4 py-6">
           <button type="button" onClick={() => setIsAtmosphereOpen(true)} className={`group ${secondaryButtonClass}`}>
             <Maximize2 className="size-4 transition-transform group-hover:scale-110" strokeWidth={1.5} aria-hidden />
             Atmosferi Yaşa
+          </button>
+          <button
+            type="button"
+            onClick={openAdvisor}
+            onPointerEnter={prefetchAdvisor}
+            onFocus={prefetchAdvisor}
+            onTouchStart={prefetchAdvisor}
+            className={secondaryButtonClass}
+          >
+            <MessageCircle className="size-4" strokeWidth={1.5} aria-hidden />
+            Danışmana Sor
+          </button>
+          <button type="button" onClick={printBrochure} className={`${secondaryButtonClass} hidden md:inline-flex`}>
+            <FileText className="size-4" strokeWidth={1.5} aria-hidden />
+            Broşürü İndir
           </button>
         </div>
 
@@ -231,23 +292,29 @@ export function VehicleDetailPage() {
             {currentTab === 'dims' && (
               <m.div key="dims" {...panelMotion}>
                 <dl className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3">
-                  {[
-                    { label: 'Uzunluk', value: dimensions.lengthMm, unit: 'mm' },
-                    { label: 'Genişlik', value: dimensions.widthMm, unit: 'mm' },
-                    { label: 'Yükseklik', value: dimensions.heightMm, unit: 'mm' },
-                    { label: 'Aks Mesafesi', value: dimensions.wheelbaseMm, unit: 'mm' },
-                    { label: 'Bagaj', value: dimensions.bootCapacityL, unit: 'L' },
-                    { label: 'Ağırlık', value: dimensions.curbWeightKg, unit: 'kg' },
-                  ].map(({ label, value, unit }) => (
-                    <div key={label} className="flex flex-col gap-2 border-b border-border-subtle pb-4">
-                      <dt className="stat-label">{label}</dt>
-                      <dd className="stat-value text-2xl md:text-3xl">
-                        {value?.toLocaleString('tr-TR')}
-                        <span className="ml-1 text-base text-muted">{unit}</span>
-                      </dd>
-                    </div>
-                  ))}
+                  {DIMENSIONS.map(({ key, label, unit }) => {
+                    // Cila 1: form varsayılanı (4500 mm, 500 L, 1500 kg…) gerçek ölçü gibi gösterilmez
+                    const value = trustedSpec(vehicle, key);
+                    return (
+                      <div key={key} className="flex flex-col gap-2 border-b border-border-subtle pb-4">
+                        <dt className="stat-label">{label}</dt>
+                        <dd className="stat-value text-2xl md:text-3xl">
+                          {value === null ? (
+                            <span className="text-muted" aria-label="Doğrulanmamış">
+                              —
+                            </span>
+                          ) : (
+                            <>
+                              {value.toLocaleString('tr-TR')}
+                              <span className="ml-1 text-base text-muted">{unit}</span>
+                            </>
+                          )}
+                        </dd>
+                      </div>
+                    );
+                  })}
                 </dl>
+                {hasUnverifiedDimensions && <UnverifiedNote className="mt-6" />}
               </m.div>
             )}
 
@@ -267,14 +334,36 @@ export function VehicleDetailPage() {
             )}
           </div>
 
-          <OwnershipCostPanel vehicle={vehicle} onApply={requestTestDrive} />
+          <OwnershipCostPanel vehicle={vehicle} onApply={requestTestDrive} plan={plan} onPlanChange={updatePlan} />
         </PageContainer>
       </m.div>
 
       {/* Sabit/portal katmanlar, opaklık animasyonu yapan sayfa kabının dışında tutulur */}
-      <MobileActionBar vehicle={vehicle} onTestDrive={requestTestDrive} />
+      <MobileActionBar
+        vehicle={vehicle}
+        onTestDrive={requestTestDrive}
+        onAskAdvisor={openAdvisor}
+        onPrintBrochure={printBrochure}
+        onPrefetchAdvisor={prefetchAdvisor}
+      />
 
-      <DetailStickyBar vehicle={vehicle} visible={heroPassed} onTestDrive={requestTestDrive} />
+      <DetailStickyBar
+        vehicle={vehicle}
+        visible={heroPassed}
+        onTestDrive={requestTestDrive}
+        onAskAdvisor={openAdvisor}
+        onPrintBrochure={printBrochure}
+        onPrefetchAdvisor={prefetchAdvisor}
+      />
+
+      {/* 1.2 — A4 Teknik Künye: ekranda görünmez, yalnızca yazdırırken basılır (body'ye portal) */}
+      <VehicleBrochure vehicle={vehicle} plan={plan} />
+
+      {advisorMounted && (
+        <Suspense fallback={null}>
+          <AdvisorDrawer vehicle={vehicle} isOpen={isAdvisorOpen} onClose={() => setIsAdvisorOpen(false)} plan={plan} />
+        </Suspense>
+      )}
 
       <GalleryLightbox
         images={images}

@@ -17,6 +17,7 @@ function scrollToTop() {
  * - Yeni sayfaya geçişte (PUSH/REPLACE) en üste kaydırır.
  * - Tarayıcı geri/ileri (POP) ile dönüldüğünde sayfanın önceki kaydırma konumunu geri yükler.
  * - URL'de #hash varsa ilgili öğeye kaydırır.
+ * - state.preserveScroll ile yapılan REPLACE (sayfa içi URL durumu) konumu değiştirmez (Faz 6, /dosya).
  */
 export function ScrollManager() {
   const location = useLocation();
@@ -52,6 +53,8 @@ export function ScrollManager() {
         }
       };
       restore();
+    } else if (navigationType === 'REPLACE' && (location.state as { preserveScroll?: boolean } | null)?.preserveScroll) {
+      // Sayfa içi durum güncellemesi (ör. /dosya sürgüleri URL'ye yazılırken): konum korunur
     } else if (location.hash) {
       const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
       if (target) {
@@ -64,7 +67,7 @@ export function ScrollManager() {
     }
 
     return () => cancelAnimationFrame(frame);
-  }, [location.key, location.hash, navigationType]);
+  }, [location.key, location.hash, location.state, navigationType]);
 
   return null;
 }

@@ -1,49 +1,40 @@
-import { useState, useMemo } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import { formatPrice, type Currency } from '../../utils/formatPrice';
 import { secondaryButtonClass } from '../ui/buttonStyles';
 import { TRANSITION } from '../../lib/motion';
+import { DOWN_PAYMENT, FINANCE_TERMS, calculateFinance } from '../../lib/finance';
 
 interface FinanceCalculatorProps {
   price: number;
   /** Aracın gerçek para birimi (resolveCurrency ile çözülmüş) */
   currency: Currency;
+  /** Peşinat oranı (%) ve vade (ay): VehicleDetailPage'de tutulur, A4 broşür de aynı seçimi basar (Faz 6) */
+  downPercent: number;
+  term: number;
+  onDownPercentChange: (value: number) => void;
+  onTermChange: (value: number) => void;
   /** Verilirse "Test Sürüşü Planla" butonu gösterilir */
   onApply?: () => void;
 }
 
-/**
- * Temsili AYLIK faiz oranları (%). Kesin oranlar finans kuruluşu, vade ve kampanyaya göre değişir.
- * TL kredileri ile döviz cinsinden fiyatlar aynı oranla hesaplanmamalı.
- */
-const REPRESENTATIVE_MONTHLY_RATE: Record<Currency, number> = {
-  TRY: 3.49,
-  EUR: 0.49,
-  USD: 0.55,
-};
-const TERMS = [12, 24, 36, 48];
-
-export function FinanceCalculator({ price, currency, onApply }: FinanceCalculatorProps) {
-  const [downpaymentPercent, setDownpaymentPercent] = useState(30);
-  const [term, setTerm] = useState(36);
-
-  const monthlyRate = REPRESENTATIVE_MONTHLY_RATE[currency];
+export function FinanceCalculator({
+  price,
+  currency,
+  downPercent: downpaymentPercent,
+  term,
+  onDownPercentChange: setDownpaymentPercent,
+  onTermChange: setTerm,
+  onApply,
+}: FinanceCalculatorProps) {
+  // Hesap lib/finance.ts'te (broşür ve Özel Dosya ile ortak)
+  const {
+    monthlyRate,
+    downAmount: downpaymentAmount,
+    monthly: monthlyPayment,
+  } = calculateFinance(price, currency, downpaymentPercent, term);
   const formatCurrency = (val: number) => formatPrice(val, currency);
   const formattedRate = monthlyRate.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-  const downpaymentAmount = (price * downpaymentPercent) / 100;
-  const loanAmount = price - downpaymentAmount;
-
-  const monthlyPayment = useMemo(() => {
-    if (loanAmount <= 0) return 0;
-    const r = monthlyRate / 100;
-    const n = term;
-    if (r === 0) return loanAmount / n;
-    // Taksitli kredi formülü: A = P * [r(1+r)^n] / [(1+r)^n - 1]
-    const numerator = r * Math.pow(1 + r, n);
-    const denominator = Math.pow(1 + r, n) - 1;
-    return loanAmount * (numerator / denominator);
-  }, [loanAmount, term, monthlyRate]);
+  const downRange = DOWN_PAYMENT.max - DOWN_PAYMENT.min;
 
   return (
     // Dış kap ve başlık OwnershipCostPanel'de (Finansman / 5 Yıllık Maliyet sekmeleri)
@@ -61,14 +52,14 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
               <input 
                 type="range"
                 aria-label="Peşinat oranı"
-                min="10" 
-                max="80" 
-                step="5"
+                min={DOWN_PAYMENT.min}
+                max={DOWN_PAYMENT.max}
+                step={DOWN_PAYMENT.step}
                 value={downpaymentPercent}
                 onChange={(e) => setDownpaymentPercent(Number(e.target.value))}
                 className="w-full h-0.5 bg-border-subtle appearance-none cursor-pointer outline-none range-thumb"
                 style={{
-                  background: `linear-gradient(to right, rgb(var(--color-foreground)) ${((downpaymentPercent - 10) / 70) * 100}%, rgb(var(--color-border-subtle)) ${((downpaymentPercent - 10) / 70) * 100}%)`
+                  background: `linear-gradient(to right, rgb(var(--color-foreground)) ${((downpaymentPercent - DOWN_PAYMENT.min) / downRange) * 100}%, rgb(var(--color-border-subtle)) ${((downpaymentPercent - DOWN_PAYMENT.min) / downRange) * 100}%)`
                 }}
               />
             </div>
@@ -78,7 +69,7 @@ export function FinanceCalculator({ price, currency, onApply }: FinanceCalculato
           <div className="space-y-4">
             <span className="stat-label mb-4 block">Vade Seçenekleri</span>
             <div className="flex gap-4">
-              {TERMS.map((t) => (
+              {FINANCE_TERMS.map((t) => (
                 <button
                   key={t}
                   type="button"

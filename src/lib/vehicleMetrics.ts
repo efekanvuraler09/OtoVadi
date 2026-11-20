@@ -1,6 +1,7 @@
 import type { Vehicle } from '../types/vehicle';
 import { approximateTry, resolveCurrency } from '../utils/formatPrice';
 import { cleanText } from '../utils/vehicleText';
+import { trustedSpec } from './specTrust';
 
 /**
  * Araç verisinden türetilen ortak ölçüler (Faz 5). Firestore'da yakıt tüketimi alanı YOK; tüketim burada
@@ -39,25 +40,48 @@ export interface ConsumptionEstimate {
   value: number;
   /** L (benzin/dizel/hibrit) veya kWh (elektrik) */
   unit: 'L' | 'kWh';
+  /**
+   * Faz 6: güç ve ağırlık doğrulanmış değerlerden mi geldi. false → doğrulanmamış (şablon) değerler yerine
+   * gövde tipi ortalaması kullanıldı; Düello bu satırı kıyaslamaz, TCO dipnotta belirtir.
+   */
+  reliable: boolean;
 }
 
 const positive = (value: unknown, fallback: number): number =>
   typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback;
 
+/** Teknik değer doğrulanmamışsa kullanılan gövde tipi ortalamaları (güç HP, ağırlık kg, motor hacmi cc) */
+const BODY_FALLBACK: Record<string, { hp: number; kg: number; cc: number }> = {
+  'muscle-car': { hp: 420, kg: 1750, cc: 5700 },
+  pickup: { hp: 200, kg: 2200, cc: 2800 },
+  suv: { hp: 180, kg: 1700, cc: 1800 },
+  sedan: { hp: 150, kg: 1450, cc: 1600 },
+  hatchback: { hp: 130, kg: 1300, cc: 1400 },
+};
+
+export function bodyFallback(vehicle: Vehicle): { hp: number; kg: number; cc: number } {
+  return BODY_FALLBACK[vehicle.bodyType] ?? BODY_FALLBACK.sedan;
+}
+
 /**
  * Temsili karma tüketim (WLTP benzeri, L/100 km veya kWh/100 km). Güç ve ağırlık arttıkça artar; büyük hacimli
  * motorlar, pick-up/SUV gövdeler ve klasik (1990 öncesi) araçlar ek pay alır. Dizel ve hibrit daha verimlidir.
+ * Yalnızca doğrulanmış teknik değerler kullanılır (lib/specTrust.ts); eksikse gövde tipi ortalaması devreye girer.
  */
 export function estimateConsumption(vehicle: Vehicle): ConsumptionEstimate {
-  const hp = positive(vehicle.engine?.powerHp, 150);
-  const kg = positive(vehicle.dimensions?.curbWeightKg, 1500);
+  const fallback = bodyFallback(vehicle);
+  const trustedHp = trustedSpec(vehicle, 'powerHp');
+  const trustedKg = trustedSpec(vehicle, 'curbWeightKg');
+  const hp = trustedHp ?? fallback.hp;
+  const kg = trustedKg ?? fallback.kg;
+  const reliable = trustedHp !== null && trustedKg !== null;
 
   if (energyKind(vehicle) === 'electric') {
     const kwh = 13.5 + 0.0045 * (kg - 1500) + 0.006 * Math.max(0, hp - 200);
-    return { value: round1(clamp(kwh, 12, 28)), unit: 'kWh' };
+    return { value: round1(clamp(kwh, 12, 28)), unit: 'kWh', reliable };
   }
 
-  const litres = positive(vehicle.engine?.displacementCc, 1500) / 1000;
+  const litres = (trustedSpec(vehicle, 'displacementCc') ?? fallback.cc) / 1000;
   let consumption = 4.2 + 0.0105 * hp + 0.0011 * (kg - 1300) + 0.6 * Math.max(0, litres - 2);
 
   if (vehicle.bodyType === 'pickup') consumption += 1.0;
@@ -76,7 +100,7 @@ export function estimateConsumption(vehicle: Vehicle): ConsumptionEstimate {
       break;
   }
 
-  return { value: round1(clamp(consumption, 3, 24)), unit: 'L' };
+  return { value: round1(clamp(consumption, 3, 24)), unit: 'L', reliable };
 }
 
 /** Aracın yaklaşık TL değeri (kasko ve kıyas için). Döviz fiyatlarda YAKLAŞIK kur kullanılır; ekranda fiyat olarak gösterilmez. */
@@ -85,10 +109,10 @@ export function approximateVehicleValueTry(vehicle: Vehicle): number {
   return approximateTry(msrp, resolveCurrency(vehicle.pricing));
 }
 
-/** Güç / ağırlık (HP / ton) */
+/** Güç / ağırlık (HP / ton). Değerlerden biri doğrulanmamışsa 0 (kıyasa girmez). */
 export function powerToWeight(vehicle: Vehicle): number {
-  const hp = positive(vehicle.engine?.powerHp, 0);
-  const kg = positive(vehicle.dimensions?.curbWeightKg, 0);
+  const hp = trustedSpec(vehicle, 'powerHp');
+  const kg = trustedSpec(vehicle, 'curbWeightKg');
   return hp && kg ? Math.round((hp / kg) * 1000) : 0;
 }
 

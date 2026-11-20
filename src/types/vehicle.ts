@@ -150,6 +150,12 @@ export interface Vehicle {
   interactiveGallery?: InteractiveGalleryData;
   modelPath?: string;
   driverNotes?: DriverNote[];
+  /**
+   * Faz 6 (Cila 1): teknik değerler elle doğrulandı mı. true → şablon sezgisi devre dışı, tüm değerler gösterilir;
+   * false → tüm teknik değerler doğrulanmamış sayılır; alan yoksa lib/specTrust.ts sezgisi karar verir.
+   * Admin formu bu alanı yazmaz; Firebase Console'dan elle eklenir.
+   */
+  specsVerified?: boolean;
 }
 
 export interface VehicleCatalogMeta {

@@ -7,6 +7,7 @@ import { useI18n } from '../../i18n/useI18n';
 import { SmartImage } from '../ui/SmartImage';
 import { vehicleName } from '../../utils/vehicleText';
 import { TRANSITION, fadeUp } from '../../lib/motion';
+import { trustedSpec } from '../../lib/specTrust';
 
 interface VehicleRevealProps {
   match: MatchResult;
@@ -74,7 +75,7 @@ export function VehicleReveal({ match }: VehicleRevealProps) {
             {t.soulTwin.power}
           </span>
           <span className="stat-value text-2xl md:text-3xl">
-            {vehicle.engine.powerHp} HP
+            {trustedSpec(vehicle, 'powerHp') ?? '—'} HP
           </span>
         </div>
 

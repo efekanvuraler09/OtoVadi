@@ -1,9 +1,8 @@
+import { useState } from 'react';
 import { Home, Sparkles, Scale, User, type LucideIcon } from 'lucide-react';
-import { m } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useI18n } from '../../i18n/useI18n';
-import { TRANSITION } from '../../lib/motion';
 
 interface NavItem {
   id: string;
@@ -27,6 +26,18 @@ export function BottomNav() {
   ];
 
   const isActive = (to: string) => (to === '/' ? location.pathname === '/' : location.pathname.startsWith(to));
+  // Oturum gerektiren sekme, oturum yokken hiçbir zaman aktif görünmez
+  const activeIndex = navItems.findIndex((item) => !(item.requiresAuth && !user) && isActive(item.to));
+
+  /*
+   * Cila 2 — Aktif sekme göstergesi tek bir öğedir ve CSS transform ile kayar (domAnimation'da layoutId çalışmadığı için
+   * eskiden zıplıyordu; 0 kB JS). Aktif sekme yokken (ör. /modeller) gösterge son konumunda soluklaşır; geri gelince
+   * oradan kayar. Hareket azaltma tercihinde geçiş kapalıdır (motion-reduce).
+   */
+  const [indicatorIndex, setIndicatorIndex] = useState(Math.max(0, activeIndex));
+  if (activeIndex >= 0 && activeIndex !== indicatorIndex) {
+    setIndicatorIndex(activeIndex);
+  }
 
   const itemClass =
     'relative flex min-h-14 w-full flex-col items-center justify-center gap-1 px-1 py-2';
@@ -35,20 +46,13 @@ export function BottomNav() {
     const Icon = item.icon;
     return (
       <>
-        {active && (
-          <m.span
-            layoutId="nav-pill"
-            className="absolute inset-x-2 inset-y-1 rounded-sm bg-foreground/5"
-            transition={TRANSITION.base}
-          />
-        )}
         <Icon
-          className={`relative size-5 ${active ? 'text-foreground' : 'text-muted'}`}
+          className={`relative size-5 transition-colors ${active ? 'text-foreground' : 'text-muted'}`}
           strokeWidth={active ? 2.25 : 1.75}
           aria-hidden
         />
         <span
-          className={`relative max-w-full truncate text-2xs font-medium ${active ? 'text-foreground' : 'text-muted'}`}
+          className={`relative max-w-full truncate text-2xs font-medium transition-colors ${active ? 'text-foreground' : 'text-muted'}`}
         >
           {item.label}
         </span>
@@ -63,7 +67,14 @@ export function BottomNav() {
     >
       {/* Yükseklik: --bottom-bar-height (5rem) — main'deki pb-bottom-bar ile eşleşir */}
       <div className="flex h-20 items-center px-2">
-        <ul className="grid w-full grid-cols-4">
+        <ul className="relative grid w-full grid-cols-4">
+          <li
+            aria-hidden
+            className="pointer-events-none absolute inset-y-1 left-0 w-1/4 px-2 transition-[transform,opacity] duration-350 ease-out-expo motion-reduce:transition-none"
+            style={{ transform: `translateX(${indicatorIndex * 100}%)`, opacity: activeIndex >= 0 ? 1 : 0 }}
+          >
+            <span className="block h-full w-full rounded-sm bg-foreground/5" />
+          </li>
           {navItems.map((item) => {
             const active = isActive(item.to);
             return (

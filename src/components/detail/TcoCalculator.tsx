@@ -9,6 +9,9 @@ import { TRANSITION } from '../../lib/motion';
 
 interface TcoCalculatorProps {
   vehicle: Vehicle;
+  /** Yıllık km VehicleDetailPage'de tutulur (A4 broşür aynı değeri basar) */
+  annualKm: number;
+  onAnnualKmChange: (value: number) => void;
 }
 
 const tl = (value: number) => formatPrice(Math.round(value), 'TRY');
@@ -29,11 +32,10 @@ const sliderBackground = (percent: number) =>
  * Y2 — Türkiye'ye özel 5 yıllık sahip olma maliyeti. Yıllık km ve birim enerji fiyatı kullanıcıdan;
  * MTV, kasko ve bakım temsili dilimlerden (lib/tco.ts). Bileşen araç id'siyle key'lenir: araç değişince varsayılanlara döner.
  */
-export function TcoCalculator({ vehicle }: TcoCalculatorProps) {
+export function TcoCalculator({ vehicle, annualKm, onAnnualKmChange: setAnnualKm }: TcoCalculatorProps) {
   const kind = energyKind(vehicle);
   const energy = ENERGY_LABEL[kind];
   const defaultPrice = DEFAULT_UNIT_PRICE[kind];
-  const [annualKm, setAnnualKm] = useState<number>(ANNUAL_KM.default);
   const [priceInput, setPriceInput] = useState(() => decimal(defaultPrice));
   const unitPrice = parseUnitPrice(priceInput);
   const kmId = useId();
@@ -109,7 +111,9 @@ export function TcoCalculator({ vehicle }: TcoCalculatorProps) {
             <span className="tabular-nums text-secondary">
               {decimal(result.consumption.value, 1)} {result.consumption.unit}/100 km
             </span>{' '}
-            (motor gücü, ağırlık ve motor hacminden hesaplanır).
+            {result.consumption.reliable
+              ? '(motor gücü, ağırlık ve motor hacminden hesaplanır).'
+              : '(teknik değerler doğrulanmadığı için gövde tipi ortalamasından hesaplanır).'}
           </p>
         </div>
       </div>
@@ -166,6 +170,8 @@ export function TcoCalculator({ vehicle }: TcoCalculatorProps) {
           Tutarlar girilen kilometre ve güncel ortalama birim maliyetlere dayalı temsili tahminlerdir. Bugünkü fiyatlarla
           hesaplanır; zam, enflasyon, il ve hasarsızlık indirimi dikkate alınmaz. MTV 2026 tarifesinin temsili dilimidir.
           {result.usedApproxFx && ' Döviz fiyatlı araçlarda kasko, araç değeri yaklaşık kurla TL’ye çevrilerek hesaplanır.'}
+          {result.usedFallbackSpecs &&
+            ' Bu araçta bazı teknik değerler henüz doğrulanmadığından tüketim ve vergi dilimi gövde tipi ortalamasıyla tahmin edilmiştir.'}
         </p>
       </div>
     </div>

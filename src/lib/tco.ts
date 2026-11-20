@@ -2,11 +2,13 @@ import type { Vehicle } from '../types/vehicle';
 import { resolveCurrency } from '../utils/formatPrice';
 import {
   approximateVehicleValueTry,
+  bodyFallback,
   brandTier,
   energyKind,
   estimateConsumption,
   type EnergyKind,
 } from './vehicleMetrics';
+import { hasUnverifiedSpecs, trustedSpec } from './specTrust';
 
 /**
  * Y2 — Türkiye'ye özel 5 yıllık sahip olma maliyeti (TCO). TAMAMI TEMSİLİ TAHMİNDİR:
@@ -107,6 +109,8 @@ export interface TcoResult {
   energy: EnergyKind;
   /** Kasko hesabında döviz fiyatı yaklaşık kurla TL'ye çevrildi mi */
   usedApproxFx: boolean;
+  /** Faz 6: doğrulanmamış teknik değer yerine gövde tipi ortalaması kullanıldı mı (dipnotta belirtilir) */
+  usedFallbackSpecs: boolean;
 }
 
 export function calculateTco(vehicle: Vehicle, { annualKm, unitPrice }: TcoInput): TcoResult {
@@ -125,14 +129,17 @@ export function calculateTco(vehicle: Vehicle, { annualKm, unitPrice }: TcoInput
     yearlyBase = PICKUP_MTV_YEARLY;
     mtvNote = 'Kamyonet sınıfı, temsili tutar';
   } else if (energy === 'electric') {
-    const kw = vehicle.engine?.powerKw || Math.round((vehicle.engine?.powerHp || 0) * 0.7355);
+    const kw = trustedSpec(vehicle, 'powerKw') || Math.round((trustedSpec(vehicle, 'powerHp') ?? bodyFallback(vehicle).hp) * 0.7355);
     const cc = (EV_KW_TO_CC.find(([max]) => kw <= max) ?? EV_KW_TO_CC[EV_KW_TO_CC.length - 1])[1];
     yearlyBase = mtvForCc(cc) * 0.25;
     mtvNote = `${kw} kW elektrik motoru, eşdeğer dilimin %25'i`;
   } else {
-    const cc = vehicle.engine?.displacementCc || 1600;
+    const trustedCc = trustedSpec(vehicle, 'displacementCc');
+    const cc = trustedCc ?? bodyFallback(vehicle).cc;
     yearlyBase = mtvForCc(cc);
-    mtvNote = `${cc.toLocaleString('tr-TR')} cm³ dilimi`;
+    mtvNote = trustedCc
+      ? `${cc.toLocaleString('tr-TR')} cm³ dilimi`
+      : `Motor hacmi doğrulanmadı · gövde tipi için temsili ${cc.toLocaleString('tr-TR')} cm³ dilimi`;
   }
   let mtv = 0;
   for (let year = 0; year < TCO_YEARS; year += 1) {
@@ -143,7 +150,7 @@ export function calculateTco(vehicle: Vehicle, { annualKm, unitPrice }: TcoInput
   const value = approximateVehicleValueTry(vehicle);
   const isClassic = Boolean(vehicle.year && vehicle.year < 1990);
   let rate = isClassic ? 0.015 : 0.026;
-  if (!isClassic && (vehicle.engine?.powerHp ?? 0) >= 300) rate += 0.006;
+  if (!isClassic && (trustedSpec(vehicle, 'powerHp') ?? bodyFallback(vehicle).hp) >= 300) rate += 0.006;
   if (vehicle.bodyType === 'muscle-car' || vehicle.bodyType === 'pickup') rate += 0.004;
   let insurance = 0;
   for (let year = 0; year < TCO_YEARS; year += 1) {
@@ -183,5 +190,6 @@ export function calculateTco(vehicle: Vehicle, { annualKm, unitPrice }: TcoInput
     consumption,
     energy,
     usedApproxFx: resolveCurrency(vehicle.pricing) !== 'TRY',
+    usedFallbackSpecs: !consumption.reliable || hasUnverifiedSpecs(vehicle),
   };
 }

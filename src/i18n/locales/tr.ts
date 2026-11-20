@@ -50,6 +50,13 @@ export const tr = {
     bodyTypesSubtitle: 'Bir gövde tipi seçin, ardından segmentlere göz atın.',
     allOfType: 'Tüm {type} modelleri',
     clearSearch: 'Aramayı temizle',
+    greetingMorning: 'Günaydın',
+    greetingDay: 'İyi günler',
+    greetingEvening: 'İyi akşamlar',
+    welcomeEyebrow: 'Kaldığınız Yerden',
+    welcomeRecent: 'Son incelediğiniz modeller',
+    welcomeEmpty: 'Bir modeli incelediğinizde burada sizi bekliyor olacak.',
+    welcomeGarage: 'Garajım',
   },
   vehicleCard: {
     from: 'Başlangıç',

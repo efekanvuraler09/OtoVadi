@@ -26,7 +26,6 @@ interactive-vehicle-catalog/
 │           └── ...
 ├── src/
 │   ├── data/
-│   │   ├── vehicles.json            ← Araç verisi + dosya yolları
 │   │   └── segments.ts              ← Klasman listesi (B/C/D/E/F sedan & SUV)
 │   └── ...
 ```
@@ -47,7 +46,7 @@ interactive-vehicle-catalog/
 interactive-vehicle-catalog\public\audio\bmw-x3-20d-idle.mp3
 ```
 
-Mevcut araçlar için beklenen dosya adları (`vehicles.json` içinden):
+Araç verisi artık Firestore `vehicles` koleksiyonundadır (eski `src/data/vehicles.json` silindi); dosya yolları kaydın `audio` / `media` alanlarına yazılır. Örnek beklenen dosya adları:
 
 - `bmw-x3-20d-idle.mp3`, `bmw-x3-20d-exhaust.mp3`, `bmw-x3-20d-rev.mp3`
 - `mercedes-glc-300-idle.mp3`, `mercedes-glc-300-exhaust.mp3`
@@ -90,7 +89,7 @@ Görsel yoksa kartlarda `colorHex` gradient gösterilir; görsel ekleyince otoma
 ## Yeni araç eklerken
 
 1. Ses ve görselleri yukarıdaki `public/` klasörlerine koyun.
-2. `src/data/vehicles.json` dosyasına yeni kayıt ekleyin.
+2. Aracı Yönetim Paneli'nden (`/admin/dashboard`) ekleyin; kayıt Firestore `vehicles` koleksiyonuna yazılır.
 3. **`segment`** alanını doğru seçin:
 
 | Klasman | `segment` değeri |

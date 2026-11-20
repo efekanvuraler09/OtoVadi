@@ -14,6 +14,7 @@ import { AuthModal } from './components/ui/AuthModal';
 import { subscribeVehicles } from './services/vehicleService';
 import { useVehicleStore } from './store/useVehicleStore';
 import { TRANSITION } from './lib/motion';
+import { loadDossier, loadModels, loadVehicleDetail } from './lib/routeLoaders';
 
 /**
  * P2: Ana sayfa ve 404 dışındaki tüm sayfalar ayrı JS parçalarına bölünür (React.lazy).
@@ -22,9 +23,6 @@ import { TRANSITION } from './lib/motion';
 function lazyPage<K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) {
   return lazy(() => load().then((mod) => ({ default: mod[name] })));
 }
-
-const loadVehicleDetail = () => import('./pages/VehicleDetailPage');
-const loadModels = () => import('./pages/ModelsPage');
 
 const VehicleDetailPage = lazyPage(loadVehicleDetail, 'VehicleDetailPage');
 const ModelsPage = lazyPage(loadModels, 'ModelsPage');
@@ -38,6 +36,7 @@ const SoulTwinPage = lazyPage(() => import('./pages/SoulTwinPage'), 'SoulTwinPag
 const CollectionsPage = lazyPage(() => import('./pages/CollectionsPage'), 'CollectionsPage');
 const CollectionDetailPage = lazyPage(() => import('./pages/CollectionDetailPage'), 'CollectionDetailPage');
 const MyAppointments = lazyPage(() => import('./pages/MyAppointments'), 'MyAppointments');
+const DossierPage = lazyPage(loadDossier, 'DossierPage');
 const AdminLogin = lazyPage(() => import('./pages/admin/AdminLogin'), 'AdminLogin');
 const AdminDashboard = lazyPage(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
 
@@ -112,6 +111,7 @@ export default function App() {
                 <Route path="ruh-ikizi" element={<SoulTwinPage />} />
                 <Route path="koleksiyonlar" element={<CollectionsPage />} />
                 <Route path="koleksiyonlar/:slug" element={<CollectionDetailPage />} />
+                <Route path="dosya" element={<DossierPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Route>

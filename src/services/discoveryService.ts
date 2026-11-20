@@ -7,6 +7,7 @@ import type {
   DiscoverSuccessResponse,
 } from '../types/discovery';
 import { approximateTry, resolveCurrency } from '../utils/formatPrice';
+import { trustedDrivetrain, trustedFuel, trustedHighlights, trustedSpec, trustedText } from '../lib/specTrust';
 
 /** Sunucudaki sınırla aynı (api/discover.ts → MAX_QUERY_LENGTH). */
 export const DISCOVER_MAX_QUERY_LENGTH = 300;
@@ -49,17 +50,18 @@ export function buildDiscoveryCatalog(vehicles: Vehicle[]): DiscoverCatalogItem[
         year: v.year,
         bodyType: v.bodyType,
         segment: SEGMENTS.has(v.segment) ? v.segment : undefined,
-        fuelType: v.engine?.fuelType,
-        powerHp: v.engine?.powerHp,
-        zeroTo100Kmh: v.performance?.zeroTo100Kmh,
-        drivetrain: v.performance?.drivetrain,
-        bootCapacityL: v.dimensions?.bootCapacityL,
+        // Faz 6 (Cila 1): doğrulanmamış (şablon) teknik değerler modele gönderilmez
+        fuelType: trustedFuel(v) ?? undefined,
+        powerHp: trustedSpec(v, 'powerHp') ?? undefined,
+        zeroTo100Kmh: trustedSpec(v, 'zeroTo100Kmh') ?? undefined,
+        drivetrain: trustedDrivetrain(v) ?? undefined,
+        bootCapacityL: trustedSpec(v, 'bootCapacityL') ?? undefined,
         price: hasPrice ? msrp : undefined,
         currency,
         approxPriceTry: hasPrice && currency ? Math.round(approximateTry(msrp, currency) / 10_000) * 10_000 : undefined,
         trim: clean(v.pricing?.trim),
-        description: clean(v.shortDescription),
-        highlights: v.highlights?.map((h) => clean(h)).filter((h): h is string => Boolean(h)).slice(0, 5),
+        description: trustedText(v.shortDescription) || undefined,
+        highlights: trustedHighlights(v).slice(0, 5),
       };
     });
 }

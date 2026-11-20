@@ -2,11 +2,25 @@ import type { Vehicle } from '../types/vehicle';
 import { approximateTry, formatPrice, resolveCurrency } from '../utils/formatPrice';
 import { cleanText } from '../utils/vehicleText';
 import { estimateConsumption, powerToWeight } from './vehicleMetrics';
+import {
+  hasUnverifiedSpecs,
+  specTrust,
+  trustedDrivetrain,
+  trustedEngineCode,
+  trustedFuel,
+  trustedHighlights,
+  trustedSpec,
+  trustedTransmission,
+} from './specTrust';
 
 /**
  * Y1 — Kafa Kafaya Düello satırları. Sayısal satırlarda en iyi değer belirlenir, ikinci en iyiye göre
  * fark rozeti üretilir ve skora sayılır. Değeri eksik/geçersiz olan satır skora katılmaz.
+ * Faz 6 (Cila 1): doğrulanmamış (şablon) teknik değerler "—" görünür ve kıyasa/skora girmez.
  */
+
+/** Doğrulanmamış değer yüzünden kıyaslanamayan satırların dipnotu */
+export const UNVERIFIED_NOTE = 'Doğrulanmamış teknik değer kıyasa alınmadı';
 
 export interface DuelCell {
   /** Ekranda gösterilen değer (birimsiz) */
@@ -50,13 +64,13 @@ interface NumericSpec {
 }
 
 const NUMERIC_SPECS: NumericSpec[] = [
-  { id: 'power', label: 'Güç', unit: 'HP', decimals: 0, lowerIsBetter: false, value: (v) => v.engine?.powerHp },
-  { id: 'torque', label: 'Tork', unit: 'Nm', decimals: 0, lowerIsBetter: false, value: (v) => v.engine?.torqueNm },
-  { id: 'accel', label: '0–100 km/s', unit: 'sn', decimals: 1, lowerIsBetter: true, value: (v) => v.performance?.zeroTo100Kmh },
-  { id: 'topSpeed', label: 'Maks. Hız', unit: 'km/s', decimals: 0, lowerIsBetter: false, value: (v) => v.performance?.topSpeedKmh },
+  { id: 'power', label: 'Güç', unit: 'HP', decimals: 0, lowerIsBetter: false, value: (v) => trustedSpec(v, 'powerHp') ?? undefined },
+  { id: 'torque', label: 'Tork', unit: 'Nm', decimals: 0, lowerIsBetter: false, value: (v) => trustedSpec(v, 'torqueNm') ?? undefined },
+  { id: 'accel', label: '0–100 km/s', unit: 'sn', decimals: 1, lowerIsBetter: true, value: (v) => trustedSpec(v, 'zeroTo100Kmh') ?? undefined },
+  { id: 'topSpeed', label: 'Maks. Hız', unit: 'km/s', decimals: 0, lowerIsBetter: false, value: (v) => trustedSpec(v, 'topSpeedKmh') ?? undefined },
   { id: 'ptw', label: 'Güç / Ağırlık', unit: 'HP/t', decimals: 0, lowerIsBetter: false, value: powerToWeight },
-  { id: 'weight', label: 'Ağırlık', unit: 'kg', decimals: 0, lowerIsBetter: true, value: (v) => v.dimensions?.curbWeightKg },
-  { id: 'boot', label: 'Bagaj', unit: 'L', decimals: 0, lowerIsBetter: false, value: (v) => v.dimensions?.bootCapacityL },
+  { id: 'weight', label: 'Ağırlık', unit: 'kg', decimals: 0, lowerIsBetter: true, value: (v) => trustedSpec(v, 'curbWeightKg') ?? undefined },
+  { id: 'boot', label: 'Bagaj', unit: 'L', decimals: 0, lowerIsBetter: false, value: (v) => trustedSpec(v, 'bootCapacityL') ?? undefined },
 ];
 
 function numericRow(spec: NumericSpec, vehicles: Vehicle[]): DuelRow {
@@ -80,15 +94,21 @@ function numericRow(spec: NumericSpec, vehicles: Vehicle[]): DuelRow {
     }
   }
 
-  return { id: spec.id, label: spec.label, scored: comparable, cells, winner, badge, allEqual, note: spec.note };
+  // Eksik değer şablon veriden geliyorsa kullanıcıya nedeni söylenir
+  const note = !comparable && vehicles.some(hasUnverifiedSpecs) ? UNVERIFIED_NOTE : spec.note;
+  return { id: spec.id, label: spec.label, scored: comparable, cells, winner, badge, allEqual, note };
 }
 
 function consumptionRow(vehicles: Vehicle[]): DuelRow {
   const estimates = vehicles.map(estimateConsumption);
   const fmt = numberFormat(1);
-  const cells = estimates.map((e) => ({ display: `≈ ${fmt.format(e.value)}`, unit: `${e.unit}/100 km` }));
+  // Doğrulanmamış güç/ağırlıktan türeyen tahmin gösterilmez (gövde ortalaması düelloda yanıltıcı olur)
+  const cells = estimates.map((e) =>
+    e.reliable ? { display: `≈ ${fmt.format(e.value)}`, unit: `${e.unit}/100 km` } : { display: '—' },
+  );
+  const allReliable = estimates.every((e) => e.reliable);
   // Litre ile kWh kıyaslanamaz
-  const sameUnit = estimates.every((e) => e.unit === estimates[0].unit);
+  const sameUnit = allReliable && estimates.every((e) => e.unit === estimates[0].unit);
   const values = estimates.map((e) => e.value);
   const allEqual = sameUnit && values.every((n) => n === values[0]);
   let winner: number | null = null;
@@ -108,7 +128,7 @@ function consumptionRow(vehicles: Vehicle[]): DuelRow {
     winner,
     badge,
     allEqual,
-    note: 'Güç, ağırlık ve motor hacminden hesaplanan temsili değer',
+    note: allReliable ? 'Güç, ağırlık ve motor hacminden hesaplanan temsili değer' : UNVERIFIED_NOTE,
   };
 }
 
@@ -177,17 +197,19 @@ export function buildDuelRows(vehicles: Vehicle[]): { numeric: DuelRow[]; specs:
 
   const specs = [
     textRow('engine', 'Motor', vehicles, (v) => {
-      const cc = v.engine?.displacementCc;
-      return [cleanText(v.engine?.code), valid(cc) ? `${(cc / 1000).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} L` : '']
+      const cc = trustedSpec(v, 'displacementCc');
+      return [trustedEngineCode(v) ?? '', valid(cc) ? `${(cc / 1000).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} L` : '']
         .filter(Boolean)
         .join(' · ');
     }),
-    textRow('fuel', 'Yakıt', vehicles, (v) => FUEL[v.engine?.fuelType] ?? ''),
+    textRow('fuel', 'Yakıt', vehicles, (v) => FUEL[trustedFuel(v) ?? ''] ?? ''),
     textRow('transmission', 'Şanzıman', vehicles, (v) => {
-      const type = TRANSMISSION[v.performance?.transmission] ?? '';
-      return v.performance?.gears ? `${type} · ${v.performance.gears} ileri` : type;
+      const transmission = trustedTransmission(v);
+      const type = transmission ? (TRANSMISSION[transmission] ?? '') : '';
+      // Vites sayısı şablon kayıtlarda varsayılan (7) olduğu için yalnızca motor verisi doğrulanmışsa yazılır
+      return type && v.performance?.gears && specTrust(v).engine ? `${type} · ${v.performance.gears} ileri` : type;
     }),
-    textRow('drivetrain', 'Çekiş', vehicles, (v) => DRIVETRAIN[v.performance?.drivetrain] ?? ''),
+    textRow('drivetrain', 'Çekiş', vehicles, (v) => DRIVETRAIN[trustedDrivetrain(v) ?? ''] ?? ''),
   ];
 
   return { numeric, specs };
@@ -217,9 +239,9 @@ export function duelScore(rows: DuelRow[], count: number): DuelScore {
 export function duelFeatures(vehicles: Vehicle[]): { name: string; has: boolean[] }[] {
   const counts = new Map<string, number>();
   for (const v of vehicles) {
-    for (const raw of v.highlights ?? []) {
-      const name = cleanText(raw);
-      if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+    // "Standart Donanım" gibi şablon etiketler listeye girmez
+    for (const name of trustedHighlights(v)) {
+      counts.set(name, (counts.get(name) ?? 0) + 1);
     }
   }
   return [...counts.entries()]
@@ -230,8 +252,11 @@ export function duelFeatures(vehicles: Vehicle[]): { name: string; has: boolean[
 
 /* ── Seçim çözümleme (URL → tepsi → varsayılan) ───────────────────── */
 
-/** URL'de parametre yoksa ve tepsi boşsa açılan varsayılan düello (doküman id'leri) */
-const DEFAULT_DUEL = ['hyundai-tucson-2023', 'tiguan-2023'];
+/**
+ * URL'de parametre yoksa ve tepsi boşsa açılan varsayılan düello (doküman id'leri). Faz 6: teknik değerleri doğrulanmış
+ * iki rakip (eski Tucson × Tiguan çiftinin motor verisi şablon olduğu için Cila 1 sonrası yalnızca 3 kategori kıyaslanıyordu).
+ */
+const DEFAULT_DUEL = ['ford-mustang-gt-2023', 'dodge-challenger-srt-hellcat-2023'];
 export const DUEL_PARAM_KEYS = ['a', 'b', 'c'] as const;
 
 function findByKey(vehicles: Vehicle[], key: string): Vehicle | undefined {

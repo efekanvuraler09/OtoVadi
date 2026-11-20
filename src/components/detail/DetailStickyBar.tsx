@@ -1,5 +1,5 @@
 import { AnimatePresence, m } from 'framer-motion';
-import { Bookmark, Check, Scale } from 'lucide-react';
+import { Bookmark, Check, FileText, MessageCircle, Scale } from 'lucide-react';
 import type { Vehicle } from '../../types/vehicle';
 import { formatVehiclePrice } from '../../utils/formatPrice';
 import { cleanText, vehicleBrand, vehicleModel } from '../../utils/vehicleText';
@@ -12,6 +12,11 @@ interface DetailStickyBarProps {
   /** Hero ekrandan çıkınca true */
   visible: boolean;
   onTestDrive: () => void;
+  /** "Bu Araca Sorun" danışmanı (2.1) */
+  onAskAdvisor: () => void;
+  /** A4 Teknik Künye (1.2) */
+  onPrintBrochure: () => void;
+  onPrefetchAdvisor?: () => void;
 }
 
 const ghostButtonClass =
@@ -21,7 +26,7 @@ const ghostButtonClass =
  * U4 — Masaüstü yapışkan özet şeridi. Hero'nun altına inildiğinde header'ın hemen altında (top-16) belirir.
  * Yalnızca md+ (mobilde MobileActionBar var). Yerel katman z-30: header (z-header 40) ve overlay'lerin altında kalır.
  */
-export function DetailStickyBar({ vehicle, visible, onTestDrive }: DetailStickyBarProps) {
+export function DetailStickyBar({ vehicle, visible, onTestDrive, onAskAdvisor, onPrintBrochure, onPrefetchAdvisor }: DetailStickyBarProps) {
   const garage = useGarageToggle(vehicle);
   const compare = useCompareToggle(vehicle);
   const trim = cleanText(vehicle.pricing?.trim);
@@ -51,6 +56,26 @@ export function DetailStickyBar({ vehicle, visible, onTestDrive }: DetailStickyB
             <p className="shrink-0 text-lg font-medium tabular-nums text-foreground">{formatVehiclePrice(vehicle.pricing)}</p>
 
             <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={onPrintBrochure}
+                aria-label="Broşürü indir (A4 teknik künye)"
+                title="Broşürü İndir"
+                className={`${ghostButtonClass} border-border-subtle text-foreground hover:border-foreground`}
+              >
+                <FileText className="size-4" strokeWidth={1.5} aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={onAskAdvisor}
+                onPointerEnter={onPrefetchAdvisor}
+                onFocus={onPrefetchAdvisor}
+                className={`${ghostButtonClass} border-border-subtle text-foreground hover:border-foreground`}
+              >
+                <MessageCircle className="size-4" strokeWidth={1.5} aria-hidden />
+                <span className="hidden lg:inline">Danışmana Sor</span>
+                <span className="sr-only lg:hidden">Danışmana Sor</span>
+              </button>
               <button
                 type="button"
                 onClick={garage.toggle}

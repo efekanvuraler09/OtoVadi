@@ -50,6 +50,13 @@ export const en = {
     bodyTypesSubtitle: 'Pick a body type, then browse its segments.',
     allOfType: 'All {type} models',
     clearSearch: 'Clear search',
+    greetingMorning: 'Good morning',
+    greetingDay: 'Good afternoon',
+    greetingEvening: 'Good evening',
+    welcomeEyebrow: 'Where You Left Off',
+    welcomeRecent: 'Recently viewed models',
+    welcomeEmpty: 'Models you view will be waiting for you here.',
+    welcomeGarage: 'My Garage',
   },
   vehicleCard: {
     from: 'From',

@@ -50,6 +50,13 @@ export const de = {
     bodyTypesSubtitle: 'Wählen Sie einen Karosserietyp und dann ein Segment.',
     allOfType: 'Alle {type}-Modelle',
     clearSearch: 'Suche löschen',
+    greetingMorning: 'Guten Morgen',
+    greetingDay: 'Guten Tag',
+    greetingEvening: 'Guten Abend',
+    welcomeEyebrow: 'Dort, wo Sie aufgehört haben',
+    welcomeRecent: 'Zuletzt angesehene Modelle',
+    welcomeEmpty: 'Modelle, die Sie ansehen, erwarten Sie hier.',
+    welcomeGarage: 'Meine Garage',
   },
   vehicleCard: {
     from: 'Ab',

@@ -5,10 +5,14 @@ import { resolveCurrency } from '../../utils/formatPrice';
 import { FinanceCalculator } from './FinanceCalculator';
 import { TcoCalculator } from './TcoCalculator';
 import { TRANSITION, fadeUp } from '../../lib/motion';
+import type { OwnershipPlan } from '../../lib/finance';
 
 interface OwnershipCostPanelProps {
   vehicle: Vehicle;
   onApply: () => void;
+  /** Peşinat / vade / yıllık km — sayfada tutulur, A4 broşür de aynı seçimi basar */
+  plan: OwnershipPlan;
+  onPlanChange: (patch: Partial<OwnershipPlan>) => void;
 }
 
 type PanelTab = 'finance' | 'tco';
@@ -22,7 +26,7 @@ const TABS: { id: PanelTab; label: string; title: string }[] = [
  * Y2 — Detay sayfasının maliyet paneli: "Finansman" (mevcut kredi hesaplayıcı) ve "5 Yıllık Maliyet (TCO)" sekmeleri.
  * Sekmeler WAI-ARIA tablist deseninde (←/→ ile geçiş).
  */
-export function OwnershipCostPanel({ vehicle, onApply }: OwnershipCostPanelProps) {
+export function OwnershipCostPanel({ vehicle, onApply, plan, onPlanChange }: OwnershipCostPanelProps) {
   const [tab, setTab] = useState<PanelTab>('finance');
   const baseId = useId();
   const active = TABS.find((t) => t.id === tab) ?? TABS[0];
@@ -84,9 +88,22 @@ export function OwnershipCostPanel({ vehicle, onApply }: OwnershipCostPanelProps
         transition={TRANSITION.base}
       >
         {tab === 'finance' ? (
-          <FinanceCalculator price={vehicle.pricing.msrp} currency={resolveCurrency(vehicle.pricing)} onApply={onApply} />
+          <FinanceCalculator
+            price={vehicle.pricing.msrp}
+            currency={resolveCurrency(vehicle.pricing)}
+            downPercent={plan.downPercent}
+            term={plan.term}
+            onDownPercentChange={(downPercent) => onPlanChange({ downPercent })}
+            onTermChange={(term) => onPlanChange({ term })}
+            onApply={onApply}
+          />
         ) : (
-          <TcoCalculator key={vehicle.id} vehicle={vehicle} />
+          <TcoCalculator
+            key={vehicle.id}
+            vehicle={vehicle}
+            annualKm={plan.annualKm}
+            onAnnualKmChange={(annualKm) => onPlanChange({ annualKm })}
+          />
         )}
       </m.div>
     </section>

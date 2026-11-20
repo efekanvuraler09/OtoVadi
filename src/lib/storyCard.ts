@@ -1,5 +1,6 @@
 import type { Vehicle } from '../types/vehicle';
 import { vehicleBrand, vehicleModel } from '../utils/vehicleText';
+import { trustedSpec } from './specTrust';
 import { RADAR_AXES, axisVector, radarPoints, type RadarAxis, type RadarProfile } from './radarProfile';
 
 /**
@@ -436,12 +437,13 @@ function drawLegend(ctx: CanvasRenderingContext2D, y: number): void {
 }
 
 function drawStats(ctx: CanvasRenderingContext2D, vehicle: Vehicle, top: number): void {
-  const fmt = (n: number | undefined, digits = 0) =>
-    typeof n === 'number' && n > 0 ? n.toLocaleString('tr-TR', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—';
+  const fmt = (n: number | null, digits = 0) =>
+    n !== null ? n.toLocaleString('tr-TR', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—';
+  // Doğrulanmamış (şablon) değerler kartta "—" (Cila 1)
   const stats = [
-    { label: 'GÜÇ', value: fmt(vehicle.engine?.powerHp), unit: 'HP' },
-    { label: 'TORK', value: fmt(vehicle.engine?.torqueNm), unit: 'Nm' },
-    { label: '0–100 KM/S', value: fmt(vehicle.performance?.zeroTo100Kmh, 1), unit: 'sn' },
+    { label: 'GÜÇ', value: fmt(trustedSpec(vehicle, 'powerHp')), unit: 'HP' },
+    { label: 'TORK', value: fmt(trustedSpec(vehicle, 'torqueNm')), unit: 'Nm' },
+    { label: '0–100 KM/S', value: fmt(trustedSpec(vehicle, 'zeroTo100Kmh'), 1), unit: 'sn' },
   ];
 
   ctx.save();

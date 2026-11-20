@@ -8,6 +8,7 @@ import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { SmartImage } from '../ui/SmartImage';
 import { vehicleBrand, vehicleModel, vehicleName } from '../../utils/vehicleText';
 import { TRANSITION, staggerDelay } from '../../lib/motion';
+import { trustedEngineCode, trustedSpec } from '../../lib/specTrust';
 
 interface AtmosphereStageProps {
   vehicle: Vehicle;
@@ -175,28 +176,14 @@ export function AtmosphereStage({ vehicle, isOpen, onClose }: AtmosphereStagePro
 
 /* ── Helpers ─────────────────────────────────────────────────────── */
 
+/** Doğrulanmamış (şablon) değerler "—" (Cila 1) */
 function buildSpecs(vehicle: Vehicle) {
-  const specs: { label: string; value: string }[] = [];
+  const withUnit = (value: number | null, unit: string) => (value === null ? '—' : `${value.toLocaleString('tr-TR')} ${unit}`);
 
-  specs.push({
-    label: 'Beygir Gücü',
-    value: `${vehicle.engine.powerHp.toLocaleString('tr-TR')} HP`,
-  });
-
-  specs.push({
-    label: 'Tork',
-    value: `${vehicle.engine.torqueNm.toLocaleString('tr-TR')} Nm`,
-  });
-
-  specs.push({
-    label: '0–100 km/h',
-    value: `${vehicle.performance.zeroTo100Kmh.toLocaleString('tr-TR')} sn`,
-  });
-
-  specs.push({
-    label: 'Motor',
-    value: vehicle.engine.configuration,
-  });
-
-  return specs;
+  return [
+    { label: 'Beygir Gücü', value: withUnit(trustedSpec(vehicle, 'powerHp'), 'HP') },
+    { label: 'Tork', value: withUnit(trustedSpec(vehicle, 'torqueNm'), 'Nm') },
+    { label: '0–100 km/h', value: withUnit(trustedSpec(vehicle, 'zeroTo100Kmh'), 'sn') },
+    { label: 'Motor', value: trustedEngineCode(vehicle) ?? '—' },
+  ];
 }

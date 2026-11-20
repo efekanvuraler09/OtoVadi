@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { m } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { subscribeCollectionBySlug } from '../services/collectionService';
@@ -14,6 +14,8 @@ import { NotFoundPage } from './NotFoundPage';
 import { TRANSITION, fade, fadeUp } from '../lib/motion';
 import type { VehicleCollection } from '../types/collection';
 import type { Vehicle } from '../types/vehicle';
+import { trustedSpec } from '../lib/specTrust';
+import { VehicleLink } from '../components/vehicle/VehicleLink';
 
 import { usePageMeta } from '../hooks/usePageMeta';
 export function CollectionDetailPage() {
@@ -131,6 +133,7 @@ export function CollectionDetailPage() {
           return (
             <m.article
               key={entry.vehicleId}
+              data-vt-root
               {...fadeUp}
               whileInView={fadeUp.animate}
               animate={undefined}
@@ -144,31 +147,29 @@ export function CollectionDetailPage() {
                 <div className="h-px flex-1 bg-border-subtle" />
               </div>
 
-              <SmartImage
-                src={v.media.heroImage}
-                alt={vehicleName(v)}
-                aspectRatio="16 / 9"
-                colorHex={v.media.colorHex}
-                className="mb-6"
-              />
+              <div data-vt="media" className="mb-6">
+                <SmartImage src={v.media.heroImage} alt={vehicleName(v)} aspectRatio="16 / 9" colorHex={v.media.colorHex} />
+              </div>
 
               <p className="eyebrow">
                 <span lang="en">{vehicleBrand(v)}</span> · <span className="tabular-nums">{v.year}</span>
               </p>
-              <h2 className="mt-2 text-display-md font-normal text-foreground">{vehicleModel(v)}</h2>
+              <h2 className="mt-2 text-display-md font-normal text-foreground">
+                <span data-vt="title">{vehicleModel(v)}</span>
+              </h2>
               {v.tagline && <p className="mt-3 text-lg text-secondary">{v.tagline}</p>}
 
               <dl className="my-6 grid grid-cols-3 border-y border-border-subtle py-4">
                 <div>
                   <dt className="stat-label">Güç</dt>
                   <dd className="stat-value mt-1 text-xl">
-                    {v.engine.powerHp} <span className="text-sm text-muted">HP</span>
+                    {trustedSpec(v, 'powerHp') ?? '—'} <span className="text-sm text-muted">HP</span>
                   </dd>
                 </div>
                 <div className="border-l border-border-subtle pl-4">
                   <dt className="stat-label">0–100</dt>
                   <dd className="stat-value mt-1 text-xl">
-                    {v.performance.zeroTo100Kmh.toLocaleString('tr-TR')} <span className="text-sm text-muted">sn</span>
+                    {trustedSpec(v, 'zeroTo100Kmh')?.toLocaleString('tr-TR') ?? '—'} <span className="text-sm text-muted">sn</span>
                   </dd>
                 </div>
                 <div className="border-l border-border-subtle pl-4">
@@ -183,13 +184,13 @@ export function CollectionDetailPage() {
                 </blockquote>
               )}
 
-              <Link
-                to={`/arac/${v.id}`}
+              <VehicleLink
+                vehicle={v}
                 className="group inline-flex min-h-10 items-center gap-3 text-xs font-semibold uppercase tracking-eyebrow text-foreground"
               >
                 İncele
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} aria-hidden />
-              </Link>
+              </VehicleLink>
 
               {index < resolvedEntries.length - 1 && (
                 <div className="my-14 flex justify-center md:my-20" aria-hidden>

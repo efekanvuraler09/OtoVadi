@@ -1,4 +1,5 @@
 import type { BodyType, Vehicle } from '../types/vehicle';
+import { trustedSpec } from './specTrust';
 
 export function countByBodyType(vehicles: Vehicle[], bodyType: BodyType): number {
   return vehicles.filter((v) => v.bodyType === bodyType).length;
@@ -24,9 +25,9 @@ export const BENCHMARK_METRICS: BenchmarkMetric[] = [
   { key: 'topSpeedKmh', label: 'Maks. Hız', unit: 'km/s', lowerIsBetter: false, decimals: 0 },
 ];
 
+/** Yalnızca doğrulanmış değer (Cila 1): şablon değerli araçlar ne kendi çubuğunu görür ne de katalog dağılımına girer */
 export function benchmarkValue(vehicle: Vehicle, key: BenchmarkKey): number | null {
-  const raw = key === 'powerHp' || key === 'torqueNm' ? vehicle.engine?.[key] : vehicle.performance?.[key];
-  return typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : null;
+  return trustedSpec(vehicle, key);
 }
 
 export interface BenchmarkStat {

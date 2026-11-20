@@ -3,6 +3,7 @@ import { m } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { HeroSection } from '../components/home/HeroSection';
 import { FeaturedShowcase } from '../components/home/FeaturedShowcase';
+import { WelcomeStrip } from '../components/home/WelcomeStrip';
 import { InstantSearch } from '../components/home/InstantSearch';
 import { SegmentPicker } from '../components/home/SegmentPicker';
 import { VehicleCard } from '../components/vehicle/VehicleCard';
@@ -55,6 +56,9 @@ export function HomePage() {
   return (
     <>
       <HeroSection />
+
+      {/* 1.3 — Kişisel karşılama ve son incelenenler (yalnızca geçmiş veya oturum varsa) */}
+      <WelcomeStrip />
 
       <FeaturedShowcase />
 

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { m } from 'framer-motion';
 import { ArrowRight, Bookmark, Check, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,6 +10,8 @@ import { useGarageToggle } from '../../hooks/useGarageToggle';
 import { useCompareToggle } from '../../hooks/useCompareToggle';
 import { useI18n } from '../../i18n/useI18n';
 import { TRANSITION, fadeUp, staggerDelay } from '../../lib/motion';
+import { trustedDrivetrain, trustedFuel, trustedSpec } from '../../lib/specTrust';
+import { useVehicleTransitionLink } from '../../hooks/useVehicleTransitionLink';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -34,29 +37,41 @@ const actionButtonActiveClass =
  * Tek tip araç kartı (U6). Kartın tamamı tıklanabilir ama tek bir gerçek <Link> vardır (başlık; ::after ile kartı kaplar):
  * klavye, orta tık ve "yeni sekmede aç" doğal olarak çalışır. Garaj/karşılaştır aksiyonları linkin üstünde (z-10) durur.
  * 3'lü teknik veri satırı hover'a bağlı değildir; dokunmatik ekranda da her zaman görünür.
+ * Faz 6: tıklamada görsel ve başlık View Transition ile detay hero'suna yerleşir (data-vt); hover/focus'ta detay parçası
+ * ve hero görseli önceden iner. Doğrulanmamış (şablon) teknik değerler "—" görünür.
  */
 export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = false }: VehicleCardProps) {
   const { t, locale } = useI18n();
   const copy = t.vehicleCard;
   const { isGaraged, isBusy, toggle } = useGarageToggle(vehicle);
   const compare = useCompareToggle(vehicle);
+  const articleRef = useRef<HTMLElement>(null);
+  const link = useVehicleTransitionLink(vehicle);
 
   const featured = variant === 'featured';
   const name = vehicleName(vehicle);
   const trim = cleanText(vehicle.pricing?.trim);
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
-  const fuel = copy.fuel[vehicle.engine.fuelType as keyof typeof copy.fuel] ?? vehicle.engine.fuelType;
-  const drive = copy.drive[vehicle.performance.drivetrain as keyof typeof copy.drive] ?? vehicle.performance.drivetrain;
+  const fuelType = trustedFuel(vehicle);
+  const drivetrain = trustedDrivetrain(vehicle);
+  const fuel = fuelType ? (copy.fuel[fuelType as keyof typeof copy.fuel] ?? fuelType) : '—';
+  const drive = drivetrain ? (copy.drive[drivetrain as keyof typeof copy.drive] ?? drivetrain) : '';
+  const power = trustedSpec(vehicle, 'powerHp');
+  const accel = trustedSpec(vehicle, 'zeroTo100Kmh');
 
   const specs = [
-    { label: copy.power, value: number.format(vehicle.engine.powerHp), unit: 'HP' },
-    { label: copy.acceleration, value: number.format(vehicle.performance.zeroTo100Kmh), unit: copy.seconds },
+    { label: copy.power, value: power === null ? '—' : number.format(power), unit: power === null ? undefined : 'HP' },
+    { label: copy.acceleration, value: accel === null ? '—' : number.format(accel), unit: accel === null ? undefined : copy.seconds },
     // Dar kartta taşmasın: çekiş yalnızca dört çeker araçlarda yakıtın yanına eklenir
-    { label: copy.fuelLabel, value: ['awd', '4wd'].includes(vehicle.performance.drivetrain) ? `${fuel} · ${drive}` : fuel },
+    { label: copy.fuelLabel, value: drivetrain && ['awd', '4wd'].includes(drivetrain) && fuelType ? `${fuel} · ${drive}` : fuel },
   ];
 
   return (
     <m.article
+      ref={articleRef}
+      onPointerEnter={link.prefetch}
+      onFocus={link.prefetch}
+      onTouchStart={link.prefetch}
       {...fadeUp}
       transition={{ ...TRANSITION.base, delay: staggerDelay(index) }}
       className={`group relative flex h-full flex-col ${
@@ -64,14 +79,17 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
       }`}
     >
       <div className="relative">
-        <SmartImage
-          src={vehicle.media?.thumbnail || vehicle.media?.heroImage}
-          alt={name}
-          aspectRatio="16 / 10"
-          colorHex={vehicle.media?.colorHex}
-          priority={priority}
-          imgClassName="group-hover:scale-[1.03]"
-        />
+        {/* View Transition kaynağı: tıklamada detay hero'suna dönüşür */}
+        <div data-vt="media">
+          <SmartImage
+            src={vehicle.media?.thumbnail || vehicle.media?.heroImage}
+            alt={name}
+            aspectRatio="16 / 10"
+            colorHex={vehicle.media?.colorHex}
+            priority={priority}
+            imgClassName="group-hover:scale-[1.03]"
+          />
+        </div>
 
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           {/* U7: sayfadan çıkarmaz; aracı global karşılaştırma tepsisine ekler/çıkarır */}
@@ -114,10 +132,11 @@ export function VehicleCard({ vehicle, variant = 'grid', index = 0, priority = f
         </p>
         <h3 className={`mt-2 font-display font-normal text-foreground ${featured ? 'text-2xl' : 'text-xl md:text-2xl'}`}>
           <Link
-            to={`/arac/${vehicle.id}`}
+            to={link.to}
+            onClick={(event) => link.onClick(event, articleRef.current)}
             className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-foreground"
           >
-            {vehicleModel(vehicle)}
+            <span data-vt="title">{vehicleModel(vehicle)}</span>
           </Link>
         </h3>
         {trim && <p className="mt-1 truncate text-sm text-muted">{trim}</p>}

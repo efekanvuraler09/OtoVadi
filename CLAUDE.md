@@ -5,7 +5,7 @@ editoryal içerik (Günün Aracı, Koleksiyonlar) ve Firestore tabanlı admin CM
 
 ## Yığın
 React 19 · TypeScript ~6 · Vite 8 · Tailwind 3.4 (`darkMode: 'class'`) · framer-motion 12 · Zustand 5 ·
-React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, Vercel Function) ·
+React Router 7 (`BrowserRouter`, deklaratif rotalar) · Firebase 12 (Auth + Firestore) · `@google/genai` (YALNIZCA sunucuda: `api/discover.ts`, `api/ask.ts` — Vercel Function) ·
 fontlar self-host `@fontsource/playfair-display` (yalnızca 400/500 import edilir) + `@fontsource-variable/inter` (main.tsx'te import; Google Fonts yok).
 
 ## Doğrulama (her değişiklikten sonra)
@@ -128,6 +128,49 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
   çoğu CORS vermediği için pratikte çoğunlukla bu çıkar). Kartta rakamlar Inter (Playfair eski stil rakamları canvas'ta kapatılamıyor).
   Paylaş butonu yalnızca `navigator.canShare({files})` destekleniyorsa; dokunuş eskirse "tekrar dokunun" (kart önbellekte).
 
+## Sessiz lüks, akış ve imza deneyimler (Faz 6)
+- **Teknik veri güveni (Cila 1) — `lib/specTrust.ts`:** şablon değerler gerçek gibi gösterilmez. Kural: tek alan ASLA şüpheli sayılmaz; yalnızca bilinen
+  profilin TÜM alanları eşleşirse grup doğrulanmamış olur. Motor: cc+HP+Nm+0–100+maks hız birebir `PLACEHOLDER_ENGINES`
+  (1498/150/250/8,5/220 · 1499/140/220/8,5/213 · form 1000/100/200/10/200); boyut: 6 alandan ≥5'i form seti (4500/1800/1600/2700/500/1500).
+  Şablon motorlu kayıtta form varsayılanı kategorikler (`fwd`, `automatic`, `petrol`, kod "1.5 Turbo") da gizlenir. Kayıtta `specsVerified: true`
+  (Console'dan elle; admin formu yazmaz) sezgiyi kapatır, `false` her şeyi gizler. Okuma HER ZAMAN `trustedSpec(v, key)` / `trustedFuel` /
+  `trustedDrivetrain` / `trustedTransmission` / `trustedEngineCode` ile (null → arayüzde "—" + `detail/UnverifiedNote`). Şablon metinler
+  (`"Premium tasarım, üstün performans"`, "Standart Donanım"…) `trustedText` / `trustedHighlights` ile ayıklanır. Kullananlar: SpecGrid, Boyutlar sekmesi,
+  VehicleCard, Koleksiyon detayı, AtmosphereStage, VehicleReveal, Story kartı, `catalogBenchmarks`, `buildDuelRows` (dipnot `UNVERIFIED_NOTE`, skora girmez),
+  TCO (`bodyFallback` gövde ortalaması + `usedFallbackSpecs` dipnotu; `estimateConsumption().reliable`), broşür, Dosya, Akıllı Keşif kataloğu ve `api/ask.ts`.
+  Varsayılan düello Mustang GT × Challenger Hellcat (doğrulanmış çift). Bilinçli olarak dokunulmadı: `radarProfile`, `dnaEngine`, `localVehicleMatcher`.
+- **BottomNav (Cila 2):** aktif gösterge tek `li[aria-hidden]`, CSS `translateX(index·100%)` + 350 ms geçiş (0 kB JS, `motion-reduce:transition-none`);
+  aktif sekme yokken soluklaşır. `layoutId` kullanma (domAnimation'da çalışmaz).
+- **Kart → detay View Transition (1.1):** `lib/viewTransition.ts` → `startVehicleTransition` = `document.startViewTransition(async () => { flushSync(navigate);
+  await [data-vt-ready] })` (BrowserRouter'da RR'nin `viewTransition`'ı yok). Kaynaklar `[data-vt="media"]` / `[data-vt="title"]` (VehicleCard'ın
+  article'ı veya `[data-vt-root]` atası); isimler yalnızca tıklama anında verilir, DetailHero `vt-vehicle-media` / `vt-vehicle-title`'ı hep taşır.
+  `hooks/useVehicleTransitionLink` + `vehicle/VehicleLink` hover/focus/dokunuşta detay parçasını (`lib/routeLoaders.ts`) ve hero görselini
+  (`lib/imageCache.ts`; SmartImage önbellekteki görseli ilk render'da görünür çizer) önceden indirir. Desteklenmeyen tarayıcı / hareket azaltma → normal `<Link>`.
+  Geçişle gelinince (`history.state.vehicleTransition`, 4 sn) sayfa solması ve perde atlanır. CSS `::view-transition-*` kuralları index.css'te.
+- **Sinematik hero (1.4):** `DetailHero` görsel yüklenince `.hero-curtain` (1,1 sn clip-path) + `.hero-drift` (20 sn %3,5 yakınlaşma) — yalnızca
+  `prefers-reduced-motion: no-preference`; `.hero-spotlight` md+ ve fare ile, CSS değişkeniyle (React state yok), en fazla %7 beyaz.
+- **Kaldığınız Yerden (1.3):** `store/useRecentStore` (localStorage `recently-viewed`, en fazla 3 id, en yeni önce; Firestore'a yazılmaz),
+  detay sayfası kaydeder. `home/WelcomeStrip` hero'nun hemen altında; yalnızca geçmiş veya oturum varsa. Metinler `t.home.greeting*` / `welcome*`.
+- **Baskı (1.2 / 2.3):** `print/PrintSheet` body'ye portal edilir, ekranda `display:none`; `@media print` body'nin diğer çocuklarını gizler, tokenları
+  açık temaya çevirir (html.dark zemini dahil), `.print-sheet` içinde animasyon/geçiş kapalı, `@page A4 margin 0`. `PrintPage fit="page"` flex tek sayfa
+  (taşan kesilir — broşürü tek sayfaya sığdır), `fit="flow"` blok akış. `printDocument` yazdırmadan önce baskı görsellerini ≤3 sn bekler (hotlink yavaşsa monogram basılır).
+  Headless test: `Page.printToPDF` ~5 MB PDF'te tek CDP mesajında takılır → `transferMode: 'ReturnAsStream'` + `IO.read` kullan.
+  `print/VehicleBrochure` (Teknik Künye; yalnızca `lib/specSheet.ts` doğrulanmış satırları) detayda hep mount; `lib/print.ts → printDocument(başlık)`
+  PDF adını geçici başlıktan verir. Girişler: hero ikonu, aksiyon alanı (md+), DetailStickyBar, MobileActionBar "Daha fazla" menüsü.
+- **Finansman / plan:** `lib/finance.ts` (`calculateFinance`, `FINANCE_TERMS`, `DOWN_PAYMENT`, `OwnershipPlan`, `sanitizePlan`) tek formül;
+  peşinat/vade/yıllık km `VehicleDetailPage` state'inde (FinanceCalculator ve TcoCalculator kontrollü) → broşür ve danışman aynı seçimi kullanır.
+- **Özel Dosya (2.3) — `/dosya`:** lazy `pages/DossierPage` (noindex). Durum yalnızca URL'de: `?ids=<slug|id>,…(≤3)&km=&term=&down=` (`lib/dossier.ts`:
+  parse/sanitize, `dossierHref`, `buildDossierEntries`, `buildDossierSummary` → duel satırları + TCO/taksit farkı). Firestore koleksiyonu/kuralı YOK.
+  Ayar değişiklikleri `navigate(..., { replace: true, state: { preserveScroll: true } })` — ScrollManager bu REPLACE'te kaydırmaz. Giriş: Garajım → `DossierPanel`.
+- **"Bu Araca Sorun" (2.1) — `api/ask.ts`:** POST `{ vehicleId, question, locale, estimates? }` (sözleşme `src/types/ask.ts`). Araç kaydı istemciden
+  ALINMAZ: Firestore REST'ten id, yoksa `slug` runQuery ile okunur; şablon değerler sunucuda ayıklanır (specTrust kopyası — ikisini birlikte güncelle).
+  Tahminler yalnızca aralık kontrollü sayılar. Soru ≤300 karakter (400 `question_too_long`), id deseni, 8 KB gövde, örnek başına 10/dk. Gemini
+  `responseSchema {answer, usedFields(enum), unknown}`; yanıt dili sorudan tespit edilir (`detectAnswerLocale`). Son güvence `enforceNumericGrounding`:
+  kayıtta/tahminlerde karşılığı olmayan rakam içeren cümle atılır, hiçbir şey kalmazsa sabit "Bu detay elimizdeki araç kaydında yer almıyor." döner.
+  İstemci: `services/askService.ts` (oturum başına `ASK_SESSION_LIMIT`=6 soru, sessionStorage; başarısız istek hak yemez) + lazy
+  `advisor/AdvisorDrawer` (portal, z-drawer-backdrop, `useBodyScrollLock`, ESC/odak tuzağı; md+ sağ çekmece, mobil alt sheet, 3 örnek soru, "Dayanak:" alanları).
+  `vercel.json` SPA kuralı `api/` hariç tutar; `functions` içinde `api/ask.ts` maxDuration 30. `vite preview`'da `/api` yok → satır içi hata görünür.
+
 ## Akıllı Keşif ve güvenlik (Faz 2)
 - Akış: `AutoCurator` → `services/discoveryService.ts` → `POST /api/discover` → Gemini (`responseSchema`, slug enum + sunucuda
   ayrıca doğrulama, toplam 12 sn, 429/503'te tek retry, 300 karakter). Sözleşme `src/types/discovery.ts` (yalnızca tip).
@@ -147,6 +190,7 @@ Geliştirme: `npm run dev` (5173); vite.config.ts'teki ara katman `/api/*` istek
   `resolveCurrency` içindeki GEÇİCİ kural: `TRY` ve < 1M → EUR. Araçlar admin'den doğru para birimiyle yeniden kaydedilince bu kural kaldırılmalı.
 - Doküman id = `vehicle.id`; `slug` farklı olabilir. Garaj (`users/{uid}.savedVehicles`) slug saklar; id ve slug'ı birlikte kontrol et.
 - Admin'den eklenen araçlarda boyutlar sahte varsayılandır (4500 mm, 500 L, 1500 kg), ses `src: ''`, multimedya/iç mekan boştur; güvenilir sayma.
+  Kasım 2026'da 22 kaydın motor değerleri kopya şablon (bkz. Faz 6 `specTrust`); gerçek değer bazen yalnızca `shortDescription`'da yazar (ör. A6 "245 hp").
 - Muscle car kayıtlarında `segment: "muscle-car"` olabilir (tip `'-'` bekler).
 - `public/audio/` ve `public/images/vehicles/` boştur (bu yüzden Ses sekmesi şu an hiçbir araçta görünmez); görseller dış hotlink'tir
   (Wikimedia/Unsplash/hdcarwallpapers) ve kırılabilir — SmartImage fallback'i bunu karşılar. Marka/model alanlarında baş/son boşluk var.
@@ -175,5 +219,7 @@ Faz 3 tamamlandı: K11, K13, U1, U2, U3, U6, U8, U9, U10 (görsellerin kendi dep
 Faz 4 tamamlandı: P1, P2, P4, P6, P7, K12 + varsayılan koyu tema, AutoCurator autoFocus ve alert() temizliği
 (dinamik @vercel/og görseli, araç URL'li sitemap ve P3/P5 hariç).
 Faz 5 tamamlandı: U4 (lightbox, katalog kıyası, boş sekme gizleme, masaüstü şerit), U7 + Y1 (tepsi + düello),
-U11 + Y3 (SVG radar + Story kartı), Y2 (TCO). Kalan: U5 ses stüdyosu, Y4–Y7.
+U11 + Y3 (SVG radar + Story kartı), Y2 (TCO).
+Faz 6 tamamlandı: Cila 1 (specTrust), Cila 2 (BottomNav CSS göstergesi), 1.1 (View Transition), 1.4 (sinematik hero), 1.3 (Kaldığınız Yerden),
+1.2 (A4 Teknik Künye), 2.3 (Özel Dosya /dosya), 2.1 ("Bu Araca Sorun", api/ask.ts). Kalan: U5 ses stüdyosu, Y4–Y7, 2.2 Monograf, 2.4 Ateşleme Anı.
 Sonraki fazlar kullanıcı onayıyla, madde numarasıyla seçilir.

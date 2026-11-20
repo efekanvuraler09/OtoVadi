@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react';
+import { isImageLoaded, markImageLoaded, normalizeImageSrc } from '../../lib/imageCache';
 
 interface SmartImageProps {
   src?: string | null;
@@ -24,14 +25,6 @@ interface SmartImageProps {
 }
 
 type Status = 'loading' | 'loaded' | 'error';
-
-/** Göreli yolları köke bağlar; boş/geçersiz değerde null döner. */
-function normalizeSrc(src?: string | null): string | null {
-  const value = src?.trim();
-  if (!value) return null;
-  if (/^(https?:|data:|blob:)/i.test(value) || value.startsWith('/')) return value;
-  return `/${value}`;
-}
 
 function hexToRgb(hex?: string): string | null {
   const match = hex?.trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
@@ -72,9 +65,10 @@ export function SmartImage({
   onLoad,
   onError,
 }: SmartImageProps) {
-  const resolved = normalizeSrc(src);
-  // Durum src'ye bağlı tutulur: src değişince ek effect gerekmeden "loading"e döner
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const resolved = normalizeImageSrc(src);
+  // Durum src'ye bağlı tutulur: src değişince ek effect gerekmeden "loading"e döner.
+  // Bu oturumda zaten yüklenmiş görsel ilk render'da görünür başlar (Faz 6: View Transition anlık görüntüsü boş kalmasın)
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(() => (isImageLoaded(resolved) ? resolved : null));
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   const status: Status =
@@ -129,6 +123,7 @@ export function SmartImage({
           decoding="async"
           draggable={draggable}
           onLoad={() => {
+            markImageLoaded(resolved);
             setLoadedSrc(resolved);
             onLoad?.();
           }}
